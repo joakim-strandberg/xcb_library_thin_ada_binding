@@ -1,0 +1,11 @@
+library project Xcb is
+   for Library_Name use "xcb_ada";
+   for Library_Kind use "static";
+
+   for Source_Dirs  use ("src");
+   for Object_Dir   use "obj";
+   for Library_Dir  use "lib";
+
+   for Languages    use ("Ada");
+
+end Xcb;
