@@ -18,8 +18,6 @@ procedure Main is
    Mask : XCB.GC_Type;
    Values : aliased XCB.Value_List_Array (0..1);
 
-   Done : Interfaces.C.int := 0;
-
    R : XCB.Rectangle_Type := (X => 20, Y => 20, Width => 60, Height => 60);
 
    Unused_Cookie : XCB.Void_Cookie_Type;
@@ -42,9 +40,9 @@ begin
 
    -- Create window
    W := XCB.Generate_Id (C);
-   Mask := XCB.XCB_CW_BACK_PIXEL or XCB.XCB_CW_EVENT_MASK;
-   Values (0) := XCB.XCB_NONE; --S.White_Pixel;
-   Values (1) := XCB.XCB_EVENT_MASK_EXPOSURE or XCB.XCB_EVENT_MASK_KEY_PRESS;
+   Mask := XCB.Constants.XCB_CW_BACK_PIXEL or XCB.Constants.XCB_CW_EVENT_MASK;
+   Values (0) := S.White_Pixel;
+   Values (1) := XCB.Constants.XCB_EVENT_MASK_EXPOSURE or XCB.Constants.XCB_EVENT_MASK_KEY_PRESS;
    Unused_Cookie := XCB.Create_Window (C            => C,
                                        Depth        => S.Root_Depth,
                                        Wid          => W,
@@ -69,19 +67,15 @@ begin
    end if;
 
    -- Event loop
-   while Done = 0 loop
+   loop
       E := XCB.Wait_For_Event (C);
 
       if E /= null then
          Ada.Text_IO.Put_Line ("Response kind:" & E.Response_Kind'Img);
          case (E.Response_Kind) is
-            when XCB.XCB_EXPOSE =>
-               -- Draw or redraw the window
-               --              xcb_poly_fill_rectangle(c, w, g,  1, &r);
-               Flush_Number := XCB.Flush (C);
-            when XCB.XCB_KEY_PRESS =>
+            when XCB.Constants.XCB_KEY_PRESS =>
                -- Exit on key press
-               Done := 1;
+               exit;
             when others =>
                null;
          end case;

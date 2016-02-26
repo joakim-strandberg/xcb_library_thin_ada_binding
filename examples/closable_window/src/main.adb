@@ -20,8 +20,6 @@ procedure Main is
    Mask : XCB.GC_Type;
    Values : aliased XCB.Value_List_Array (0..1);
 
-   Done : Interfaces.C.int := 0;
-
    R : XCB.Rectangle_Type := (X => 20, Y => 20, Width => 60, Height => 60);
 
    Unused_Cookie : XCB.Void_Cookie_Type;
@@ -44,9 +42,9 @@ begin
 
    -- Create window
    W := XCB.Generate_Id (C);
-   Mask := XCB.XCB_CW_BACK_PIXEL or XCB.XCB_CW_EVENT_MASK;
+   Mask := XCB.Constants.XCB_CW_BACK_PIXEL or XCB.Constants.XCB_CW_EVENT_MASK;
    Values (0) := S.White_Pixel;
-   Values (1) := XCB.XCB_EVENT_MASK_EXPOSURE or XCB.XCB_EVENT_MASK_KEY_PRESS;
+   Values (1) := XCB.Constants.XCB_EVENT_MASK_EXPOSURE or XCB.Constants.XCB_EVENT_MASK_KEY_PRESS;
    Unused_Cookie := XCB.Create_Window (C            => C,
                                        Depth        => S.Root_Depth,
                                        Wid          => W,
@@ -88,35 +86,6 @@ begin
                                             1,
                                             Reply_2.all.Atom'Address);
    end;
---    xcb_change_property(c, XCB_PROP_MODE_REPLACE, w, (*reply).atom, 4, 32, 1,
---  &(*reply2).atom);
---
---    xcb_map_window(c, w);
---    xcb_flush(c);
---
---    xcb_generic_event_t* event;
---    while((event = xcb_wait_for_event(c)))
---    {
---      puts("Event occurred");
---      switch((*event).response_type & ~0x80)
---      {
---        case XCB_EXPOSE:
---          puts("Expose");
---          break;
---        case XCB_CLIENT_MESSAGE:
---        {
---          puts("Client Message");
---          if((*(xcb_client_message_event_t*)event).data.data32[0] ==
---  (*reply2).atom)
---          {
---            puts("Kill client");
---            return 0;
---          }
---          break;
---        }
---      }
---    }
-
 
    -- Map (show) the window
    Unused_Cookie := XCB.Map_Window (C, W);
@@ -128,22 +97,22 @@ begin
    end if;
 
    -- Event loop
-   while Done = 0 loop
+   loop
       E := XCB.Wait_For_Event (C);
 
       if E /= null then
          Ada.Text_IO.Put_Line ("Response kind:" & E.Response_Kind'Img);
          case (E.Response_Kind mod 128) is
-            when XCB.XCB_EXPOSE =>
+            when XCB.Constants.XCB_EXPOSE =>
                -- Draw or redraw the window
                --              xcb_poly_fill_rectangle(c, w, g,  1, &r);
                Flush_Number := XCB.Flush (C);
-            when XCB.XCB_KEY_PRESS =>
+            when XCB.Constants.XCB_KEY_PRESS =>
                -- Exit on key press
-               Done := 1;
-            when XCB.XCB_CLIENT_MESSAGE =>
-               Done := 1;
+               exit;
+            when XCB.Constants.XCB_CLIENT_MESSAGE =>
                Ada.Text_IO.Put_Line ("Clicked on the X-button");
+               exit;
             when others =>
                null;
          end case;
