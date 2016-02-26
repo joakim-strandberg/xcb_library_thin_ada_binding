@@ -35,7 +35,6 @@ package XCB is
 
    pragma Linker_Options ("-lxcb");
 
-   --  unsupported macro: XCB_PACKED __attribute__((__packed__))
    X_PROTOCOL                       : constant := 11;
    X_PROTOCOL_REVISION              : constant := 0;
    X_TCP_PORT                       : constant := 6000;
@@ -72,158 +71,159 @@ package XCB is
    XCB_MAP_NOTIFY        : constant := 19;
    XCB_MAP_REQUEST       : constant := 20;
    XCB_REPARENT_NOTIFY   : constant := 21;
+   XCB_CONFIGURE_NOTIFY           : constant := 22;
+   XCB_CONFIGURE_REQUEST          : constant := 23;
+   XCB_GRAVITY_NOTIFY             : constant := 24;
+   XCB_RESIZE_REQUEST             : constant := 25;
+   XCB_CIRCULATE_NOTIFY           : constant := 26;
+   XCB_CIRCULATE_REQUEST          : constant := 27;
+   XCB_PROPERTY_NOTIFY            : constant := 28;
+   XCB_SELECTION_CLEAR            : constant := 29;
+   XCB_SELECTION_REQUEST          : constant := 30;
+   XCB_SELECTION_NOTIFY           : constant := 31;
+   XCB_COLORMAP_NOTIFY            : constant := 32;
+   XCB_CLIENT_MESSAGE             : constant := 33;
+   XCB_MAPPING_NOTIFY             : constant := 34;
+   XCB_GE_GENERIC                 : constant := 35;
 
-   --  unsupported macro: XCB_CONFIGURE_NOTIFY 22
-   --  unsupported macro: XCB_CONFIGURE_REQUEST 23
-   --  unsupported macro: XCB_GRAVITY_NOTIFY 24
-   --  unsupported macro: XCB_RESIZE_REQUEST 25
-   --  unsupported macro: XCB_CIRCULATE_NOTIFY 26
-   --  unsupported macro: XCB_CIRCULATE_REQUEST 27
-   --  unsupported macro: XCB_PROPERTY_NOTIFY 28
-   --  unsupported macro: XCB_SELECTION_CLEAR 29
-   --  unsupported macro: XCB_SELECTION_REQUEST 30
-   --  unsupported macro: XCB_SELECTION_NOTIFY 31
-   --  unsupported macro: XCB_COLORMAP_NOTIFY 32
-   --  unsupported macro: XCB_CLIENT_MESSAGE 33
-   --  unsupported macro: XCB_MAPPING_NOTIFY 34
-   --  unsupported macro: XCB_GE_GENERIC 35
-   --  unsupported macro: XCB_REQUEST 1
-   --  unsupported macro: XCB_VALUE 2
-   --  unsupported macro: XCB_WINDOW 3
-   --  unsupported macro: XCB_PIXMAP 4
-   --  unsupported macro: XCB_ATOM 5
-   --  unsupported macro: XCB_CURSOR 6
-   --  unsupported macro: XCB_FONT 7
-   --  unsupported macro: XCB_MATCH 8
-   --  unsupported macro: XCB_DRAWABLE 9
-   --  unsupported macro: XCB_ACCESS 10
-   --  unsupported macro: XCB_ALLOC 11
-   --  unsupported macro: XCB_COLORMAP 12
-   --  unsupported macro: XCB_G_CONTEXT 13
-   --  unsupported macro: XCB_ID_CHOICE 14
-   --  unsupported macro: XCB_NAME 15
-   --  unsupported macro: XCB_LENGTH 16
-   --  unsupported macro: XCB_IMPLEMENTATION 17
-   --  unsupported macro: XCB_CREATE_WINDOW 1
-   --  unsupported macro: XCB_CHANGE_WINDOW_ATTRIBUTES 2
-   --  unsupported macro: XCB_GET_WINDOW_ATTRIBUTES 3
-   --  unsupported macro: XCB_DESTROY_WINDOW 4
-   --  unsupported macro: XCB_DESTROY_SUBWINDOWS 5
-   --  unsupported macro: XCB_CHANGE_SAVE_SET 6
-   --  unsupported macro: XCB_REPARENT_WINDOW 7
-   --  unsupported macro: XCB_MAP_WINDOW 8
-   --  unsupported macro: XCB_MAP_SUBWINDOWS 9
-   --  unsupported macro: XCB_UNMAP_WINDOW 10
-   --  unsupported macro: XCB_UNMAP_SUBWINDOWS 11
-   --  unsupported macro: XCB_CONFIGURE_WINDOW 12
-   --  unsupported macro: XCB_CIRCULATE_WINDOW 13
-   --  unsupported macro: XCB_GET_GEOMETRY 14
-   --  unsupported macro: XCB_QUERY_TREE 15
-   --  unsupported macro: XCB_INTERN_ATOM 16
-   --  unsupported macro: XCB_GET_ATOM_NAME 17
-   --  unsupported macro: XCB_CHANGE_PROPERTY 18
-   --  unsupported macro: XCB_DELETE_PROPERTY 19
-   --  unsupported macro: XCB_GET_PROPERTY 20
-   --  unsupported macro: XCB_LIST_PROPERTIES 21
-   --  unsupported macro: XCB_SET_SELECTION_OWNER 22
-   --  unsupported macro: XCB_GET_SELECTION_OWNER 23
-   --  unsupported macro: XCB_CONVERT_SELECTION 24
-   --  unsupported macro: XCB_SEND_EVENT 25
-   --  unsupported macro: XCB_GRAB_POINTER 26
-   --  unsupported macro: XCB_UNGRAB_POINTER 27
-   --  unsupported macro: XCB_GRAB_BUTTON 28
-   --  unsupported macro: XCB_UNGRAB_BUTTON 29
-   --  unsupported macro: XCB_CHANGE_ACTIVE_POINTER_GRAB 30
-   --  unsupported macro: XCB_GRAB_KEYBOARD 31
-   --  unsupported macro: XCB_UNGRAB_KEYBOARD 32
-   --  unsupported macro: XCB_GRAB_KEY 33
-   --  unsupported macro: XCB_UNGRAB_KEY 34
-   --  unsupported macro: XCB_ALLOW_EVENTS 35
-   --  unsupported macro: XCB_GRAB_SERVER 36
-   --  unsupported macro: XCB_UNGRAB_SERVER 37
-   --  unsupported macro: XCB_QUERY_POINTER 38
-   --  unsupported macro: XCB_GET_MOTION_EVENTS 39
-   --  unsupported macro: XCB_TRANSLATE_COORDINATES 40
-   --  unsupported macro: XCB_WARP_POINTER 41
-   --  unsupported macro: XCB_SET_INPUT_FOCUS 42
-   --  unsupported macro: XCB_GET_INPUT_FOCUS 43
-   --  unsupported macro: XCB_QUERY_KEYMAP 44
-   --  unsupported macro: XCB_OPEN_FONT 45
-   --  unsupported macro: XCB_CLOSE_FONT 46
-   --  unsupported macro: XCB_QUERY_FONT 47
-   --  unsupported macro: XCB_QUERY_TEXT_EXTENTS 48
-   --  unsupported macro: XCB_LIST_FONTS 49
-   --  unsupported macro: XCB_LIST_FONTS_WITH_INFO 50
-   --  unsupported macro: XCB_SET_FONT_PATH 51
-   --  unsupported macro: XCB_GET_FONT_PATH 52
-   --  unsupported macro: XCB_CREATE_PIXMAP 53
-   --  unsupported macro: XCB_FREE_PIXMAP 54
-   --  unsupported macro: XCB_CREATE_GC 55
-   --  unsupported macro: XCB_CHANGE_GC 56
-   --  unsupported macro: XCB_COPY_GC 57
-   --  unsupported macro: XCB_SET_DASHES 58
-   --  unsupported macro: XCB_SET_CLIP_RECTANGLES 59
-   --  unsupported macro: XCB_FREE_GC 60
-   --  unsupported macro: XCB_CLEAR_AREA 61
-   --  unsupported macro: XCB_COPY_AREA 62
-   --  unsupported macro: XCB_COPY_PLANE 63
-   --  unsupported macro: XCB_POLY_POINT 64
-   --  unsupported macro: XCB_POLY_LINE 65
-   --  unsupported macro: XCB_POLY_SEGMENT 66
-   --  unsupported macro: XCB_POLY_RECTANGLE 67
-   --  unsupported macro: XCB_POLY_ARC 68
-   --  unsupported macro: XCB_FILL_POLY 69
-   --  unsupported macro: XCB_POLY_FILL_RECTANGLE 70
-   --  unsupported macro: XCB_POLY_FILL_ARC 71
-   --  unsupported macro: XCB_PUT_IMAGE 72
-   --  unsupported macro: XCB_GET_IMAGE 73
-   --  unsupported macro: XCB_POLY_TEXT_8 74
-   --  unsupported macro: XCB_POLY_TEXT_16 75
-   --  unsupported macro: XCB_IMAGE_TEXT_8 76
-   --  unsupported macro: XCB_IMAGE_TEXT_16 77
-   --  unsupported macro: XCB_CREATE_COLORMAP 78
-   --  unsupported macro: XCB_FREE_COLORMAP 79
-   --  unsupported macro: XCB_COPY_COLORMAP_AND_FREE 80
-   --  unsupported macro: XCB_INSTALL_COLORMAP 81
-   --  unsupported macro: XCB_UNINSTALL_COLORMAP 82
-   --  unsupported macro: XCB_LIST_INSTALLED_COLORMAPS 83
-   --  unsupported macro: XCB_ALLOC_COLOR 84
-   --  unsupported macro: XCB_ALLOC_NAMED_COLOR 85
-   --  unsupported macro: XCB_ALLOC_COLOR_CELLS 86
-   --  unsupported macro: XCB_ALLOC_COLOR_PLANES 87
-   --  unsupported macro: XCB_FREE_COLORS 88
-   --  unsupported macro: XCB_STORE_COLORS 89
-   --  unsupported macro: XCB_STORE_NAMED_COLOR 90
-   --  unsupported macro: XCB_QUERY_COLORS 91
-   --  unsupported macro: XCB_LOOKUP_COLOR 92
-   --  unsupported macro: XCB_CREATE_CURSOR 93
-   --  unsupported macro: XCB_CREATE_GLYPH_CURSOR 94
-   --  unsupported macro: XCB_FREE_CURSOR 95
-   --  unsupported macro: XCB_RECOLOR_CURSOR 96
-   --  unsupported macro: XCB_QUERY_BEST_SIZE 97
-   --  unsupported macro: XCB_QUERY_EXTENSION 98
-   --  unsupported macro: XCB_LIST_EXTENSIONS 99
-   --  unsupported macro: XCB_CHANGE_KEYBOARD_MAPPING 100
-   --  unsupported macro: XCB_GET_KEYBOARD_MAPPING 101
-   --  unsupported macro: XCB_CHANGE_KEYBOARD_CONTROL 102
-   --  unsupported macro: XCB_GET_KEYBOARD_CONTROL 103
-   --  unsupported macro: XCB_BELL 104
-   --  unsupported macro: XCB_CHANGE_POINTER_CONTROL 105
-   --  unsupported macro: XCB_GET_POINTER_CONTROL 106
-   --  unsupported macro: XCB_SET_SCREEN_SAVER 107
-   --  unsupported macro: XCB_GET_SCREEN_SAVER 108
-   --  unsupported macro: XCB_CHANGE_HOSTS 109
-   --  unsupported macro: XCB_LIST_HOSTS 110
-   --  unsupported macro: XCB_SET_ACCESS_CONTROL 111
-   --  unsupported macro: XCB_SET_CLOSE_DOWN_MODE 112
-   --  unsupported macro: XCB_KILL_CLIENT 113
-   --  unsupported macro: XCB_ROTATE_PROPERTIES 114
-   --  unsupported macro: XCB_FORCE_SCREEN_SAVER 115
-   --  unsupported macro: XCB_SET_POINTER_MAPPING 116
-   --  unsupported macro: XCB_GET_POINTER_MAPPING 117
-   --  unsupported macro: XCB_SET_MODIFIER_MAPPING 118
-   --  unsupported macro: XCB_GET_MODIFIER_MAPPING 119
-   --  unsupported macro: XCB_NO_OPERATION 127
+   XCB_REQUEST                    : constant := 1;
+   XCB_VALUE                      : constant := 2;
+   XCB_WINDOW                     : constant := 3;
+   XCB_PIXMAP                     : constant := 4;
+   XCB_ATOM                       : constant := 5;
+   XCB_CURSOR                     : constant := 6;
+   XCB_FONT                       : constant := 7;
+   XCB_MATCH                      : constant := 8;
+   XCB_DRAWABLE                   : constant := 9;
+   XCB_ACCESS                     : constant := 10;
+   XCB_ALLOC                      : constant := 11;
+   XCB_COLORMAP                   : constant := 12;
+   XCB_G_CONTEXT                  : constant := 13;
+   XCB_ID_CHOICE                  : constant := 14;
+   XCB_NAME                       : constant := 15;
+   XCB_LENGTH                     : constant := 16;
+   XCB_IMPLEMENTATION             : constant := 17;
+
+   XCB_CREATE_WINDOW              : constant := 1;
+   XCB_CHANGE_WINDOW_ATTRIBUTES   : constant := 2;
+   XCB_GET_WINDOW_ATTRIBUTES      : constant := 3;
+   XCB_DESTROY_WINDOW             : constant := 4;
+   XCB_DESTROY_SUBWINDOWS         : constant := 5;
+   XCB_CHANGE_SAVE_SET            : constant := 6;
+   XCB_REPARENT_WINDOW            : constant := 7;
+   XCB_MAP_WINDOW                 : constant := 8;
+   XCB_MAP_SUBWINDOWS             : constant := 9;
+   XCB_UNMAP_WINDOW               : constant := 10;
+   XCB_UNMAP_SUBWINDOWS           : constant := 11;
+   XCB_CONFIGURE_WINDOW           : constant := 12;
+   XCB_CIRCULATE_WINDOW           : constant := 13;
+   XCB_GET_GEOMETRY               : constant := 14;
+   XCB_QUERY_TREE                 : constant := 15;
+   XCB_INTERN_ATOM                : constant := 16;
+   XCB_GET_ATOM_NAME              : constant := 17;
+   XCB_CHANGE_PROPERTY            : constant := 18;
+   XCB_DELETE_PROPERTY            : constant := 19;
+   XCB_GET_PROPERTY               : constant := 20;
+   XCB_LIST_PROPERTIES            : constant := 21;
+   XCB_SET_SELECTION_OWNER        : constant := 22;
+   XCB_GET_SELECTION_OWNER        : constant := 23;
+   XCB_CONVERT_SELECTION          : constant := 24;
+   XCB_SEND_EVENT                 : constant := 25;
+   XCB_GRAB_POINTER               : constant := 26;
+   XCB_UNGRAB_POINTER             : constant := 27;
+   XCB_GRAB_BUTTON                : constant := 28;
+   XCB_UNGRAB_BUTTON              : constant := 29;
+   XCB_CHANGE_ACTIVE_POINTER_GRAB : constant := 30;
+   XCB_GRAB_KEYBOARD              : constant := 31;
+   XCB_UNGRAB_KEYBOARD            : constant := 32;
+   XCB_GRAB_KEY                   : constant := 33;
+   XCB_UNGRAB_KEY                 : constant := 34;
+   XCB_ALLOW_EVENTS               : constant := 35;
+   XCB_GRAB_SERVER                : constant := 36;
+   XCB_UNGRAB_SERVER              : constant := 37;
+   XCB_QUERY_POINTER              : constant := 38;
+   XCB_GET_MOTION_EVENTS          : constant := 39;
+   XCB_TRANSLATE_COORDINATES      : constant := 40;
+   XCB_WARP_POINTER               : constant := 41;
+   XCB_SET_INPUT_FOCUS            : constant := 42;
+   XCB_GET_INPUT_FOCUS            : constant := 43;
+   XCB_QUERY_KEYMAP               : constant := 44;
+   XCB_OPEN_FONT                  : constant := 45;
+   XCB_CLOSE_FONT                 : constant := 46;
+   XCB_QUERY_FONT                 : constant := 47;
+   XCB_QUERY_TEXT_EXTENTS         : constant := 48;
+   XCB_LIST_FONTS                 : constant := 49;
+   XCB_LIST_FONTS_WITH_INFO       : constant := 50;
+   XCB_SET_FONT_PATH              : constant := 51;
+   XCB_GET_FONT_PATH              : constant := 52;
+   XCB_CREATE_PIXMAP              : constant := 53;
+   XCB_FREE_PIXMAP                : constant := 54;
+   XCB_CREATE_GC                  : constant := 55;
+   XCB_CHANGE_GC                  : constant := 56;
+   XCB_COPY_GC                    : constant := 57;
+   XCB_SET_DASHES                 : constant := 58;
+   XCB_SET_CLIP_RECTANGLES        : constant := 59;
+   XCB_FREE_GC                    : constant := 60;
+   XCB_CLEAR_AREA                 : constant := 61;
+   XCB_COPY_AREA                  : constant := 62;
+   XCB_COPY_PLANE                 : constant := 63;
+   XCB_POLY_POINT                 : constant := 64;
+   XCB_POLY_LINE                  : constant := 65;
+   XCB_POLY_SEGMENT               : constant := 66;
+   XCB_POLY_RECTANGLE             : constant := 67;
+   XCB_POLY_ARC                   : constant := 68;
+   XCB_FILL_POLY                  : constant := 69;
+   XCB_POLY_FILL_RECTANGLE        : constant := 70;
+   XCB_POLY_FILL_ARC              : constant := 71;
+   XCB_PUT_IMAGE                  : constant := 72;
+   XCB_GET_IMAGE                  : constant := 73;
+   XCB_POLY_TEXT_8                : constant := 74;
+   XCB_POLY_TEXT_16               : constant := 75;
+   XCB_IMAGE_TEXT_8               : constant := 76;
+   XCB_IMAGE_TEXT_16              : constant := 77;
+   XCB_CREATE_COLORMAP            : constant := 78;
+   XCB_FREE_COLORMAP              : constant := 79;
+   XCB_COPY_COLORMAP_AND_FREE     : constant := 80;
+   XCB_INSTALL_COLORMAP           : constant := 81;
+   XCB_UNINSTALL_COLORMAP         : constant := 82;
+   XCB_LIST_INSTALLED_COLORMAPS   : constant := 83;
+   XCB_ALLOC_COLOR                : constant := 84;
+   XCB_ALLOC_NAMED_COLOR          : constant := 85;
+   XCB_ALLOC_COLOR_CELLS          : constant := 86;
+   XCB_ALLOC_COLOR_PLANES         : constant := 87;
+   XCB_FREE_COLORS                : constant := 88;
+   XCB_STORE_COLORS               : constant := 89;
+   XCB_STORE_NAMED_COLOR          : constant := 90;
+   XCB_QUERY_COLORS               : constant := 91;
+   XCB_LOOKUP_COLOR               : constant := 92;
+   XCB_CREATE_CURSOR              : constant := 93;
+   XCB_CREATE_GLYPH_CURSOR        : constant := 94;
+   XCB_FREE_CURSOR                : constant := 95;
+   XCB_RECOLOR_CURSOR             : constant := 96;
+   XCB_QUERY_BEST_SIZE            : constant := 97;
+   XCB_QUERY_EXTENSION            : constant := 98;
+   XCB_LIST_EXTENSIONS            : constant := 99;
+   XCB_CHANGE_KEYBOARD_MAPPING    : constant := 100;
+   XCB_GET_KEYBOARD_MAPPING       : constant := 101;
+   XCB_CHANGE_KEYBOARD_CONTROL    : constant := 102;
+   XCB_GET_KEYBOARD_CONTROL       : constant := 103;
+   XCB_BELL                       : constant := 104;
+   XCB_CHANGE_POINTER_CONTROL     : constant := 105;
+   XCB_GET_POINTER_CONTROL        : constant := 106;
+   XCB_SET_SCREEN_SAVER           : constant := 107;
+   XCB_GET_SCREEN_SAVER           : constant := 108;
+   XCB_CHANGE_HOSTS               : constant := 109;
+   XCB_LIST_HOSTS                 : constant := 110;
+   XCB_SET_ACCESS_CONTROL         : constant := 111;
+   XCB_SET_CLOSE_DOWN_MODE        : constant := 112;
+   XCB_KILL_CLIENT                : constant := 113;
+   XCB_ROTATE_PROPERTIES          : constant := 114;
+   XCB_FORCE_SCREEN_SAVER         : constant := 115;
+   XCB_SET_POINTER_MAPPING        : constant := 116;
+   XCB_GET_POINTER_MAPPING        : constant := 117;
+   XCB_SET_MODIFIER_MAPPING       : constant := 118;
+   XCB_GET_MODIFIER_MAPPING       : constant := 119;
+   XCB_NO_OPERATION               : constant := 127;
 
    --
    -- Type definitions
@@ -233,6 +233,26 @@ package XCB is
       Sequence : aliased Interfaces.C.unsigned;
    end record;
    pragma Convention (C_Pass_By_Copy, Void_Cookie_Type);
+
+   type Intern_Atom_Cookie_Type is record
+      Sequence : aliased Interfaces.C.unsigned;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Intern_Atom_Cookie_Type);
+
+   subtype Atom_Type is Interfaces.Unsigned_32;
+
+   type Intern_Atom_Reply_Type is record
+      Response_Kind : aliased Interfaces.Unsigned_8;
+      Padding_0     : aliased Interfaces.Unsigned_8;
+      Sequence      : aliased Interfaces.Unsigned_16;
+      Length        : aliased Interfaces.Unsigned_32;
+      Atom          : aliased Atom_Type;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Intern_Atom_Reply_Type);
+
+   type Intern_Atom_Reply_Access_Type is access all Intern_Atom_Reply_Type;
+   for Intern_Atom_Reply_Access_Type'Storage_Size use 0;
+   pragma Convention (C, Intern_Atom_Reply_Access_Type);
 
    -- Opaque structure containing all data that XCB needs in order
    -- to communicate with an X server.
@@ -426,6 +446,12 @@ package XCB is
       XCB_WINDOW_CLASS_INPUT_ONLY);
    pragma Convention (C, Window_Class_Type);
 
+   type Prop_Mode_Type is
+     (XCB_PROP_MODE_REPLACE,
+      XCB_PROP_MODE_PREPEND,
+      XCB_PROP_MODE_APPEND);
+   pragma Convention (C, Prop_Mode_Type);
+
    --
    -- Subprogram definitions
    --
@@ -555,5 +581,26 @@ package XCB is
 
    function Setup_Roots_Iterator (R : Setup_Constant_Access_Type) return Screen_Iterator_Type;
    pragma Import (C, Setup_Roots_Iterator, "xcb_setup_roots_iterator");
+
+   function Intern_Atom (C              : Connection_Access_Type;
+                         Only_If_Exists : Interfaces.Unsigned_8;
+                         Name_Length    : Interfaces.Unsigned_16;
+                         Name           : Interfaces.C.Strings.chars_ptr) return Intern_Atom_Cookie_Type;
+   pragma Import (C, Intern_Atom, "xcb_intern_atom");
+
+   function Intern_Atom_Reply (C      : Connection_Access_Type;
+                               Cookie : Intern_Atom_Cookie_Type;
+                               Error  : System.Address) return Intern_Atom_Reply_Access_Type;
+   pragma Import (C, Intern_Atom_Reply, "xcb_intern_atom_reply");
+
+   function Change_Property (c           : Connection_Access_Type;
+                             Mode        : Interfaces.Unsigned_8;
+                             Window      : Window_Type;
+                             Property    : Atom_Type;
+                             C_Kind      : Atom_Type;
+                             Format      : Interfaces.Unsigned_8;
+                             Data_Length : Interfaces.Unsigned_32;
+                             Data        : System.Address) return Void_Cookie_Type;
+   pragma Import (C, Change_Property, "xcb_change_property");
 
 end XCB;
