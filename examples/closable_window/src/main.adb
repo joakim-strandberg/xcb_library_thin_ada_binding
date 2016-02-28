@@ -14,7 +14,7 @@ procedure Main is
 
    C : XCB.Connection_Access_Type;
    S : XCB.Screen_Access_Type;
-   W : XCB.Window_Type;
+   W : XCB.Window_Id_Type;
    E : XCB.Generic_Event_Access_Type;
 
    Mask : XCB.GC_Type;
@@ -47,7 +47,7 @@ begin
    Values (1) := XCB.Constants.XCB_EVENT_MASK_EXPOSURE or XCB.Constants.XCB_EVENT_MASK_KEY_PRESS;
    Unused_Cookie := XCB.Create_Window (C            => C,
                                        Depth        => S.Root_Depth,
-                                       Wid          => W,
+                                       Window_Id    => W,
                                        Parent       => S.Root,
                                        X            => 10,
                                        Y            => 10,
@@ -55,7 +55,7 @@ begin
                                        Height       => 100,
                                        Border_Width => 1,
                                        U_Class      => XCB.XCB_WINDOW_CLASS_INPUT_OUTPUT,
-                                       Visual       => S.Root_Visual,
+                                       Visual_Id    => S.Root_Visual_Id,
                                        Value_Mask   => Mask,
                                        Value_List   => Values);
 

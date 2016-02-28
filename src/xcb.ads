@@ -1,5 +1,7 @@
--- The original file was xcb.h. Translated to Ada by Joakim Strandberg 2016.
--- The original copyright notice:
+-- The original files were xcb.h and xproto.h.
+-- Translated to Ada by Joakim Strandberg 2016.
+--
+-- The original copyright notice of xcb.h:
 --
 -- Copyright (C) 2001-2006 Bart Massey, Jamey Sharp, and Josh Triplett.
 -- All Rights Reserved.
@@ -29,6 +31,7 @@ pragma Style_Checks (Off);
 
 with Interfaces.C.Strings;
 with System;
+with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
 
 package XCB is
@@ -269,7 +272,6 @@ package XCB is
       -- User input (key presses, mouse movement, etc) is also received as a set of events.
       XCB_EVENT_MASK_EXPOSURE              : constant Event_Mask_Type := 32768;
 
-
       XCB_EVENT_MASK_VISIBILITY_CHANGE     : constant Event_Mask_Type := 65536;
       XCB_EVENT_MASK_STRUCTURE_NOTIFY      : constant Event_Mask_Type := 131072;
       XCB_EVENT_MASK_RESIZE_REDIRECT       : constant Event_Mask_Type := 262144;
@@ -363,7 +365,7 @@ package XCB is
    -- Graphical Contexts,...
    type X_Id_Type is new Interfaces.Unsigned_32;
 
-   subtype Keycode_Type is Interfaces.Unsigned_8;
+   subtype Key_Code_Type is Interfaces.Unsigned_8;
 
    type Setup_Padding_1_Array_Type is array (0 .. 3) of aliased Interfaces.Unsigned_8;
    type Setup_Type is record
@@ -384,8 +386,8 @@ package XCB is
       Bitmap_Format_Bit_Order     : aliased Interfaces.Unsigned_8;
       Bitmap_Format_Scanline_Unit : aliased Interfaces.Unsigned_8;
       Bitmap_Format_Scanline_Pad  : aliased Interfaces.Unsigned_8;
-      Minimum_Keycode             : aliased Keycode_Type;
-      Maximum_Keycode             : aliased Keycode_Type;
+      Minimum_Keycode             : aliased Key_Code_Type;
+      Maximum_Keycode             : aliased Key_Code_Type;
       Paddding_1                  : aliased Setup_Padding_1_Array_Type;
    end record;
    pragma Convention (C_Pass_By_Copy, Setup_Type);
@@ -413,7 +415,9 @@ package XCB is
 
    type Drawable_Type is new X_Id_Type;
 
-   subtype Window_Type is Drawable_Type;
+   subtype Button_Id_Type is Interfaces.Unsigned_8;
+
+   subtype Window_Id_Type is Drawable_Type;
 
    subtype Colormap_Type is Interfaces.Unsigned_32;
 
@@ -428,7 +432,7 @@ package XCB is
    pragma Convention (C_Pass_By_Copy, Rectangle_Type);
 
    type Screen_Type is record
-      Root                  : aliased Window_Type;
+      Root                  : aliased Window_Id_Type;
       Default_Colormap      : aliased Colormap_Type;
       White_Pixel           : aliased Interfaces.Unsigned_32;
       Black_Pixel           : aliased Interfaces.Unsigned_32;
@@ -439,7 +443,7 @@ package XCB is
       Height_In_Millimeters : aliased Interfaces.Unsigned_16;
       Min_Installed_Maps    : aliased Interfaces.Unsigned_16;
       Max_Installed_Maps    : aliased Interfaces.Unsigned_16;
-      Root_Visual           : aliased Visual_Id_Type;
+      Root_Visual_Id        : aliased Visual_Id_Type;
       Backing_Stores        : aliased Interfaces.Unsigned_8;
       Save_Unders           : aliased Interfaces.Unsigned_8;
       Root_Depth            : aliased Depth_Type;
@@ -467,6 +471,117 @@ package XCB is
       XCB_PROP_MODE_PREPEND,
       XCB_PROP_MODE_APPEND);
    pragma Convention (C, Prop_Mode_Type);
+
+   type Expose_Event_Padding_1_Array_Type is array (0 .. 1) of aliased Interfaces.Unsigned_8;
+   type Expose_Event_Type is record
+      Response_Kind : aliased Interfaces.Unsigned_8;
+      Padding_0     : aliased Interfaces.Unsigned_8;
+      Sequence      : aliased Interfaces.Unsigned_16;
+      Window_Id     : aliased Window_Id_Type;
+      X             : aliased Interfaces.Unsigned_16;
+      Y             : aliased Interfaces.Unsigned_16;
+      Width         : aliased Interfaces.Unsigned_16;
+      Height        : aliased Interfaces.Unsigned_16;
+      Count         : aliased Interfaces.Unsigned_16;
+      Padding_1     : aliased Expose_Event_Padding_1_Array_Type;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Expose_Event_Type);
+
+   type Expose_Event_Access_Type is access all Expose_Event_Type;
+
+   subtype Timestamp_Type is Interfaces.Unsigned_32;
+
+   type Button_Press_Event_Type is record
+      Response_Kind : aliased Interfaces.Unsigned_8;
+      Detail        : aliased Button_Id_Type;
+      Sequence      : aliased Interfaces.Unsigned_16;
+      Time          : aliased Timestamp_Type;
+      Root          : aliased Window_Id_Type;
+      Event         : aliased Window_Id_Type;
+      Child         : aliased Window_Id_Type;
+      Root_X        : aliased Interfaces.Integer_16;
+      Root_Y        : aliased Interfaces.Integer_16;
+      Event_X       : aliased Interfaces.Integer_16;
+      Event_Y       : aliased Interfaces.Integer_16;
+      State         : aliased Interfaces.Unsigned_16;
+      Same_Screen   : aliased Interfaces.Unsigned_8;
+      Padding_0     : aliased Interfaces.Unsigned_8;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Button_Press_Event_Type);
+
+   type Button_Press_Event_Access_Type is access all Button_Press_Event_Type;
+
+   type Button_Release_Event_Type is new Button_Press_Event_Type;
+
+   type Button_Release_Event_Access_Type is access all Button_Release_Event_Type;
+
+   type Motion_Notify_Event_Type is record
+      Response_Kind : aliased Interfaces.Unsigned_8;
+      Detail        : aliased Interfaces.Unsigned_8;
+      Sequence      : aliased Interfaces.Unsigned_16;
+      Time          : aliased Timestamp_Type;
+      Root          : aliased Window_Id_Type;
+      Event         : aliased Window_Id_Type;
+      Child         : aliased Window_Id_Type;
+      Root_X        : aliased Interfaces.Integer_16;
+      Root_Y        : aliased Interfaces.Integer_16;
+      Event_X       : aliased Interfaces.Integer_16;
+      Event_Y       : aliased Interfaces.Integer_16;
+      State         : aliased Interfaces.Unsigned_16;
+      Same_Screen   : aliased Interfaces.Unsigned_8;
+      Padding_0     : aliased Interfaces.Unsigned_8;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Motion_Notify_Event_Type);
+
+   type Motion_Notify_Event_Access_Type is access all Motion_Notify_Event_Type;
+
+   type Enter_Notify_Event_Type is record
+      Response_Kind     : aliased Interfaces.Unsigned_8;
+      Detail            : aliased Interfaces.Unsigned_8;
+      Sequence          : aliased Interfaces.Unsigned_16;
+      Time              : aliased Timestamp_Type;
+      Root              : aliased Window_Id_Type;
+      Event             : aliased Window_Id_Type;
+      Child             : aliased Window_Id_Type;
+      Root_X            : aliased Interfaces.Integer_16;
+      Root_Y            : aliased Interfaces.Integer_16;
+      Event_X           : aliased Interfaces.Integer_16;
+      Event_Y           : aliased Interfaces.Integer_16;
+      State             : aliased Interfaces.Unsigned_16;
+      Mode              : aliased Interfaces.Unsigned_8;
+      Same_Screen_Focus : aliased Interfaces.Unsigned_8;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Enter_Notify_Event_Type);
+
+   type Enter_Notify_Event_Access_Type is access all Enter_Notify_Event_Type;
+
+   type Leave_Notify_Event_Type is new Enter_Notify_Event_Type;
+
+   type Leave_Notify_Event_Access_Type is access all Leave_Notify_Event_Type;
+
+   type Key_Press_Event_Type is record
+      Response_Kind : aliased Interfaces.Unsigned_8;
+      Detail        : aliased Key_Code_Type;
+      Sequence      : aliased Interfaces.Unsigned_16;
+      Time          : aliased Timestamp_Type;
+      Root          : aliased Window_Id_Type;
+      Event         : aliased Window_Id_Type;
+      Child         : aliased Window_Id_Type;
+      Root_X        : aliased Interfaces.Integer_16;
+      Root_Y        : aliased Interfaces.Integer_16;
+      Event_X       : aliased Interfaces.Integer_16;
+      Event_Y       : aliased Interfaces.Integer_16;
+      State         : aliased Interfaces.Unsigned_16;
+      Same_Screen   : aliased Interfaces.Unsigned_8;
+      Padding_0     : aliased Interfaces.Unsigned_8;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Key_Press_Event_Type);
+
+   type Key_Press_Event_Access_Type is access all Key_Press_Event_Type;
+
+   type Key_Release_Event_Type is new Key_Press_Event_Type;
+
+   type Key_Release_Event_Access_Type is access all Key_Release_Event_Type;
 
    --
    -- Subprogram definitions
@@ -576,24 +691,24 @@ package XCB is
 
    function Create_Window (C            : Connection_Access_Type;
                            Depth        : Depth_Type;
-                           Wid          : Window_Type;
-                           Parent       : Window_Type;
+                           Window_Id    : Window_Id_Type;
+                           Parent       : Window_Id_Type;
                            X            : X_Coordinate_Type;
                            Y            : Y_Coordinate_Type;
                            Width        : Width_Type;
                            Height       : Height_Type;
                            Border_Width : Border_Width_Type;
                            U_Class      : Window_Class_Type;
-                           Visual       : Visual_Id_Type;
+                           Visual_Id    : Visual_Id_Type;
                            Value_Mask   : CW_Type;
                            Value_List   : Value_List_Array) return Void_Cookie_Type;
    pragma Import (C, Create_Window, "xcb_create_window");
 
    function Map_Window (C      : Connection_Access_Type;
-                        Window : Window_Type) return Void_Cookie_Type;
+                        Window : Window_Id_Type) return Void_Cookie_Type;
    pragma Import (C, Map_Window, "xcb_map_window");
 
-   function Generate_Id (C : Connection_Access_Type) return Window_Type;
+   function Generate_Id (C : Connection_Access_Type) return Window_Id_Type;
 
    function Setup_Roots_Iterator (R : Setup_Constant_Access_Type) return Screen_Iterator_Type;
    pragma Import (C, Setup_Roots_Iterator, "xcb_setup_roots_iterator");
@@ -611,12 +726,36 @@ package XCB is
 
    function Change_Property (c           : Connection_Access_Type;
                              Mode        : Interfaces.Unsigned_8;
-                             Window      : Window_Type;
+                             Window      : Window_Id_Type;
                              Property    : Atom_Type;
                              C_Kind      : Atom_Type;
                              Format      : Interfaces.Unsigned_8;
                              Data_Length : Interfaces.Unsigned_32;
                              Data        : System.Address) return Void_Cookie_Type;
    pragma Import (C, Change_Property, "xcb_change_property");
+
+   function To_Expose_Event is new Ada.Unchecked_Conversion (Source => Generic_Event_Access_Type,
+                                                             Target => Expose_Event_Access_Type);
+
+   function To_Button_Press_Event is new Ada.Unchecked_Conversion (Source => Generic_Event_Access_Type,
+                                                                   Target => Button_Press_Event_Access_Type);
+
+   function To_Button_Release_Event is new Ada.Unchecked_Conversion (Source => Generic_Event_Access_Type,
+                                                                     Target => Button_Release_Event_Access_Type);
+
+   function To_Motion_Notify_Event is new Ada.Unchecked_Conversion (Source => Generic_Event_Access_Type,
+                                                                    Target => Motion_Notify_Event_Access_Type);
+
+   function To_Enter_Notify_Event is new Ada.Unchecked_Conversion (Source => Generic_Event_Access_Type,
+                                                                   Target => Enter_Notify_Event_Access_Type);
+
+   function To_Leave_Notify_Event is new Ada.Unchecked_Conversion (Source => Generic_Event_Access_Type,
+                                                                   Target => Leave_Notify_Event_Access_Type);
+
+   function To_Key_Press_Event is new Ada.Unchecked_Conversion (Source => Generic_Event_Access_Type,
+                                                                Target => Key_Press_Event_Access_Type);
+
+   function To_Key_Release_Event is new Ada.Unchecked_Conversion (Source => Generic_Event_Access_Type,
+                                                                  Target => Key_Release_Event_Access_Type);
 
 end XCB;
