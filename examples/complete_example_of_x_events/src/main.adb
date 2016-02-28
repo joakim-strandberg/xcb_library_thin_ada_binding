@@ -7,44 +7,77 @@ procedure Main is
    use type Interfaces.C.unsigned;
    use type Interfaces.C.int;
    use type Interfaces.Unsigned_8;
+   use type Interfaces.Unsigned_16;
    use type XCB.Generic_Event_Access_Type;
 
+   procedure Print_Modifiers (Mask : Interfaces.Unsigned_16) is
+   begin
+      if (Mask and 2#0000_0000_0000_0001#) = 2#0000_0000_0000_0001# then
+         Ada.Text_IO.Put_Line ("Shift");
+      end if;
 
---      /* print names of modifiers present in mask */
---      void
---      print_modifiers (uint32_t mask)
---      {
---          const char *MODIFIERS[] = {
---                  "Shift", "Lock", "Ctrl", "Alt",
---                  "Mod2", "Mod3", "Mod4", "Mod5",
---                  "Button1", "Button2", "Button3", "Button4", "Button5"
---          };
---
---          printf ("Modifier mask: ");
---          for (const char **modifier = MODIFIERS ; mask; mask >>= 1, ++modifier) {
---              if (mask & 1) {
---                  printf (*modifier);
---              }
---          }
---          printf ("\n");
---      }
+      if (Mask and 2#0000_0000_0000_0010#) = 2#0000_0000_0000_0010# then
+         Ada.Text_IO.Put_Line ("Lock");
+      end if;
 
-     Connection : XCB.Connection_Access_Type;
-     Screen : XCB.Screen_Access_Type;
-     Window : XCB.Window_Id_Type;
---
-     Mask : XCB.GC_Type;
+      if (Mask and 2#0000_0000_0000_0100#) = 2#0000_0000_0000_0100# then
+         Ada.Text_IO.Put_Line ("Ctrl");
+      end if;
+
+      if (Mask and 2#0000_0000_0000_1000#) = 2#0000_0000_0000_1000# then
+         Ada.Text_IO.Put_Line ("Alt");
+      end if;
+
+      if (Mask and 2#0000_0000_0001_0000#) = 2#0000_0000_0001_0000# then
+         Ada.Text_IO.Put_Line ("Mod2");
+      end if;
+
+      if (Mask and 2#0000_0000_0010_0000#) = 2#0000_0000_0010_0000# then
+         Ada.Text_IO.Put_Line ("Mod3");
+      end if;
+
+      if (Mask and 2#0000_0000_0100_0000#) = 2#0000_0000_0100_0000# then
+         Ada.Text_IO.Put_Line ("Mod4");
+      end if;
+
+      if (Mask and 2#0000_0000_1000_0000#) = 2#0000_0000_1000_0000# then
+         Ada.Text_IO.Put_Line ("Mod5");
+      end if;
+
+      if (Mask and 2#0000_0001_0000_0000#) = 2#0000_0001_0000_0000# then
+         Ada.Text_IO.Put_Line ("Button1");
+      end if;
+
+      if (Mask and 2#0000_0010_0000_0000#) = 2#0000_0010_0000_0000# then
+         Ada.Text_IO.Put_Line ("Button2");
+      end if;
+
+      if (Mask and 2#0000_0100_0000_0000#) = 2#0000_0100_0000_0000# then
+         Ada.Text_IO.Put_Line ("Button3");
+      end if;
+
+      if (Mask and 2#0000_1000_0000_0000#) = 2#0000_1000_0000_0000# then
+         Ada.Text_IO.Put_Line ("Button4");
+      end if;
+
+      if (Mask and 2#0001_0000_0000_0000#) = 2#0001_0000_0000_0000# then
+         Ada.Text_IO.Put_Line ("Button5");
+      end if;
+   end Print_Modifiers;
+
+   Connection : XCB.Connection_Access_Type;
+   Screen : XCB.Screen_Access_Type;
+   Window : XCB.Window_Id_Type;
+
+   Mask : XCB.GC_Type;
    Values : aliased XCB.Value_List_Array (0..1);
 
    Event : XCB.Generic_Event_Access_Type;
---
---     R : XCB.Rectangle_Type := (X => 20, Y => 20, Width => 60, Height => 60);
---
+
    Unused_Cookie : XCB.Void_Cookie_Type;
    pragma Unreferenced (Unused_Cookie);
 
    Flush_Number : Interfaces.C.int;
-
 begin
 
    -- Open the connection to the X server
@@ -98,7 +131,7 @@ begin
                BP : XCB.Button_Press_Event_Access_Type;
             begin
                BP := XCB.To_Button_Press_Event (Event);
-               --               print_modifiers (bp->state);
+               Print_Modifiers (BP.State);
 
                case BP.Detail is
                   when 4 =>
@@ -114,7 +147,7 @@ begin
                BR : XCB.Button_Release_Event_Access_Type;
             begin
                BR := XCB.To_Button_Release_Event (Event);
-               --                print_modifiers(br->state);
+               Print_Modifiers (BR.State);
                Ada.Text_IO.Put_Line ("Button " & BR.Detail'Img & " pressed in window" & BR.Event'Img & ", at coordinates (" & BR.Event_X'Img & "," & BR.Event_Y'Img & ")");
             end;
          when XCB.Constants.XCB_MOTION_NOTIFY =>
@@ -143,7 +176,7 @@ begin
                KP : XCB.Key_Press_Event_Access_Type;
             begin
                KP := XCB.To_Key_Press_Event (Event);
---                  print_modifiers(kp->state);
+               Print_Modifiers(KP.State);
                Ada.Text_IO.Put_Line ("Key pressed in window" & KP.Event'Img);
             end;
          when XCB.Constants.XCB_KEY_RELEASE =>
@@ -151,7 +184,7 @@ begin
                KR : XCB.Key_Release_Event_Access_Type;
             begin
                KR := XCB.To_Key_Release_Event (Event);
---                  print_modifiers(kr->state);
+               Print_Modifiers(KR.State);
                Ada.Text_IO.Put_Line ("Key released in window" & KR.Event'Img);
             end;
          when others =>
