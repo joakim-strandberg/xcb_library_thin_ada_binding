@@ -56,6 +56,14 @@ package XCB is
 
    subtype Event_Mask_Type is Interfaces.Unsigned_32;
 
+   type Font_Id_Type is new Interfaces.Unsigned_32;
+
+   -- The names of the constants correspond exactly to the constant value names
+   -- in the C-header files. One might be tempted to remove XCB_ from each
+   -- constant name, but this will create XCB_ACCESS -> ACCESS and ACCESS is
+   -- a reserved word in the Ada programming language. Because of this XCB_
+   -- has not been removed from the names in the Constants package,
+   -- maybe this is something that needs to be reviewed in the future?
    package Constants is
 
       X_PROTOCOL                       : constant := 11;
@@ -460,6 +468,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Screen_Iterator_Type);
 
+   type Screen_Iterator_Access_Type is access all Screen_Iterator_Type;
+
    type Window_Class_Type is
      (XCB_WINDOW_CLASS_COPY_FROM_PARENT,
       XCB_WINDOW_CLASS_INPUT_OUTPUT,
@@ -583,6 +593,22 @@ package XCB is
 
    type Key_Release_Event_Access_Type is access all Key_Release_Event_Type;
 
+   type Generic_Error_Padding_Array_Type is array (0 .. 4) of aliased Interfaces.Unsigned_32;
+   type Generic_Error_Type is record
+      Response_Kind : aliased Interfaces.Unsigned_8;
+      Error_Code    : aliased Interfaces.Unsigned_8;
+      Sequence      : aliased Interfaces.Unsigned_16;
+      Resource_Id   : aliased Interfaces.Unsigned_32;
+      Minor_Code    : aliased Interfaces.Unsigned_16;
+      Major_Code    : aliased Interfaces.Unsigned_8;
+      Padding_0     : aliased Interfaces.Unsigned_8;
+      Padding_Array : aliased Generic_Error_Padding_Array_Type;
+      Full_Sequence : aliased Interfaces.Unsigned_32;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Generic_Error_Type);
+
+   type Generic_Error_Access_Type is access all Generic_Error_Type;
+
    --
    -- Subprogram definitions
    --
@@ -643,22 +669,22 @@ package XCB is
    function Generate_Id (C : Connection_Access_Type) return X_Id_Type;
    pragma Import (C, Generate_Id, "xcb_generate_id");
 
-  -- Test whether the connection has shut down due to a fatal error.
-  -- c: The connection.
-  -- Returns: > 0 if the connection is in an error state; 0 otherwise.
-  --
-  -- Some errors that occur in the context of an xcb_connection_t
-  -- are unrecoverable. When such an error occurs, the
-  -- connection is shut down and further operations on the
-  -- xcb_connection_t have no effect.
-  --
-  -- Different error codes:
-  -- XCB_CONN_ERROR, because of socket errors, pipe errors or other stream errors.
-  -- XCB_CONN_CLOSED_EXT_NOTSUPPORTED, when extension not supported.
-  -- XCB_CONN_CLOSED_MEM_INSUFFICIENT, when memory not available.
-  -- XCB_CONN_CLOSED_REQ_LEN_EXCEED, exceeding request length that server accepts.
-  -- XCB_CONN_CLOSED_PARSE_ERR, error during parsing display string.
-  -- XCB_CONN_CLOSED_INVALID_SCREEN, because the server does not have a screen matching the display.
+   -- Test whether the connection has shut down due to a fatal error.
+   -- c: The connection.
+   -- Returns: > 0 if the connection is in an error state; 0 otherwise.
+   --
+   -- Some errors that occur in the context of an xcb_connection_t
+   -- are unrecoverable. When such an error occurs, the
+   -- connection is shut down and further operations on the
+   -- xcb_connection_t have no effect.
+   --
+   -- Different error codes:
+   -- XCB_CONN_ERROR, because of socket errors, pipe errors or other stream errors.
+   -- XCB_CONN_CLOSED_EXT_NOTSUPPORTED, when extension not supported.
+   -- XCB_CONN_CLOSED_MEM_INSUFFICIENT, when memory not available.
+   -- XCB_CONN_CLOSED_REQ_LEN_EXCEED, exceeding request length that server accepts.
+   -- XCB_CONN_CLOSED_PARSE_ERR, error during parsing display string.
+   -- XCB_CONN_CLOSED_INVALID_SCREEN, because the server does not have a screen matching the display.
    function Connection_Has_Error (C : Connection_Access_Type) return Interfaces.C.int;
    pragma Import (C, Connection_Has_Error, "xcb_connection_has_error");
 
@@ -667,19 +693,19 @@ package XCB is
    function Flush (C : Connection_Access_Type) return Interfaces.C.int;
    pragma Import (C, Flush, "xcb_flush");
 
-  -- Creates a graphics context
-  --
-  -- c The connection
-  -- cid The ID with which you will refer to the graphics context, created by `xcb_generate_id`.
-  -- drawable Drawable to get the root/depth from.
-  -- Returns: A cookie
-  --
-  -- Creates a graphics context. The graphics context can be used with any drawable
-  -- that has the same root and depth as the specified drawable.
-  --
-  -- This form can be used only if the request will not cause
-  -- a reply to be generated. Any returned error will be
-  -- saved for handling by xcb_request_check().
+   -- Creates a graphics context
+   --
+   -- c The connection
+   -- cid The ID with which you will refer to the graphics context, created by `xcb_generate_id`.
+   -- drawable Drawable to get the root/depth from.
+   -- Returns: A cookie
+   --
+   -- Creates a graphics context. The graphics context can be used with any drawable
+   -- that has the same root and depth as the specified drawable.
+   --
+   -- This form can be used only if the request will not cause
+   -- a reply to be generated. Any returned error will be
+   -- saved for handling by xcb_request_check().
    function Create_GC (C          : Connection_Access_Type;
                        Context_Id : Graphical_Context_Type;
                        Drawable   : Drawable_Type;
@@ -688,6 +714,8 @@ package XCB is
    pragma Import (C, Create_GC, "xcb_create_gc");
 
    function Generate_Id (C : Connection_Access_Type) return Graphical_Context_Type;
+
+   function Generate_Id (C : Connection_Access_Type) return Font_Id_Type;
 
    function Create_Window (C            : Connection_Access_Type;
                            Depth        : Depth_Type;
@@ -757,5 +785,71 @@ package XCB is
 
    function To_Key_Release_Event is new Ada.Unchecked_Conversion (Source => Generic_Event_Access_Type,
                                                                   Target => Key_Release_Event_Access_Type);
+
+   function Open_Font_Checked (C           : Connection_Access_Type;
+                               Font_Id     : Font_Id_Type;
+                               Name_Length : Interfaces.Unsigned_16;
+                               name        : Interfaces.C.Strings.chars_ptr) return Void_Cookie_Type;
+   pragma Import (C, Open_Font_Checked, "xcb_open_font_checked");
+
+   function Request_Check (C      : Connection_Access_Type;
+                           Cookie : Void_Cookie_Type) return Generic_Error_Access_Type;
+   pragma Import (C, Request_Check, "xcb_request_check");
+
+   function Create_GC_Checked (C          : Connection_Access_Type;
+                               Context_Id : XCB.Graphical_Context_Type;
+                               Drawable   : XCB.Drawable_Type;
+                               Value_Mask : Interfaces.Unsigned_32;
+                               Value_List : Value_List_Array) return Void_Cookie_Type;
+   pragma Import (C, Create_GC_Checked, "xcb_create_gc_checked");
+
+   function Close_Font_Checked (C : Connection_Access_Type;
+                                Font : XCB.Font_Id_Type) return Void_Cookie_Type;
+   pragma Import (C, Close_Font_Checked, "xcb_close_font_checked");
+
+  --
+  -- @brief Draws text
+  --
+  -- @param c The connection
+  -- @param string_len The length of the \a string. Note that this parameter limited by 255 due to
+  -- using 8 bits!
+  -- @param drawable The drawable (Window or Pixmap) to draw text on.
+  -- @param gc The graphics context to use.
+  -- \n
+  -- The following graphics context components are used: plane-mask, foreground,
+  -- background, font, subwindow-mode, clip-x-origin, clip-y-origin, and clip-mask.
+  -- @param x The x coordinate of the first character, relative to the origin of \a drawable.
+  -- @param y The y coordinate of the first character, relative to the origin of \a drawable.
+  -- @param string The string to draw. Only the first 255 characters are relevant due to the data
+  -- type of \a string_len.
+  -- @return A cookie
+  --
+  -- Fills the destination rectangle with the background pixel from \a gc, then
+  -- paints the text with the foreground pixel from \a gc. The upper-left corner of
+  -- the filled rectangle is at [x, y - font-ascent]. The width is overall-width,
+  -- the height is font-ascent + font-descent. The overall-width, font-ascent and
+  -- font-descent are as returned by `xcb_query_text_extents` (TODO).
+  --
+  -- Note that using X core fonts is deprecated (but still supported) in favor of
+  -- client-side rendering using Xft.
+  --
+  -- This form can be used only if the request will not cause
+  -- a reply to be generated. Any returned error will be
+  -- saved for handling by xcb_request_check().
+   function Image_Text_8_Checked (C             : Connection_Access_Type;
+                                  String_Length : Interfaces.Unsigned_8;
+                                  Drawable      : Drawable_Type;
+                                  GC            : Graphical_Context_Type;
+                                  X             : Interfaces.Integer_16;
+                                  Y             : Interfaces.Integer_16;
+                                  Text          : Interfaces.C.Strings.chars_ptr) return Void_Cookie_Type;
+   pragma Import (C, Image_Text_8_Checked, "xcb_image_text_8_checked");
+
+   function Free_GC (C  : Connection_Access_Type;
+                     GC : Graphical_Context_Type) return Void_Cookie_Type;
+   pragma Import (C, Free_GC, "xcb_free_gc");
+
+   procedure Screen_Next (I : Screen_Iterator_Access_Type);
+   pragma Import (C, Screen_Next, "xcb_screen_next");
 
 end XCB;
