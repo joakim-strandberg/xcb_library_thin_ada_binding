@@ -7,7 +7,8 @@ with XCB;
 -- Closing by clicking on the "X"-button will generate
 -- the error message "I/O error has occurred!? How is this possible?".
 procedure Main is
-   use type XCB.GC_Type;
+   use type XCB.Graphical_Context_Type;
+   use type XCB.CW_Mask_Type;
    use type Interfaces.C.unsigned;
    use type Interfaces.Unsigned_8;
    use type XCB.Generic_Event_Access_Type;
@@ -17,7 +18,7 @@ procedure Main is
    W : XCB.Window_Id_Type;
    E : XCB.Generic_Event_Access_Type;
 
-   Mask : XCB.GC_Type;
+   Mask : XCB.CW_Mask_Type;
    Values : aliased XCB.Value_List_Array (0..1);
 
    R : XCB.Rectangle_Type := (X => 20, Y => 20, Width => 60, Height => 60);

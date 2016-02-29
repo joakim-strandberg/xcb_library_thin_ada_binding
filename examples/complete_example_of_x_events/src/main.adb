@@ -3,7 +3,8 @@ with Interfaces.C.Strings;
 with XCB;
 
 procedure Main is
-   use type XCB.GC_Type;
+   use type XCB.Graphical_Context_Type;
+   use type XCB.CW_Mask_Type;
    use type Interfaces.C.unsigned;
    use type Interfaces.C.int;
    use type Interfaces.Unsigned_8;
@@ -69,7 +70,7 @@ procedure Main is
    Screen : XCB.Screen_Access_Type;
    Window : XCB.Window_Id_Type;
 
-   Mask : XCB.GC_Type;
+   Mask : XCB.CW_Mask_Type;
    Values : aliased XCB.Value_List_Array (0..1);
 
    Event : XCB.Generic_Event_Access_Type;

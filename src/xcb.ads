@@ -50,9 +50,15 @@ package XCB is
 
    type Border_Width_Type is new Interfaces.Unsigned_16;
 
-   subtype CW_Type is Interfaces.Unsigned_32;
+   subtype CW_Mask_Type is Interfaces.Unsigned_32;
 
-   subtype GC_Type is Interfaces.Unsigned_32;
+   type Value_Mask_Type is new Interfaces.Unsigned_32;
+
+   -- Identifier for objects in the XCB library. For example Windows,
+   -- Graphical Contexts,...
+   type X_Id_Type is new Interfaces.Unsigned_32;
+
+   type Graphical_Context_Type is new X_Id_Type;
 
    subtype Event_Mask_Type is Interfaces.Unsigned_32;
 
@@ -290,45 +296,45 @@ package XCB is
       XCB_EVENT_MASK_COLOR_MAP_CHANGE      : constant Event_Mask_Type := 8388608;
       XCB_EVENT_MASK_OWNER_GRAB_BUTTON     : constant Event_Mask_Type := 16777216;
 
-      XCB_GC_FUNCTION              : constant GC_Type := 1;
-      XCB_GC_PLANE_MASK            : constant GC_Type := 2;
-      XCB_GC_FOREGROUND            : constant GC_Type := 4;
-      XCB_GC_BACKGROUND            : constant GC_Type := 8;
-      XCB_GC_LINE_WIDTH            : constant GC_Type := 16;
-      XCB_GC_LINE_STYLE            : constant GC_Type := 32;
-      XCB_GC_CAP_STYLE             : constant GC_Type := 64;
-      XCB_GC_JOIN_STYLE            : constant GC_Type := 128;
-      XCB_GC_FILL_STYLE            : constant GC_Type := 256;
-      XCB_GC_FILL_RULE             : constant GC_Type := 512;
-      XCB_GC_TILE                  : constant GC_Type := 1024;
-      XCB_GC_STIPPLE               : constant GC_Type := 2048;
-      XCB_GC_TILE_STIPPLE_ORIGIN_X : constant GC_Type := 4096;
-      XCB_GC_TILE_STIPPLE_ORIGIN_Y : constant GC_Type := 8192;
-      XCB_GC_FONT                  : constant GC_Type := 16384;
-      XCB_GC_SUBWINDOW_MODE        : constant GC_Type := 32768;
-      XCB_GC_GRAPHICS_EXPOSURES    : constant GC_Type := 65536;
-      XCB_GC_CLIP_ORIGIN_X         : constant GC_Type := 131072;
-      XCB_GC_CLIP_ORIGIN_Y         : constant GC_Type := 262144;
-      XCB_GC_CLIP_MASK             : constant GC_Type := 524288;
-      XCB_GC_DASH_OFFSET           : constant GC_Type := 1048576;
-      XCB_GC_DASH_LIST             : constant GC_Type := 2097152;
-      XCB_GC_ARC_MODE              : constant GC_Type := 4194304;
+      XCB_GC_FUNCTION              : constant Value_Mask_Type := 1;
+      XCB_GC_PLANE_MASK            : constant Value_Mask_Type := 2;
+      XCB_GC_FOREGROUND            : constant Value_Mask_Type := 4;
+      XCB_GC_BACKGROUND            : constant Value_Mask_Type := 8;
+      XCB_GC_LINE_WIDTH            : constant Value_Mask_Type := 16;
+      XCB_GC_LINE_STYLE            : constant Value_Mask_Type := 32;
+      XCB_GC_CAP_STYLE             : constant Value_Mask_Type := 64;
+      XCB_GC_JOIN_STYLE            : constant Value_Mask_Type := 128;
+      XCB_GC_FILL_STYLE            : constant Value_Mask_Type := 256;
+      XCB_GC_FILL_RULE             : constant Value_Mask_Type := 512;
+      XCB_GC_TILE                  : constant Value_Mask_Type := 1024;
+      XCB_GC_STIPPLE               : constant Value_Mask_Type := 2048;
+      XCB_GC_TILE_STIPPLE_ORIGIN_X : constant Value_Mask_Type := 4096;
+      XCB_GC_TILE_STIPPLE_ORIGIN_Y : constant Value_Mask_Type := 8192;
+      XCB_GC_FONT                  : constant Value_Mask_Type := 16384;
+      XCB_GC_SUBWINDOW_MODE        : constant Value_Mask_Type := 32768;
+      XCB_GC_GRAPHICS_EXPOSURES    : constant Value_Mask_Type := 65536;
+      XCB_GC_CLIP_ORIGIN_X         : constant Value_Mask_Type := 131072;
+      XCB_GC_CLIP_ORIGIN_Y         : constant Value_Mask_Type := 262144;
+      XCB_GC_CLIP_MASK             : constant Value_Mask_Type := 524288;
+      XCB_GC_DASH_OFFSET           : constant Value_Mask_Type := 1048576;
+      XCB_GC_DASH_LIST             : constant Value_Mask_Type := 2097152;
+      XCB_GC_ARC_MODE              : constant Value_Mask_Type := 4194304;
 
-      XCB_CW_BACK_PIXMAP       : constant CW_Type := 1;
-      XCB_CW_BACK_PIXEL        : constant CW_Type := 2;
-      XCB_CW_BORDER_PIXMAP     : constant CW_Type := 4;
-      XCB_CW_BORDER_PIXEL      : constant CW_Type := 8;
-      XCB_CW_BIT_GRAVITY       : constant CW_Type := 16;
-      XCB_CW_WIN_GRAVITY       : constant CW_Type := 32;
-      XCB_CW_BACKING_STORE     : constant CW_Type := 64;
-      XCB_CW_BACKING_PLANES    : constant CW_Type := 128;
-      XCB_CW_BACKING_PIXEL     : constant CW_Type := 256;
-      XCB_CW_OVERRIDE_REDIRECT : constant CW_Type := 512;
-      XCB_CW_SAVE_UNDER        : constant CW_Type := 1024;
-      XCB_CW_EVENT_MASK        : constant CW_Type := 2048;
-      XCB_CW_DONT_PROPAGATE    : constant CW_Type := 4096;
-      XCB_CW_COLORMAP          : constant CW_Type := 8192;
-      XCB_CW_CURSOR            : constant CW_Type := 16384;
+      XCB_CW_BACK_PIXMAP       : constant CW_Mask_Type := 1;
+      XCB_CW_BACK_PIXEL        : constant CW_Mask_Type := 2;
+      XCB_CW_BORDER_PIXMAP     : constant CW_Mask_Type := 4;
+      XCB_CW_BORDER_PIXEL      : constant CW_Mask_Type := 8;
+      XCB_CW_BIT_GRAVITY       : constant CW_Mask_Type := 16;
+      XCB_CW_WIN_GRAVITY       : constant CW_Mask_Type := 32;
+      XCB_CW_BACKING_STORE     : constant CW_Mask_Type := 64;
+      XCB_CW_BACKING_PLANES    : constant CW_Mask_Type := 128;
+      XCB_CW_BACKING_PIXEL     : constant CW_Mask_Type := 256;
+      XCB_CW_OVERRIDE_REDIRECT : constant CW_Mask_Type := 512;
+      XCB_CW_SAVE_UNDER        : constant CW_Mask_Type := 1024;
+      XCB_CW_EVENT_MASK        : constant CW_Mask_Type := 2048;
+      XCB_CW_DONT_PROPAGATE    : constant CW_Mask_Type := 4096;
+      XCB_CW_COLORMAP          : constant CW_Mask_Type := 8192;
+      XCB_CW_CURSOR            : constant CW_Mask_Type := 16384;
 
    end Constants;
 
@@ -369,10 +375,6 @@ package XCB is
    for Connection_Access_Type'Storage_Size use 0;
    pragma Convention (C, Connection_Access_Type);
 
-   -- Identifier for objects in the XCB library. For example Windows,
-   -- Graphical Contexts,...
-   type X_Id_Type is new Interfaces.Unsigned_32;
-
    subtype Key_Code_Type is Interfaces.Unsigned_8;
 
    type Setup_Padding_1_Array_Type is array (0 .. 3) of aliased Interfaces.Unsigned_8;
@@ -401,8 +403,6 @@ package XCB is
    pragma Convention (C_Pass_By_Copy, Setup_Type);
 
    type Setup_Constant_Access_Type is access constant Setup_Type;
-
-   type Graphical_Context_Type is new X_Id_Type;
 
    type Value_List_Array is array (Natural range <>) of Interfaces.Unsigned_32;
    pragma Convention (C, Value_List_Array);
@@ -638,6 +638,9 @@ package XCB is
    function Wait_For_Event (C : Connection_Access_Type) return Generic_Event_Access_Type;
    pragma Import (C, Wait_For_Event, "xcb_wait_for_event");
 
+   function Poll_For_Event (C : Connection_Access_Type) return Generic_Event_Access_Type;
+   pragma Import (C, Poll_For_Event, "xcb_poll_for_event");
+
    procedure Free is new Ada.Unchecked_Deallocation (Object => Generic_Event_Type,
                                                      Name   => Generic_Event_Access_Type);
 
@@ -709,7 +712,7 @@ package XCB is
    function Create_GC (C          : Connection_Access_Type;
                        Context_Id : Graphical_Context_Type;
                        Drawable   : Drawable_Type;
-                       Value_Mask : GC_Type;
+                       Value_Mask : Value_Mask_Type;
                        Value_List : Value_List_Array) return Void_Cookie_Type;
    pragma Import (C, Create_GC, "xcb_create_gc");
 
@@ -728,13 +731,17 @@ package XCB is
                            Border_Width : Border_Width_Type;
                            U_Class      : Window_Class_Type;
                            Visual_Id    : Visual_Id_Type;
-                           Value_Mask   : CW_Type;
+                           Value_Mask   : CW_Mask_Type;
                            Value_List   : Value_List_Array) return Void_Cookie_Type;
    pragma Import (C, Create_Window, "xcb_create_window");
 
    function Map_Window (C      : Connection_Access_Type;
                         Window : Window_Id_Type) return Void_Cookie_Type;
    pragma Import (C, Map_Window, "xcb_map_window");
+
+   function Map_Window_Checked (C : Connection_Access_Type;
+                                Window : Window_Id_Type) return Void_Cookie_Type;
+   pragma Import (C, Map_Window_Checked, "xcb_map_window_checked");
 
    function Generate_Id (C : Connection_Access_Type) return Window_Id_Type;
 
@@ -799,7 +806,7 @@ package XCB is
    function Create_GC_Checked (C          : Connection_Access_Type;
                                Context_Id : XCB.Graphical_Context_Type;
                                Drawable   : XCB.Drawable_Type;
-                               Value_Mask : Interfaces.Unsigned_32;
+                               Value_Mask : Value_Mask_Type;
                                Value_List : Value_List_Array) return Void_Cookie_Type;
    pragma Import (C, Create_GC_Checked, "xcb_create_gc_checked");
 

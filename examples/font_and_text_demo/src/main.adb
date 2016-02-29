@@ -1,18 +1,26 @@
+with Ada.Command_Line;
 with Ada.Text_IO;
 with Interfaces.C.Strings;
 with XCB;
+with GNAT.OS_Lib;
 
 -- Close application by pressing any key on the keyboard.
 -- Closing by clicking on the "X"-button will generate
 -- the error message "I/O error has occurred!? How is this possible?".
 procedure Main is
-   use type XCB.GC_Type;
+   use type XCB.Graphical_Context_Type;
    use type Interfaces.C.unsigned;
    use type Interfaces.C.int;
+   use type Interfaces.Unsigned_8;
+   use type Interfaces.Integer_16;
+   use type XCB.Value_Mask_Type;
+   use type XCB.CW_Mask_Type;
    use type XCB.Generic_Event_Access_Type;
+   use type XCB.Generic_Error_Access_Type;
+   use type XCB.Screen_Access_Type;
 
-   procedure Test_Cookie (Cookie : XCB.Void_Cookie_Type;
-                          Connection : XCB.Connection_Access_Type;
+   procedure Test_Cookie (Cookie        : XCB.Void_Cookie_Type;
+                          Connection    : XCB.Connection_Access_Type;
                           Error_Message : String)
    is
       Error : XCB.Generic_Error_Access_Type;
@@ -20,7 +28,7 @@ procedure Main is
       Error := XCB.Request_Check (Connection, Cookie);
 
       if (Error /= null) then
-         fprintf (stderr, "ERROR: %s : %"PRIu8"\n", errMessage , error->error_code);
+         Ada.Text_IO.Put_Line ("ERROR: " & Error_Message & " : " & Error.Error_Code'Img);
          XCB.Disconnect (Connection);
          GNAT.OS_Lib.OS_Exit (-1);
       end if;
@@ -29,7 +37,7 @@ procedure Main is
    function Get_Font_GC (Connection : XCB.Connection_Access_Type;
                          Screen : XCB.Screen_Access_Type;
                          Window : XCB.Window_Id_Type;
-                         Font_Name : String) return XCB.GC_Type
+                         Font_Name : String) return XCB.Graphical_Context_Type
    is
       Font : XCB.Font_Id_Type;
 
@@ -37,13 +45,13 @@ procedure Main is
 
       GC : XCB.Graphical_Context_Type;
 
-      Mask : Interfaces.Unsigned_32;
+      Mask : XCB.Value_Mask_Type;
 
       Value_List : aliased XCB.Value_List_Array (0..2);
 
       GC_Cookie : XCB.Void_Cookie_Type;
    begin
-     -- Get font
+      -- Get font
       Font := XCB.Generate_Id (Connection);
       Font_Cookie := XCB.Open_Font_Checked (Connection,
                                             Font,
@@ -58,7 +66,7 @@ procedure Main is
       Mask          := XCB.Constants.XCB_GC_FOREGROUND or XCB.Constants.XCB_GC_BACKGROUND or XCB.Constants.XCB_GC_FONT;
       Value_List := (0 => Screen.Black_Pixel,
                      1 => Screen.White_Pixel,
-                     2 => Font);
+                     2 => Interfaces.Unsigned_32 (Font));
 
       GC_Cookie := XCB.Create_GC_Checked (Connection,
                                           GC,
@@ -69,7 +77,7 @@ procedure Main is
       Test_Cookie(GC_Cookie, Connection, "can't create gc");
 
       -- Close font
-        Font_Cookie := XCB.Close_Font_Checked (Connection, Font);
+      Font_Cookie := XCB.Close_Font_Checked (Connection, Font);
 
       Test_Cookie(Font_Cookie, Connection, "can't close font");
 
@@ -77,7 +85,7 @@ procedure Main is
    end Get_Font_GC;
 
    procedure Draw_Text (Connection : XCB.Connection_Access_Type;
-                        Screen     : XCB.Screen_Type;
+                        Screen     : XCB.Screen_Access_Type;
                         Window     : XCB.Window_Id_Type;
                         X_1        : Interfaces.Integer_16;
                         Y_1        : Interfaces.Integer_16;
@@ -92,12 +100,12 @@ procedure Main is
       GC := Get_Font_GC (Connection, Screen, Window, "fixed");
 
       -- Draw the text
-      Text_Cookie = XCB.Image_Text_8_Checked (Connection,
-                                              Label'Length,
-                                              Window,
-                                              GC,
-                                              X_1, Y_1,
-                                              Label);
+      Text_Cookie := XCB.Image_Text_8_Checked (Connection,
+                                               Label'Length,
+                                               Window,
+                                               GC,
+                                               X_1, Y_1,
+                                               Interfaces.C.Strings.New_String (Label));
 
       Test_Cookie(Text_Cookie, Connection, "can't paste text");
 
@@ -109,26 +117,28 @@ procedure Main is
    end Draw_Text;
 
    Connection : XCB.Connection_Access_Type;
-   Screen : XCB.Screen_Access_Type;
---     W : XCB.Window_Id_Type;
---     E : XCB.Generic_Event_Access_Type;
---
---     Mask : XCB.GC_Type;
---     Values : aliased XCB.Value_List_Array (0..1);
---
---     R : XCB.Rectangle_Type := (X => 20, Y => 20, Width => 60, Height => 60);
 
-   Unused_Cookie : XCB.Void_Cookie_Type;
-   pragma Unreferenced (Unused_Cookie);
+   Screen : XCB.Screen_Access_Type;
+
+   Window : XCB.Window_Id_Type;
+
+   Event : XCB.Generic_Event_Access_Type;
+
+   Mask : XCB.CW_Mask_Type;
+
+   Values : aliased XCB.Value_List_Array (0..1);
+
+   Window_Cookie : XCB.Void_Cookie_Type;
+   Map_Cookie    : XCB.Void_Cookie_Type;
 
    Flush_Number : Interfaces.C.int;
 
    WIDTH  : constant := 300;
    HEIGHT : constant := 100;
 
-   Screen_Number : Interfaces.C.int;
+   Screen_Number : aliased Interfaces.C.int;
 
-   Iterator : XCB.Screen_Iterator_Type;
+   Iterator : aliased XCB.Screen_Iterator_Type;
 begin
    -- Get the connection
    Connection := XCB.Connect(Interfaces.C.Strings.Null_Ptr, Screen_Number'Access);
@@ -139,38 +149,56 @@ begin
    end if;
 
    --  Get the current screen
-   Iterator := XCB.Setup_Roots_Iterator ( XCB.Get_Setup (C) );
+   Iterator := XCB.Setup_Roots_Iterator ( XCB.Get_Setup (Connection) );
 
    -- We want the screen at index screenNum of the iterator
-   for I in Integer range 0..(Screen_Number - 1) loop
-      XCB.Screen_Next (Iterator'Access);
+   for I in Integer range 0..Integer (Screen_Number - 1) loop
+      XCB.Screen_Next (Iterator'Unchecked_Access);
    end loop;
 
-   Screen = Iterator.data;
+   Screen := Iterator.data;
 
-   -- Create window
-   W := XCB.Generate_Id (C);
+
+   if Screen = null then
+      Ada.Text_IO.Put_Line ("ERROR: can't get the current screen");
+      XCB.Disconnect (Connection);
+      Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);
+      return;
+   end if;
+
+   -- Create the window
+   Window := XCB.Generate_Id (Connection);
+
    Mask := XCB.Constants.XCB_CW_BACK_PIXEL or XCB.Constants.XCB_CW_EVENT_MASK;
-   Values (0) := S.White_Pixel;
-   Values (1) := XCB.Constants.XCB_EVENT_MASK_EXPOSURE or XCB.Constants.XCB_EVENT_MASK_KEY_PRESS;
-   Unused_Cookie := XCB.Create_Window (C            => C,
-                                       Depth        => S.Root_Depth,
-                                       Window_Id    => W,
-                                       Parent       => S.Root,
-                                       X            => 10,
-                                       Y            => 10,
-                                       Width        => 100,
-                                       Height       => 100,
-                                       Border_Width => 1,
+   Values (0) := Screen.White_Pixel;
+   Values (1) :=
+     XCB.Constants.XCB_EVENT_MASK_KEY_RELEASE or
+     XCB.Constants.XCB_EVENT_MASK_BUTTON_PRESS or
+     XCB.Constants.XCB_EVENT_MASK_EXPOSURE or
+     XCB.Constants.XCB_EVENT_MASK_POINTER_MOTION;
+
+   Window_Cookie := XCB.Create_Window (C            => Connection,
+                                       Depth        => Screen.Root_Depth,
+                                       Window_Id    => Window,
+                                       Parent       => Screen.Root,
+                                       X            => 20,
+                                       Y            => 200,
+                                       Width        => WIDTH,
+                                       Height       => HEIGHT,
+                                       Border_Width => 0,
                                        U_Class      => XCB.XCB_WINDOW_CLASS_INPUT_OUTPUT,
-                                       Visual_Id    => S.Root_Visual_Id,
+                                       Visual_Id    => Screen.Root_Visual_Id,
                                        Value_Mask   => Mask,
                                        Value_List   => Values);
 
-   -- Map (show) the window
-   Unused_Cookie := XCB.Map_Window (C, W);
 
-   Flush_Number := XCB.Flush (C);
+   Test_Cookie (Window_Cookie, Connection, "can't create window");
+
+   Map_Cookie := XCB.Map_Window_Checked (Connection, Window);
+
+   Test_Cookie(Map_Cookie, Connection, "can't map window");
+
+   Flush_Number := XCB.Flush (Connection); -- make sure window is drawn
 
    if Flush_Number <= 0 then
       Ada.Text_IO.Put_Line ("Failed to flush");
@@ -178,93 +206,36 @@ begin
 
    -- Event loop
    loop
-      E := XCB.Wait_For_Event (C);
+      Event := XCB.Poll_For_Event (Connection);
 
-      if E /= null then
-         Ada.Text_IO.Put_Line ("Response kind:" & E.Response_Kind'Img);
-         case (E.Response_Kind) is
-            when XCB.Constants.XCB_KEY_PRESS =>
-               -- Exit on key press
-               exit;
+      if Event /= null then
+         case (Event.Response_Kind mod 128) is
+            when XCB.Constants.XCB_EXPOSE =>
+               Draw_Text (Connection,
+                          Screen,
+                          Window,
+                          10, HEIGHT - 10,
+                          "Press ESC key to exit...");
+            when XCB.Constants.XCB_KEY_RELEASE =>
+               declare
+                  KR : XCB.Key_Release_Event_Access_Type := XCB.To_Key_Release_Event (Event);
+               begin
+                  case KR.Detail is
+                     when 9 =>
+                        XCB.Free (Event);
+                        XCB.Disconnect (Connection);
+                        Ada.Command_Line.Set_Exit_Status (0);
+                        return;
+                     when others =>
+                        null;
+                  end case;
+               end;
             when others =>
                null;
          end case;
-         XCB.Free (E);
-      else
-         Ada.Text_IO.Put_Line ("I/O error has occurred!? How is this possible?");
-         exit;
+         XCB.Free (Event);
       end if;
    end loop;
 
-
---
---          if (!screen) {
---              fprintf (stderr, "ERROR: can't get the current screen\n");
---              xcb_disconnect (connection);
---              return -1;
---          }
---
---
---          /* create the window */
---          xcb_window_t window = xcb_generate_id (connection);
---
---          uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
---          uint32_t values[2];
---          values[0] = screen->white_pixel;
---          values[1] = XCB_EVENT_MASK_KEY_RELEASE |
---                      XCB_EVENT_MASK_BUTTON_PRESS |
---                      XCB_EVENT_MASK_EXPOSURE |
---                      XCB_EVENT_MASK_POINTER_MOTION;
---
---          xcb_void_cookie_t windowCookie = xcb_create_window_checked (connection,
---                                                                      screen->root_depth,
---                                                                      window, screen->root,
---                                                                      20, 200,
---                                                                      WIDTH, HEIGHT,
---                                                                      0, XCB_WINDOW_CLASS_INPUT_OUTPUT,
---                                                                      screen->root_visual,
---                                                                      mask, values);
---
---          testCookie(windowCookie, connection, "can't create window");
---
---          xcb_void_cookie_t mapCookie = xcb_map_window_checked (connection, window);
---
---          testCookie(mapCookie, connection, "can't map window");
---
---          xcb_flush(connection);  // make sure window is drawn
---
---
---          /* event loop */
---          xcb_generic_event_t  *event;
---          while (1) { ;
---              if ( (event = xcb_poll_for_event(connection)) ) {
---                  switch (event->response_type & ~0x80) {
---                      case XCB_EXPOSE: {
---                          drawText (connection,
---                                    screen,
---                                    window,
---                                    10, HEIGHT - 10,
---                                    "Press ESC key to exit..." );
---                          break;
---                      }
---                      case XCB_KEY_RELEASE: {
---                          xcb_key_release_event_t *kr = (xcb_key_release_event_t *)event;
---
---                          switch (kr->detail) {
---                              /* ESC */
---                              case 9: {
---                                  free (event);
---                                  xcb_disconnect (connection);
---                                  return 0;
---                              }
---                          }
---                          free (event);
---                      }
---                  }
---              }
---          }
---          return 0;
---      }
-
-   XCB.Disconnect (C);
+   XCB.Disconnect (Connection);
 end Main;
