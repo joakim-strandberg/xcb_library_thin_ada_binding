@@ -38,7 +38,7 @@ package XCB is
 
    pragma Linker_Options ("-lxcb");
 
-   type Depth_Type is new Interfaces.Unsigned_8;
+   type Window_Depth_Type is new Interfaces.Unsigned_8;
 
    type X_Coordinate_Type is new Interfaces.Integer_16;
 
@@ -60,9 +60,27 @@ package XCB is
 
    type Graphical_Context_Type is new X_Id_Type;
 
+   type Graphical_Context_Access_Type is access all Graphical_Context_Type;
+
+   type Graphical_Context_Iterator_Type is record
+      Data : Graphical_Context_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Graphical_Context_Iterator_Type);
+
    subtype Event_Mask_Type is Interfaces.Unsigned_32;
 
    type Font_Id_Type is new Interfaces.Unsigned_32;
+
+   type Font_Id_Access_Type is access all Font_Id_Type;
+
+   type Font_Iterator_Type is record
+      Data : Font_Id_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Font_Iterator_Type);
 
    -- The names of the constants correspond exactly to the constant value names
    -- in the C-header files. One might be tempted to remove XCB_ from each
@@ -354,6 +372,15 @@ package XCB is
 
    subtype Atom_Type is Interfaces.Unsigned_32;
 
+   type Atom_Access_Type is access all Atom_Type;
+
+   type Atom_Iterator_Type is record
+      Data  : Atom_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Atom_Iterator_Type);
+
    type Intern_Atom_Reply_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
       Padding_0     : aliased Interfaces.Unsigned_8;
@@ -375,7 +402,16 @@ package XCB is
    for Connection_Access_Type'Storage_Size use 0;
    pragma Convention (C, Connection_Access_Type);
 
-   subtype Key_Code_Type is Interfaces.Unsigned_8;
+   type Key_Code_Type is new Interfaces.Unsigned_8;
+
+   type Key_Code_Access_Type is access all Key_Code_Type;
+
+   type Key_Code_Iterator_Type is record
+      Data  : Key_Code_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Key_Code_Iterator_Type);
 
    type Setup_Padding_1_Array_Type is array (0 .. 3) of aliased Interfaces.Unsigned_8;
    type Setup_Type is record
@@ -423,13 +459,77 @@ package XCB is
 
    type Drawable_Type is new X_Id_Type;
 
-   subtype Button_Id_Type is Interfaces.Unsigned_8;
+   type Drawable_Access_Type is access all Drawable_Type;
+
+   type Drawable_Iterator_Type is record
+      Data  : Drawable_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Drawable_Iterator_Type);
+
+   type Fontable_Type is new Interfaces.Unsigned_32;
+
+   type Fontable_Access_Type is access all Fontable_Type;
+
+   type Fontable_Iterator_Type is record
+      Data  : Fontable_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Fontable_Iterator_Type);
+
+   type Button_Id_Type is new Interfaces.Unsigned_8;
+
+   type Button_Id_Access_Type is access all Button_Id_Type;
+
+   type Button_Id_Iterator_Type is record
+      Data  : Button_Id_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Button_Id_Iterator_Type);
+
+   type Point_Type is record
+      X : aliased Interfaces.Integer_16;
+      Y : aliased Interfaces.Integer_16;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Point_Type);
+
+   type Point_Access_Type is access all Point_Type;
+
+   type Point_Iterator_Type is record
+      Data  : access Point_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Point_Iterator_Type);
 
    subtype Window_Id_Type is Drawable_Type;
 
+   type Window_Id_Access_Type is access all Window_Id_Type;
+
    subtype Colormap_Type is Interfaces.Unsigned_32;
 
+   type Colormap_Access_Type is access all Colormap_Type;
+
+   type Colormap_Iterator_Type is record
+      Data  : Colormap_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Colormap_Iterator_Type);
+
    subtype Visual_Id_Type is Interfaces.Unsigned_32;
+
+   type Visual_Id_Access_Type is access all Visual_Id_Type;
+
+   type Visual_Id_Iterator_Type is record
+      Data  : Visual_Id_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Visual_Id_Iterator_Type);
 
    type Rectangle_Type is record
       X      : aliased Interfaces.C.short;
@@ -438,6 +538,108 @@ package XCB is
       Height : aliased Interfaces.Unsigned_16;
    end record;
    pragma Convention (C_Pass_By_Copy, Rectangle_Type);
+
+   type Rectangle_Access_Type is access all Rectangle_Type;
+
+   type Rectangle_Iterator_Type is record
+      Data  : Rectangle_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Rectangle_Iterator_Type);
+
+   type Arc_Type is record
+      X      : aliased Interfaces.Integer_16;
+      Y      : aliased Interfaces.Integer_16;
+      Width  : aliased Interfaces.Unsigned_16;
+      Height : aliased Interfaces.Unsigned_16;
+      Angle_1 : aliased Interfaces.Integer_16;
+      Angle_2 : aliased Interfaces.Integer_16;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Arc_Type);
+
+   type Arc_Access_Type is access all Arc_Type;
+
+   type Arc_Iterator_Type is record
+      Data  : Arc_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Arc_Iterator_Type);
+
+   type Format_Padding_0_Array_Type is array (0 .. 4) of aliased Interfaces.Unsigned_8;
+   type Format_Type is record
+      Depth           : aliased Interfaces.Unsigned_8;
+      Bits_Per_Pixel  : aliased Interfaces.Unsigned_8;
+      Scanline_Pad    : aliased Interfaces.Unsigned_8;
+      Padding_0_Array : aliased Format_Padding_0_Array_Type;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Format_Type);
+
+   type Format_Access_Type is access all Format_Type;
+
+   type Format_Iterator_Type is record
+      Data  : Format_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Format_Iterator_Type);
+
+   type Visual_Class_Type is
+     (XCB_VISUAL_CLASS_STATIC_GRAY,
+      XCB_VISUAL_CLASS_GRAY_SCALE,
+      XCB_VISUAL_CLASS_STATIC_COLOR,
+      XCB_VISUAL_CLASS_PSEUDO_COLOR,
+      XCB_VISUAL_CLASS_TRUE_COLOR,
+      XCB_VISUAL_CLASS_DIRECT_COLOR);
+   pragma Convention (C, Visual_Class_Type);
+
+   type Visual_Kind_Padding_0_Array_Type is array (0 .. 3) of aliased Interfaces.Unsigned_8;
+
+   type Visual_Kind_Type is record
+      Visual_Id          : aliased Visual_Id_Type;
+      u_class            : aliased Interfaces.Unsigned_8;
+      bits_per_rgb_value : aliased Interfaces.Unsigned_8;
+      colormap_entries   : aliased Interfaces.Unsigned_16;
+      red_mask           : aliased Interfaces.Unsigned_32;
+      green_mask         : aliased Interfaces.Unsigned_32;
+      blue_mask          : aliased Interfaces.Unsigned_32;
+      pad0               : aliased Visual_Kind_Padding_0_Array_Type;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Visual_Kind_Type);
+
+   type Visual_Kind_Access_Type is access all Visual_Kind_Type;
+
+   type Visual_Kind_Iterator_Type is record
+      Data  : Visual_Kind_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Visual_Kind_Iterator_Type);
+
+   type Depth_Padding_1_Array_Type is array (0 .. 3) of aliased Interfaces.Unsigned_8;
+   type Depth_Type is record
+      Depth           : aliased Interfaces.Unsigned_8;
+      Padding_0       : aliased Interfaces.Unsigned_8;
+      Visuals_Length  : aliased Interfaces.Unsigned_16;
+      Padding_1_Array : aliased Depth_Padding_1_Array_Type;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Depth_Type);
+
+   type Depth_Access_Type is access all Depth_Type;
+
+   type Depth_Iterator_Type is record
+      Data  : Depth_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Depth_Iterator_Type);
+
+   type Backing_Store_Type is
+     (XCB_BACKING_STORE_NOT_USEFUL,
+      XCB_BACKING_STORE_WHEN_MAPPED,
+      XCB_BACKING_STORE_ALWAYS);
+   pragma Convention (C, Backing_Store_Type);
 
    type Screen_Type is record
       Root                  : aliased Window_Id_Type;
@@ -454,7 +656,7 @@ package XCB is
       Root_Visual_Id        : aliased Visual_Id_Type;
       Backing_Stores        : aliased Interfaces.Unsigned_8;
       Save_Unders           : aliased Interfaces.Unsigned_8;
-      Root_Depth            : aliased Depth_Type;
+      Root_Depth            : aliased Window_Depth_Type;
       Allowed_Depths_Length : aliased Interfaces.Unsigned_8;
    end record;
    pragma Convention (C_Pass_By_Copy, Screen_Type);
@@ -469,6 +671,68 @@ package XCB is
    pragma Convention (C_Pass_By_Copy, Screen_Iterator_Type);
 
    type Screen_Iterator_Access_Type is access all Screen_Iterator_Type;
+
+   type Setup_Request_Padding_1_Array_Type is array (0 .. 1) of aliased Interfaces.Unsigned_8;
+   type Setup_Request_Type is record
+      Byte_Order                         : aliased Interfaces.Unsigned_8;
+      Padding_0                          : aliased Interfaces.Unsigned_8;
+      Protocol_Major_Version             : aliased Interfaces.Unsigned_16;
+      Protocol_Minor_Version             : aliased Interfaces.Unsigned_16;
+      Authorization_Protocol_Name_Length : aliased Interfaces.Unsigned_16;
+      Authorization_Protocol_Data_Length : aliased Interfaces.Unsigned_16;
+      Padding_1_Array                    : aliased Setup_Request_Padding_1_Array_Type;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Setup_Request_Type);
+
+   type Setup_Request_Access_Type is access all Setup_Request_Type;
+
+   type Setup_Request_Iterator_Type is record
+      Data : Setup_Request_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Setup_Request_Iterator_Type);
+
+   type Setup_Failed_Type is record
+      Status                 : aliased Interfaces.Unsigned_8;
+      Reason_Length          : aliased Interfaces.Unsigned_8;
+      Protocol_Major_Version : aliased Interfaces.Unsigned_16;
+      Protocol_Minor_Version : aliased Interfaces.Unsigned_16;
+      Length                 : aliased Interfaces.Unsigned_16;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Setup_Failed_Type);
+
+   type Setup_Failed_Access_Type is access all Setup_Failed_Type;
+
+   type Setup_Failed_Iterator_Type is record
+      Data  : Setup_Failed_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Setup_Failed_Iterator_Type);
+
+   type Setup_Authenticate_Padding_0_Array_Type is array (0 .. 4) of aliased Interfaces.Unsigned_8;
+   type Setup_Authenticate_Type is record
+      Status    : aliased Interfaces.Unsigned_8;
+      Padding_0 : aliased Setup_Authenticate_Padding_0_Array_Type;
+      Length    : aliased Interfaces.Unsigned_16;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Setup_Authenticate_Type);
+
+   type Setup_Authenticate_Access_Type is access all Setup_Authenticate_Type;
+
+   type Setup_Authenticate_Iterator_Type is record
+      data  : Setup_Authenticate_Access_Type;
+      c_rem : aliased Interfaces.C.int;
+      index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Setup_Authenticate_Iterator_Type);
+
+   type Image_Order_Type is
+     (XCB_IMAGE_ORDER_LSB_FIRST,
+      XCB_IMAGE_ORDER_MSB_FIRST);
+   pragma Convention (C, Image_Order_Type);
+
 
    type Window_Class_Type is
      (XCB_WINDOW_CLASS_COPY_FROM_PARENT,
@@ -500,6 +764,26 @@ package XCB is
    type Expose_Event_Access_Type is access all Expose_Event_Type;
 
    subtype Timestamp_Type is Interfaces.Unsigned_32;
+
+   type Timestamp_Access_Type is access all Timestamp_Type;
+
+   type Timestamp_Iterator_Type is record
+      Data  : Timestamp_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Timestamp_Iterator_Type);
+
+   type Keysym_Type is new Interfaces.Unsigned_32;
+
+   type Keysym_Access_Type is access all Keysym_Type;
+
+   type Keysym_Iterator_Type is record
+      Data  : Keysym_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Keysym_Iterator_Type);
 
    type Button_Press_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
@@ -609,6 +893,112 @@ package XCB is
 
    type Generic_Error_Access_Type is access all Generic_Error_Type;
 
+   type Generic_Iterator_Type is record
+      Data  : System.Address;
+      c_rem : aliased Interfaces.C.int;
+      index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Generic_Iterator_Type);
+
+   type Generic_Reply_Type is record
+      Response_Kind : aliased Interfaces.Unsigned_8;
+      Padding_0     : aliased Interfaces.Unsigned_8;
+      Sequence      : aliased Interfaces.Unsigned_16;
+      Length        : aliased Interfaces.Unsigned_32;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Generic_Reply_Type);
+
+   type GE_Event_Padding_Array_Type is array (0 .. 4) of aliased Interfaces.Unsigned_32;
+   type GE_Event_Type is record
+      Response_Kind : aliased Interfaces.Unsigned_8;
+      Padding_0     : aliased Interfaces.Unsigned_8;
+      Sequence      : aliased Interfaces.Unsigned_16;
+      Length        : aliased Interfaces.Unsigned_32;
+      Event_Kind    : aliased Interfaces.Unsigned_16;
+      Padding_1     : aliased Interfaces.Unsigned_16;
+      Padding_Array : aliased GE_Event_Padding_Array_Type;
+      Full_Sequence : aliased Interfaces.Unsigned_32;
+   end record;
+   pragma Convention (C_Pass_By_Copy, GE_Event_Type);
+
+   type Authorization_Info_Type is record
+      Name_Length : aliased Interfaces.C.int;
+      Name        : Interfaces.C.Strings.chars_ptr;
+      Data_Length : aliased Interfaces.C.int;
+      Data        : Interfaces.C.Strings.chars_ptr;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Authorization_Info_Type);
+
+   type Authorization_Info_Access_Type is access all Authorization_Info_Type;
+
+   type Special_Event_Type is null record;
+
+   type Special_Event_Access is access all Special_Event_Type;
+
+   type Query_Extension_Reply_Type is record
+      Response_Kind : aliased Interfaces.Unsigned_8;
+      Padding_0     : aliased Interfaces.Unsigned_8;
+      Sequence      : aliased Interfaces.Unsigned_16;
+      Length        : aliased Interfaces.Unsigned_32;
+      Present       : aliased Interfaces.Unsigned_8;
+      Major_Op_Code : aliased Interfaces.Unsigned_8;
+      First_Event   : aliased Interfaces.Unsigned_8;
+      First_Error   : aliased Interfaces.Unsigned_8;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Query_Extension_Reply_Type);
+
+   type Query_Extension_Reply_Constant_Access_Type is access constant Query_Extension_Reply_Type;
+
+   type Extension_Type is null record;
+
+   type Extension_Access_Type is access all Extension_Type;
+
+   type Char2b_Type is record
+      Byte_1 : aliased Interfaces.Unsigned_8;
+      Byte_2 : aliased Interfaces.Unsigned_8;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Char2b_Type);
+
+   type Char2b_Access_Type is access all Char2b_Type;
+
+   type Char2b_Iterator_Type is record
+      data  : Char2b_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Char2b_Iterator_Type);
+
+   type Window_Iterator_Type is record
+      Data  : Window_Id_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Window_Iterator_Type);
+
+   type Pixmap_Id_Type is new Interfaces.Unsigned_32;
+
+   type Pixmap_Id_Access_Type is access all Pixmap_Id_Type;
+
+   type Pixmap_Iterator_Type is record
+      Data  : Pixmap_Id_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Pixmap_Iterator_Type);
+
+   type Cursor_Id_Type is new Interfaces.Unsigned_32;
+
+   type Cursor_Id_Access_Type is access all Cursor_Id_Type;
+
+   type Cursor_Iterator_Type is record
+      Data  : Cursor_Id_Access_Type;
+      C_Rem : aliased Interfaces.C.int;
+      Index : aliased Interfaces.C.int;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Cursor_Iterator_Type);
+
+
+
    --
    -- Subprogram definitions
    --
@@ -640,6 +1030,17 @@ package XCB is
 
    function Poll_For_Event (C : Connection_Access_Type) return Generic_Event_Access_Type;
    pragma Import (C, Poll_For_Event, "xcb_poll_for_event");
+
+   function Poll_For_Queued_Event (C : Connection_Access_Type) return Generic_Event_Access_Type;
+   pragma Import (C, Poll_For_Queued_Event, "xcb_poll_for_queued_event");
+
+   function Poll_For_Special_Event (C  : Connection_Access_Type;
+                                    SE : System.Address) return Generic_Event_Access_Type;
+   pragma Import (C, Poll_For_Special_Event, "xcb_poll_for_special_event");
+
+   function Wait_For_Special_Event (C : Connection_Access_Type;
+                                    SE : System.Address) return Generic_Event_Access_Type;
+   pragma Import (C, Wait_For_Special_Event, "xcb_wait_for_special_event");
 
    procedure Free is new Ada.Unchecked_Deallocation (Object => Generic_Event_Type,
                                                      Name   => Generic_Event_Access_Type);
@@ -721,7 +1122,7 @@ package XCB is
    function Generate_Id (C : Connection_Access_Type) return Font_Id_Type;
 
    function Create_Window (C            : Connection_Access_Type;
-                           Depth        : Depth_Type;
+                           Depth        : Window_Depth_Type;
                            Window_Id    : Window_Id_Type;
                            Parent       : Window_Id_Type;
                            X            : X_Coordinate_Type;
@@ -858,5 +1259,54 @@ package XCB is
 
    procedure Screen_Next (I : Screen_Iterator_Access_Type);
    pragma Import (C, Screen_Next, "xcb_screen_next");
+
+   function Get_Maximum_Request_Length (C : Connection_Access_Type) return Interfaces.Unsigned_32;
+   pragma Import (C, Get_Maximum_Request_Length, "xcb_get_maximum_request_length");
+
+   procedure Prefetch_Maximum_Request_Length (C : Connection_Access_Type);
+   pragma Import (C, Prefetch_Maximum_Request_Length, "xcb_prefetch_maximum_request_length");
+
+   -- Listen for a special event.
+   function Register_For_Special_XGE (C            : Connection_Access_Type;
+                                      Extension    : System.Address;
+                                      Extension_Id : Interfaces.Unsigned_32;
+                                      Stamp        : access Interfaces.Unsigned_32) return Special_Event_Access;
+   pragma Import (C, Register_For_Special_XGE, "xcb_register_for_special_xge");
+
+   -- Stop listening for a special event.
+   procedure Unregister_For_Special_Event (C : Connection_Access_Type;
+                                           SE : Special_Event_Access);
+   pragma Import (C, Unregister_For_Special_Event, "xcb_unregister_for_special_event");
+
+   procedure Discard_Reply (C        : Connection_Access_Type;
+                            Sequence : Interfaces.C.unsigned);
+   pragma Import (C, Discard_Reply, "xcb_discard_reply");
+
+   function Get_Extension_Data (C   : Connection_Access_Type;
+                                Ext : Extension_Access_Type) return Query_Extension_Reply_Constant_Access_Type;
+   pragma Import (C, Get_Extension_Data, "xcb_get_extension_data");
+
+   procedure Prefetch_Extension_Data (C   : Connection_Access_Type;
+                                      Ext : Extension_Access_Type);
+   pragma Import (C, Prefetch_Extension_Data, "xcb_prefetch_extension_data");
+
+   function Get_File_Descriptor (C : Connection_Access_Type) return Interfaces.C.int;
+   pragma Import (C, Get_File_Descriptor, "xcb_get_file_descriptor");
+
+   -- Connects to the X server.
+   function Connect_To_File_Descriptor (FD        : Interfaces.C.int;
+                                        Auth_Info : Authorization_Info_Access_Type) return Connection_Access_Type;
+   pragma Import (C, Connect_To_File_Descriptor, "xcb_connect_to_fd");
+
+   function Parse_Display (Name    : Interfaces.C.Strings.chars_ptr;
+                           Host    : System.Address; -- Pointer to a malloced copy of the hostname
+                           Display : access Interfaces.C.int;
+                           Screen  : access Interfaces.C.int) return Interfaces.C.int;
+   pragma Import (C, Parse_Display, "xcb_parse_display");
+
+   function Connect_To_Display_With_Authorization_Info (Display : Interfaces.C.Strings.chars_ptr;
+                                                        Auth    : Authorization_Info_Access_Type;
+                                                        Screen  : access Interfaces.C.int) return Connection_Access_Type;
+   pragma Import (C, Connect_To_Display_With_Authorization_Info, "xcb_connect_to_display_with_auth_info");
 
 end XCB;
