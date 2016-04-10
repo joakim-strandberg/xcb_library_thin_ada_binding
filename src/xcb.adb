@@ -5,9 +5,9 @@ package body XCB is
       return (Window_Id_Type (X_Id_Type'(Generate_Id (C))));
    end Generate_Id;
 
-   function Generate_Id (C : Connection_Access_Type) return Graphical_Context_Type is
+   function Generate_Id (C : Connection_Access_Type) return Gcontext_Id_Type is
    begin
-      return (Graphical_Context_Type (X_Id_Type'(Generate_Id (C))));
+      return (Gcontext_Id_Type (X_Id_Type'(Generate_Id (C))));
    end Generate_Id;
 
    function Generate_Id (C : Connection_Access_Type) return Font_Id_Type is
