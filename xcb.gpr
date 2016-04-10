@@ -8,11 +8,4 @@ library project Xcb is
 
    for Languages    use ("Ada");
 
-   package Linker is
-      for Default_Switches ("Ada") use (
-                                        "-L/opt/X11/lib/", -- For Mac OS X
-                                        "-lxcb");
-   end Linker;
-
-
 end Xcb;

@@ -1,7 +1,12 @@
 with "../../xcb";
 
 project Events_Demo is
-    for Source_Dirs use ("src");
-    for Object_Dir use "obj";
-    for Main use ("main.adb");
+   for Source_Dirs use ("src");
+   for Object_Dir use "obj";
+   for Main use ("main.adb");
+
+   package Linker is
+      for Default_Switches ("Ada") use ("-L/opt/X11/lib/");
+   end Linker;
+
 end Events_Demo;

@@ -5,6 +5,8 @@ with Ada.Unchecked_Deallocation;
 
 package XCB is
 
+   pragma Linker_Options ("-lxcb");
+
    X_PROTOCOL                       : constant := 11;
    X_PROTOCOL_REVISION              : constant := 0;
    X_TCP_PORT                       : constant := 6000;
@@ -50,23 +52,28 @@ package XCB is
    XCB_MAPPING_NOTIFY    : constant := 34;
    XCB_GE_GENERIC        : constant := 35;
 
-   XCB_REQUEST        : constant := 1;
-   XCB_VALUE          : constant := 2;
-   XCB_WINDOW         : constant := 3;
-   XCB_PIXMAP         : constant := 4;
-   XCB_ATOM           : constant := 5;
-   XCB_CURSOR         : constant := 6;
-   XCB_FONT           : constant := 7;
-   XCB_MATCH          : constant := 8;
-   XCB_DRAWABLE       : constant := 9;
-   XCB_ACCESS         : constant := 10;
-   XCB_ALLOC          : constant := 11;
-   XCB_COLORMAP       : constant := 12;
-   XCB_GCONTEXT       : constant := 13;
-   XCB_IDCHOICE       : constant := 14;
-   XCB_NAME           : constant := 15;
-   XCB_LENGTH         : constant := 16;
-   XCB_IMPLEMENTATION : constant := 17;
+   XCB_KEY_RELEASE       : constant := 3;
+   XCB_BUTTON_RELEASE    : constant := 5;
+   XCB_LEAVE_NOTIFY      : constant := 8;
+   XCB_FOCUS_OUT         : constant := 10;
+   XCB_CIRCULATE_REQUEST : constant := 27;
+   XCB_REQUEST           : constant := 1;
+   XCB_VALUE             : constant := 2;
+   XCB_WINDOW            : constant := 3;
+   XCB_PIXMAP            : constant := 4;
+   XCB_ATOM              : constant := 5;
+   XCB_CURSOR            : constant := 6;
+   XCB_FONT              : constant := 7;
+   XCB_MATCH             : constant := 8;
+   XCB_DRAWABLE          : constant := 9;
+   XCB_ACCESS            : constant := 10;
+   XCB_ALLOC             : constant := 11;
+   XCB_COLORMAP          : constant := 12;
+   XCB_GCONTEXT          : constant := 13;
+   XCB_IDCHOICE          : constant := 14;
+   XCB_NAME              : constant := 15;
+   XCB_LENGTH            : constant := 16;
+   XCB_IMPLEMENTATION    : constant := 17;
 
    XCB_CREATE_WINDOW              : constant := 1;
    XCB_CHANGE_WINDOW_ATTRIBUTES   : constant := 2;
@@ -1377,6 +1384,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Key_Press_Event_Type);
 
+   type Key_Press_Event_Access_Type is access all Key_Press_Event_Type;
+
    type Button_Press_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
       Detail        : aliased Button_Id_Type;
@@ -1394,6 +1403,8 @@ package XCB is
       Padding_0     : aliased Interfaces.Unsigned_8;
    end record;
    pragma Convention (C_Pass_By_Copy, Button_Press_Event_Type);
+
+   type Button_Press_Event_Access_Type is access all Button_Press_Event_Type;
 
    type Motion_Notify_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
@@ -1413,6 +1424,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Motion_Notify_Event_Type);
 
+   type Motion_Notify_Event_Access_Type is access all Motion_Notify_Event_Type;
+
    type Enter_Notify_Event_Type is record
       Response_Kind     : aliased Interfaces.Unsigned_8;
       Detail            : aliased Notify_Detail_Type;
@@ -1431,6 +1444,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Enter_Notify_Event_Type);
 
+   type Enter_Notify_Event_Access_Type is access all Enter_Notify_Event_Type;
+
    type Focus_In_Event_Padding_0_Array_Type is array (0 .. 2) of aliased Interfaces.Unsigned_8;
    type Focus_In_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
@@ -1442,12 +1457,16 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Focus_In_Event_Type);
 
+   type Focus_In_Event_Access_Type is access all Focus_In_Event_Type;
+
    type Keymap_Notify_Event_Keys_Array_Type is array (0 .. 30) of aliased Interfaces.Unsigned_8;
    type Keymap_Notify_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
       Keys          : aliased Keymap_Notify_Event_Keys_Array_Type;
    end record;
    pragma Convention (C_Pass_By_Copy, Keymap_Notify_Event_Type);
+
+   type Keymap_Notify_Event_Access_Type is access all Keymap_Notify_Event_Type;
 
    type Expose_Event_Padding_1_Array_Type is array (0 .. 1) of aliased Interfaces.Unsigned_8;
    type Expose_Event_Type is record
@@ -1462,6 +1481,8 @@ package XCB is
       Padding_1     : aliased Expose_Event_Padding_1_Array_Type;
    end record;
    pragma Convention (C_Pass_By_Copy, Expose_Event_Type);
+
+   type Expose_Event_Access_Type is access all Expose_Event_Type;
 
    type Graphics_Exposure_Event_Padding_1_Array_Type is array (0 .. 2) of aliased Interfaces.Unsigned_8;
    type Graphics_Exposure_Event_Type is record
@@ -1479,6 +1500,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Graphics_Exposure_Event_Type);
 
+   type Graphics_Exposure_Event_Access_Type is access all Graphics_Exposure_Event_Type;
+
    type No_Exposure_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
       Padding_0     : aliased Interfaces.Unsigned_8;
@@ -1489,6 +1512,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, No_Exposure_Event_Type);
 
+   type No_Exposure_Event_Access_Type is access all No_Exposure_Event_Type;
+
    type Visibility_Notify_Event_Padding_1_Array_Type is array (0 .. 2) of aliased Interfaces.Unsigned_8;
    type Visibility_Notify_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
@@ -1498,6 +1523,8 @@ package XCB is
       Padding_1     : aliased Visibility_Notify_Event_Padding_1_Array_Type;
    end record;
    pragma Convention (C_Pass_By_Copy, Visibility_Notify_Event_Type);
+
+   type Visibility_Notify_Event_Access_Type is access all Visibility_Notify_Event_Type;
 
    type Create_Notify_Event_Type is record
       Response_Kind     : aliased Interfaces.Unsigned_8;
@@ -1514,6 +1541,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Create_Notify_Event_Type);
 
+   type Create_Notify_Event_Access_Type is access all Create_Notify_Event_Type;
+
    type Destroy_Notify_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
       Padding_0     : aliased Interfaces.Unsigned_8;
@@ -1521,6 +1550,8 @@ package XCB is
       Window        : aliased Window_Id_Type;
    end record;
    pragma Convention (C_Pass_By_Copy, Destroy_Notify_Event_Type);
+
+   type Destroy_Notify_Event_Access_Type is access all Destroy_Notify_Event_Type;
 
    type Unmap_Notify_Event_Padding_1_Array_Type is array (0 .. 2) of aliased Interfaces.Unsigned_8;
    type Unmap_Notify_Event_Type is record
@@ -1533,6 +1564,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Unmap_Notify_Event_Type);
 
+   type Unmap_Notify_Event_Access_Type is access all Unmap_Notify_Event_Type;
+
    type Map_Notify_Event_Padding_1_Array_Type is array (0 .. 2) of aliased Interfaces.Unsigned_8;
    type Map_Notify_Event_Type is record
       Response_Kind     : aliased Interfaces.Unsigned_8;
@@ -1544,6 +1577,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Map_Notify_Event_Type);
 
+   type Map_Notify_Event_Access_Type is access all Map_Notify_Event_Type;
+
    type Map_Request_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
       Padding_0     : aliased Interfaces.Unsigned_8;
@@ -1551,6 +1586,8 @@ package XCB is
       Window        : aliased Window_Id_Type;
    end record;
    pragma Convention (C_Pass_By_Copy, Map_Request_Event_Type);
+
+   type Map_Request_Event_Access_Type is access all Map_Request_Event_Type;
 
    type Reparent_Notify_Event_Padding_1_Array_Type is array (0 .. 2) of aliased Interfaces.Unsigned_8;
    type Reparent_Notify_Event_Type is record
@@ -1565,6 +1602,8 @@ package XCB is
       Padding_1         : aliased Reparent_Notify_Event_Padding_1_Array_Type;
    end record;
    pragma Convention (C_Pass_By_Copy, Reparent_Notify_Event_Type);
+
+   type Reparent_Notify_Event_Access_Type is access all Reparent_Notify_Event_Type;
 
    type Configure_Notify_Event_Type is record
       Response_Kind     : aliased Interfaces.Unsigned_8;
@@ -1582,6 +1621,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Configure_Notify_Event_Type);
 
+   type Configure_Notify_Event_Access_Type is access all Configure_Notify_Event_Type;
+
    type Configure_Request_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
       Stack_Mode    : aliased Stack_Mode_Type;
@@ -1598,6 +1639,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Configure_Request_Event_Type);
 
+   type Configure_Request_Event_Access_Type is access all Configure_Request_Event_Type;
+
    type Gravity_Notify_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
       Padding_0     : aliased Interfaces.Unsigned_8;
@@ -1608,6 +1651,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Gravity_Notify_Event_Type);
 
+   type Gravity_Notify_Event_Access_Type is access all Gravity_Notify_Event_Type;
+
    type Resize_Request_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
       Padding_0     : aliased Interfaces.Unsigned_8;
@@ -1616,6 +1661,8 @@ package XCB is
       Height        : aliased Interfaces.Unsigned_16;
    end record;
    pragma Convention (C_Pass_By_Copy, Resize_Request_Event_Type);
+
+   type Resize_Request_Event_Access_Type is access all Resize_Request_Event_Type;
 
    type Circulate_Notify_Event_Padding_1_Array_Type is array (0 .. 3) of aliased Interfaces.Unsigned_8;
    type Circulate_Notify_Event_Padding_2_Array_Type is array (0 .. 2) of aliased Interfaces.Unsigned_8;
@@ -1630,6 +1677,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Circulate_Notify_Event_Type);
 
+   type Circulate_Notify_Event_Access_Type is access all Circulate_Notify_Event_Type;
+
    type Property_Notify_Event_Padding_1_Array_Type is array (0 .. 2) of aliased Interfaces.Unsigned_8;
    type Property_Notify_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
@@ -1642,6 +1691,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Property_Notify_Event_Type);
 
+   type Property_Notify_Event_Access_Type is access all Property_Notify_Event_Type;
+
    type Selection_Clear_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
       Padding_0     : aliased Interfaces.Unsigned_8;
@@ -1650,6 +1701,8 @@ package XCB is
       Selection     : aliased Atom_Id_Type;
    end record;
    pragma Convention (C_Pass_By_Copy, Selection_Clear_Event_Type);
+
+   type Selection_Clear_Event_Access_Type is access all Selection_Clear_Event_Type;
 
    type Selection_Request_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
@@ -1663,6 +1716,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Selection_Request_Event_Type);
 
+   type Selection_Request_Event_Access_Type is access all Selection_Request_Event_Type;
+
    type Selection_Notify_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
       Padding_0     : aliased Interfaces.Unsigned_8;
@@ -1673,6 +1728,8 @@ package XCB is
       Property      : aliased Atom_Id_Type;
    end record;
    pragma Convention (C_Pass_By_Copy, Selection_Notify_Event_Type);
+
+   type Selection_Notify_Event_Access_Type is access all Selection_Notify_Event_Type;
 
    type Colormap_Notify_Event_Padding_1_Array_Type is array (0 .. 1) of aliased Interfaces.Unsigned_8;
    type Colormap_Notify_Event_Type is record
@@ -1686,6 +1743,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Colormap_Notify_Event_Type);
 
+   type Colormap_Notify_Event_Access_Type is access all Colormap_Notify_Event_Type;
+
    type Client_Message_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
       Format        : aliased Interfaces.Unsigned_8;
@@ -1695,6 +1754,8 @@ package XCB is
       Data          : aliased Client_Message_Data_Type;
    end record;
    pragma Convention (C_Pass_By_Copy, Client_Message_Event_Type);
+
+   type Client_Message_Event_Access_Type is access all Client_Message_Event_Type;
 
    type Mapping_Notify_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
@@ -1706,6 +1767,8 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Mapping_Notify_Event_Type);
 
+   type Mapping_Notify_Event_Access_Type is access all Mapping_Notify_Event_Type;
+
    type Ge_Generic_Event_Padding_0_Array_Type is array (0 .. 21) of aliased Interfaces.Unsigned_8;
    type Ge_Generic_Event_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
@@ -1713,15 +1776,27 @@ package XCB is
    end record;
    pragma Convention (C_Pass_By_Copy, Ge_Generic_Event_Type);
 
+   type Ge_Generic_Event_Access_Type is access all Ge_Generic_Event_Type;
+
    type Key_Release_Event_Type is new Key_Press_Event_Type;
+
+   type Key_Release_Event_Access_Type is access all Key_Release_Event_Type;
 
    type Button_Release_Event_Type is new Button_Press_Event_Type;
 
+   type Button_Release_Event_Access_Type is access all Button_Release_Event_Type;
+
    type Leave_Notify_Event_Type is new Enter_Notify_Event_Type;
+
+   type Leave_Notify_Event_Access_Type is access all Leave_Notify_Event_Type;
 
    type Focus_Out_Event_Type is new Focus_In_Event_Type;
 
+   type Focus_Out_Event_Access_Type is access all Focus_Out_Event_Type;
+
    type Circulate_Request_Event_Type is new Circulate_Notify_Event_Type;
+
+   type Circulate_Request_Event_Access_Type is access all Circulate_Request_Event_Type;
 
    type Request_Error_Type is record
       Response_Kind : aliased Interfaces.Unsigned_8;
@@ -1833,6 +1908,38 @@ package XCB is
      (C      : Connection_Access_Type;
       Cookie : Void_Cookie_Type) return Generic_Error_Access_Type;
    pragma Import (C, Request_Check, "xcb_request_check");
+
+   function To_Expose_Event is new Ada.Unchecked_Conversion
+     (Source => Generic_Event_Access_Type,
+      Target => Expose_Event_Access_Type);
+
+   function To_Button_Press_Event is new Ada.Unchecked_Conversion
+     (Source => Generic_Event_Access_Type,
+      Target => Button_Press_Event_Access_Type);
+
+   function To_Button_Release_Event is new Ada.Unchecked_Conversion
+     (Source => Generic_Event_Access_Type,
+      Target => Button_Release_Event_Access_Type);
+
+   function To_Motion_Notify_Event is new Ada.Unchecked_Conversion
+     (Source => Generic_Event_Access_Type,
+      Target => Motion_Notify_Event_Access_Type);
+
+   function To_Enter_Notify_Event is new Ada.Unchecked_Conversion
+     (Source => Generic_Event_Access_Type,
+      Target => Enter_Notify_Event_Access_Type);
+
+   function To_Leave_Notify_Event is new Ada.Unchecked_Conversion
+     (Source => Generic_Event_Access_Type,
+      Target => Leave_Notify_Event_Access_Type);
+
+   function To_Key_Press_Event is new Ada.Unchecked_Conversion
+     (Source => Generic_Event_Access_Type,
+      Target => Key_Press_Event_Access_Type);
+
+   function To_Key_Release_Event is new Ada.Unchecked_Conversion
+     (Source => Generic_Event_Access_Type,
+      Target => Key_Release_Event_Access_Type);
 
    -- Connects to the X server specified by displayname and
    -- returns a newly allocated xcb_connection_t structure.
