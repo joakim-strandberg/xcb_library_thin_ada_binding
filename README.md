@@ -1,5 +1,5 @@
 # Thin Ada binding to the XCB library
-The purpose of the XCB library is to make it possible to make graphical user interfaces in Linux where there exists an X-Server.
+The purpose of the XCB library is to make it possible to make graphical user interfaces in Linux by implementing the client-side of the X11 display server protocol.
 
 This is an Ada binding to the XCB library version 1.10. There are two later versions of the XCB library 1.11.0 and 1.11.1 but binding to those newer libraries has not been done, yet. It has been successfully tested on Mac OS X - El capitan and Ubuntu 14.04.
 
