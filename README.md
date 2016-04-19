@@ -6,3 +6,17 @@ This is an Ada binding to the XCB library version 1.10. There are two later vers
 The Ada binding is contained in the XCB package in the files xcb.ads and xcb.adb. Just include them in your project and you have your Ada binding to the XCB library! (or prefably just with the xcb.gpr file in your project)
 
 The XCB library is a library written in the C programming language. The header files for the XCB library that describe the interface to the library is contained in the files xcb.h and xproto.h. The contents of xproto.h is auto-generated from an xml file called xproto.xml by a Python script. The content of the XCB package is also auto-generated but has been edited manually with contents originating from xcb.h. Note that xproto.h is huge and xcb.h is very small in comparison. In later version of the XCB library the whole interface is auto-generated from xproto.xml.
+
+# Xproto xml file parser
+The application that auto-generates the xcb.ads file is included in the source tree. It is included to empower users to change the contents of the XCB package if they wish.
+
+After generating the file, I have manually replaced
+   function Query_Text_Extents_Size_Of (Buffer : System.Address) return Interfaces.C.int;
+with:
+   function Query_Text_Extents_Size_Of (Buffer      : System.Address;
+                                        Text_Length : Interfaces.Unsigned_32) return Interfaces.C.int;
+
+The file xproto.xml may be found in the xproto_parsing directory. The idea is to open the file xcb_parser.gpr in the GPS (GNAT Programming Studio), build the sources and then execute the application by clicking the "play" button from inside the GPS (this will make the application execute in the xproto_parsing directory and the application will be able to find the xproto.xml-file).
+
+# Thanks to
+Many thanks to Dmitry Kazakov for writing his Simple Components. They are used in the xproto.xml-file parser application for reading UTF8-characters.
