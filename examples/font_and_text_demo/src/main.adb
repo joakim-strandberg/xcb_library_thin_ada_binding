@@ -71,7 +71,7 @@ procedure Main is
 
       GC_Cookie := XCB.Create_GC_Checked (Connection,
                                           GC,
-                                          XCB.Drawable_Id_Type (Window),
+                                          Window,
                                           Mask,
                                           Value_List);
 

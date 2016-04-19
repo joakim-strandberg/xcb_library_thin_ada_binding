@@ -794,7 +794,7 @@ package XCB is
 
    type Drawable_Id_Iterator_Access_Type is access all Drawable_Id_Iterator_Type;
 
-   type Window_Id_Type is new Drawable_Id_Type;
+   subtype Window_Id_Type is Drawable_Id_Type;
 
    type Window_Id_Access_Type is access all Window_Id_Type;
 
@@ -807,7 +807,7 @@ package XCB is
 
    type Window_Id_Iterator_Access_Type is access all Window_Id_Iterator_Type;
 
-   type Pixmap_Id_Type is new Drawable_Id_Type;
+   subtype Pixmap_Id_Type is Drawable_Id_Type;
 
    type Pixmap_Id_Access_Type is access all Pixmap_Id_Type;
 
@@ -833,7 +833,7 @@ package XCB is
 
    type Fontable_Id_Iterator_Access_Type is access all Fontable_Id_Iterator_Type;
 
-   type Font_Id_Type is new Fontable_Id_Type;
+   subtype Font_Id_Type is Fontable_Id_Type;
 
    type Font_Id_Access_Type is access all Font_Id_Type;
 
@@ -846,7 +846,7 @@ package XCB is
 
    type Font_Id_Iterator_Access_Type is access all Font_Id_Iterator_Type;
 
-   type Gcontext_Id_Type is new Fontable_Id_Type;
+   subtype Gcontext_Id_Type is Fontable_Id_Type;
 
    type Gcontext_Id_Access_Type is access all Gcontext_Id_Type;
 
@@ -2029,11 +2029,9 @@ package XCB is
    function Setup_Roots_Iterator (R : Setup_Constant_Access_Type) return Screen_Iterator_Type;
    pragma Import (C, Setup_Roots_Iterator, "xcb_setup_roots_iterator");
 
-   function Generate_Id (C : Connection_Access_Type) return Gcontext_Id_Type;
+   function Generate_Id (C : Connection_Access_Type) return Fontable_Id_Type;
 
-   function Generate_Id (C : Connection_Access_Type) return Font_Id_Type;
-
-   function Generate_Id (C : Connection_Access_Type) return Window_Id_Type;
+   function Generate_Id (C : Connection_Access_Type) return Drawable_Id_Type;
 
    procedure Char_2B_Next (I : Char_2B_Iterator_Access_Type);
    pragma Import (C, Char_2B_Next, "xcb_char2b_next");
@@ -3337,8 +3335,9 @@ package XCB is
    for Query_Text_Extents_Reply_Access_Type'Storage_Size use 0;
    pragma Convention (C, Query_Text_Extents_Reply_Access_Type);
 
-   function Query_Text_Extents_Size_Of (Buffer      : System.Address;
-                                        Text_Length : Interfaces.Unsigned_32) return Interfaces.C.int;
+   function Query_Text_Extents_Size_Of
+     (Buffer      : System.Address;
+      Text_Length : Interfaces.Unsigned_32) return Interfaces.C.int;
    pragma Import (C, Query_Text_Extents_Size_Of, "xcb_query_text_extents_sizeof");
 
    type Query_Text_Extents_Cookie_Type is record

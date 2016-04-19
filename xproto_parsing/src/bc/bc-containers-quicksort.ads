@@ -1,0 +1,43 @@
+--  Copyright 2001-2009 Simon Wright <simon@pushface.org>
+
+--  This package is free software; you can redistribute it and/or
+--  modify it under terms of the GNU General Public License as
+--  published by the Free Software Foundation; either version 2, or
+--  (at your option) any later version. This package is distributed in
+--  the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+--  even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+--  PARTICULAR PURPOSE. See the GNU General Public License for more
+--  details. You should have received a copy of the GNU General Public
+--  License distributed with this package; see file COPYING.  If not,
+--  write to the Free Software Foundation, 59 Temple Place - Suite
+--  330, Boston, MA 02111-1307, USA.
+
+--  As a special exception, if other files instantiate generics from
+--  this unit, or you link this unit with other files to produce an
+--  executable, this unit does not by itself cause the resulting
+--  executable to be covered by the GNU General Public License.  This
+--  exception does not however invalidate any other reasons why the
+--  executable file might be covered by the GNU Public License.
+
+--  $Revision: 1446 $
+--  $Date: 2011-01-17 22:44:49 +0000 (Mon, 17 Jan 2011) $
+--  $Author: simonjwright $
+
+--  Implements a Quicksort of the given container in place, using the
+--  supplied comparator.
+--
+--  The instantiating Container must fully support the operation
+--
+--    function Item_At (C : Container; Index : Positive) return Item_Ptr;
+--
+--  which is normally private and whose default implementation raises
+--  Should_Have_Been_Overridden. If it's not fully supported, as is
+--  the case for hash-table-based containers (Bags, Maps, Sets),
+--  Sort_Error will be raised.
+
+generic
+   with function "<" (L, R : Item) return Boolean is <>;
+   type Container (<>) is new Containers.Container with private;
+   with function Length (C : Container) return Natural is <>;
+procedure BC.Containers.Quicksort (C : in out Container);
+pragma Preelaborate (BC.Containers.Quicksort);
