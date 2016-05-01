@@ -2033,6 +2033,58 @@ package XCB is
 
    function Generate_Id (C : Connection_Access_Type) return Drawable_Id_Type;
 
+   type Auth_Info_Type is record
+      Name_Length : aliased Interfaces.C.int;
+      Name        : Interfaces.C.Strings.chars_ptr;
+      Data_Length : aliased Interfaces.C.int;
+      Data        : Interfaces.C.Strings.chars_ptr;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Auth_Info_Type);
+
+   type Auth_Info_Access_Type is access all Auth_Info_Type;
+
+   function Get_Maximum_Request_Length (C : Connection_Access_Type) return Interfaces.Unsigned_32;
+   pragma Import (C, Get_Maximum_Request_Length, "xcb_get_maximum_request_length");
+
+   procedure Prefetch_Maximum_Request_Length (C : Connection_Access_Type);
+   pragma Import (C, Prefetch_Maximum_Request_Length, "xcb_prefetch_maximum_request_length");
+
+   function Poll_For_Queued_Event (C : Connection_Access_Type) return Generic_Event_Access_Type;
+   pragma Import (C, Poll_For_Queued_Event, "xcb_poll_for_queued_event");
+
+   type Special_Event_Type is null record;
+
+   type Special_Event_Access_Type is access all Special_Event_Type;
+
+   function Poll_For_Special_Event
+     (C             : Connection_Access_Type;
+      Special_Event : Special_Event_Access_Type) return Generic_Event_Access_Type;
+   pragma Import (C, Poll_For_Special_Event, "xcb_poll_for_special_event");
+
+   function Wait_For_Special_Event
+     (C             : Connection_Access_Type;
+      Special_Event : Special_Event_Access_Type) return Generic_Event_Access_Type;
+   pragma Import (C, Wait_For_Special_Event, "xcb_wait_for_special_event");
+
+   type Extension_Type is null record;
+
+   type Extension_Access_Type is access all Extension_Type;
+
+   function Register_For_Special_XGE
+     (C            : Connection_Access_Type;
+      Extension    : Extension_Access_Type;
+      Extension_Id : Interfaces.Unsigned_32;
+      Stamp        : access Interfaces.Unsigned_32) return Special_Event_Access_Type;
+   pragma Import (C, Register_For_Special_XGE, "xcb_register_for_special_xge");
+
+   procedure Unregister_For_Special_Event
+     (C             : Connection_Access_Type;
+      Special_Event : Special_Event_Access_Type);
+   pragma Import (C, Unregister_For_Special_Event, "xcb_unregister_for_special_event");
+
+   procedure Discard_Reply (C : Connection_Access_Type; Sequence : Interfaces.C.unsigned);
+   pragma Import (C, Discard_Reply, "xcb_discard_reply");
+
    procedure Char_2B_Next (I : Char_2B_Iterator_Access_Type);
    pragma Import (C, Char_2B_Next, "xcb_char2b_next");
 
@@ -3335,9 +3387,7 @@ package XCB is
    for Query_Text_Extents_Reply_Access_Type'Storage_Size use 0;
    pragma Convention (C, Query_Text_Extents_Reply_Access_Type);
 
-   function Query_Text_Extents_Size_Of
-     (Buffer      : System.Address;
-      Text_Length : Interfaces.Unsigned_32) return Interfaces.C.int;
+   function Query_Text_Extents_Size_Of (Buffer : System.Address; Text_Length : Interfaces.Unsigned_32) return Interfaces.C.int;
    pragma Import (C, Query_Text_Extents_Size_Of, "xcb_query_text_extents_sizeof");
 
    type Query_Text_Extents_Cookie_Type is record
@@ -5168,5 +5218,36 @@ package XCB is
 
    function No_Operation (C : Connection_Access_Type) return Void_Cookie_Type;
    pragma Import (C, No_Operation, "xcb_no_operation");
+
+   type Query_Extension_Reply_Constant_Access_Type is access constant Query_Extension_Reply_Type;
+
+   function Get_Extension_Data
+     (C         : Connection_Access_Type;
+      Extension : Extension_Access_Type) return Query_Extension_Reply_Constant_Access_Type;
+   pragma Import (C, Get_Extension_Data, "xcb_get_extension_data");
+
+   procedure Prefetch_Extension_Data (C : Connection_Access_Type; Extension : Extension_Access_Type);
+   pragma Import (C, Prefetch_Extension_Data, "xcb_prefetch_extension_data");
+
+   function Get_File_Descriptor (C : Connection_Access_Type) return Interfaces.C.int;
+   pragma Import (C, Get_File_Descriptor, "xcb_get_file_descriptor");
+
+   function Connect_To_Fd
+     (Fd        : Interfaces.C.int;
+      Auth_Info : Auth_Info_Access_Type) return Connection_Access_Type;
+   pragma Import (C, Connect_To_Fd, "xcb_connect_to_fd");
+
+   function Parse_Display
+     (Name    : Interfaces.C.Strings.chars_ptr;
+      Host    : System.Address;
+      Display : access Interfaces.C.int;
+      Screen  : access Interfaces.C.int) return Interfaces.C.int;
+   pragma Import (C, Parse_Display, "xcb_parse_display");
+
+   function Connect_To_Display_With_Auth_Info
+     (display : Interfaces.C.Strings.chars_ptr;
+      Auth    : access Auth_Info_Type;
+      Screen  : access Interfaces.C.int) return Connection_Access_Type;
+   pragma Import (C, Connect_To_Display_With_Auth_Info, "xcb_connect_to_display_with_auth_info");
 
 end XCB;
