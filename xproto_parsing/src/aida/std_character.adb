@@ -7,7 +7,6 @@ package body Std_Character is
    pragma Suppress (Range_Check);
    pragma Suppress (Tag_Check);
    pragma Suppress (Elaboration_Check);
-   pragma SPARK_Mode;
 
    function Is_Digit (C : Character) return Boolean is
    begin

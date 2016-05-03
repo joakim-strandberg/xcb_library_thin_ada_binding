@@ -1,7 +1,6 @@
 with Ada.Text_IO;
 
 package body Aida.Text_IO is
-   pragma SPARK_Mode (Off);
 
    procedure Put_Line (Item : String)
    is

@@ -19,10 +19,9 @@ package body Aida.Strings is
    end Trim;
 
    package body Generic_Bounded_String_Type_Owner is
-      pragma SPARK_Mode;
 
       procedure Initialize (This : out Bounded_String_Type;
-                            Text : String) with SPARK_Mode is
+                            Text : String) is
       begin
          if Text'Length > Maximum_Length_Of_Bounded_String then
             raise Out_Of_Bounds_Exception;
@@ -32,7 +31,6 @@ package body Aida.Strings is
 
          for I in Integer range 1..Text'Length loop
             This.Text (I) := Text (Text'First - 1 + I);
-            pragma Loop_Invariant (for all J in Integer range 1..I => This.Text (J) = Text (Text'First - 1 + J));
          end loop;
 
          This.Text_Length := Text'Length;
@@ -66,7 +64,10 @@ package body Aida.Strings is
          end if;
       end Initialize;
 
-      function To_String (This : Bounded_String_Type) return String is (This.Text(1 .. This.Text_Length));
+      function To_String (This : Bounded_String_Type) return String is
+      begin
+         return (This.Text(1 .. This.Text_Length));
+      end To_String;
 
       function Equals (This   : Bounded_String_Type;
                        Object : String) return Boolean is
@@ -87,6 +88,11 @@ package body Aida.Strings is
          return False;
       end "=";
 
+      function Length (This : Bounded_String_Type) return Length_Type is
+      begin
+         return (This.Text_Length);
+      end Length;
+
    end Generic_Bounded_String_Type_Owner;
 
    procedure Initialize (This : out Unbounded_String_Type;
@@ -96,7 +102,10 @@ package body Aida.Strings is
                                                   Source => Text);
    end Initialize;
 
-   function To_String (This : Unbounded_String_Type) return String is (Ada.Strings.Unbounded.To_String (This.Unbounded_Text));
+   function To_String (This : Unbounded_String_Type) return String is
+   begin
+      return (Ada.Strings.Unbounded.To_String (This.Unbounded_Text));
+   end To_String;
 
    procedure Append (This : in out Unbounded_String_Type;
                      Text : in     String) is

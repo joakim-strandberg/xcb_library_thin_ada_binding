@@ -4,9 +4,6 @@ with Ada.Strings.Wide_Unbounded;
 package Aida.Strings is
    pragma Preelaborate;
 
-   type Unbounded_String_Type;
-   type Unbounded_Wide_String_Type;
-
    function To_String (Value : Integer) return String;
 
    function Trim (Text : String) return String;
@@ -16,8 +13,6 @@ package Aida.Strings is
    package Generic_Bounded_String_Type_Owner is
       pragma SPARK_Mode;
 
-      type Bounded_String_Type;
-
       subtype Length_Type is Natural range 0 .. Maximum_Length_Of_Bounded_String;
 
       Out_Of_Bounds_Exception : exception;
@@ -25,8 +20,7 @@ package Aida.Strings is
       type Bounded_String_Type is tagged private;
 
       procedure Initialize (This : out Bounded_String_Type;
-                            Text : String) with
-        Pre'Class => Text'Length <= Maximum_Length_Of_Bounded_String;
+                            Text : String);
 
       procedure Initialize (This                 : out Bounded_String_Type;
                             Text                 : String;
@@ -48,8 +42,6 @@ package Aida.Strings is
             Text        : String (1 .. Maximum_Length_Of_Bounded_String) := (others => ' ');
             Text_Length : Length_Type := 0;
          end record;
-
-      function Length (This : Bounded_String_Type) return Length_Type is (This.Text_Length);
 
    end Generic_Bounded_String_Type_Owner;
 
