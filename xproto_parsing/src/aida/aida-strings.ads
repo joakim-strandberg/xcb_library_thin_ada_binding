@@ -11,7 +11,6 @@ package Aida.Strings is
    generic
       Maximum_Length_Of_Bounded_String : Positive;
    package Generic_Bounded_String_Type_Owner is
-      pragma SPARK_Mode;
 
       subtype Length_Type is Natural range 0 .. Maximum_Length_Of_Bounded_String;
 
