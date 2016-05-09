@@ -2646,8 +2646,8 @@ package XCB is
      (C        : Connection_Access_Type;
       Mode     : Prop_Mode_Type;
       Window   : Window_Id_Type;
-      Property : Atom_Id_Type;
-      Kind     : Atom_Id_Type;
+      Property : Atom_Type;
+      Kind     : Atom_Type;
       Format   : Interfaces.Unsigned_8;
       Data_Len : Interfaces.Unsigned_32;
       Data     : System.Address) return Void_Cookie_Type;
@@ -2657,8 +2657,8 @@ package XCB is
      (C        : Connection_Access_Type;
       Mode     : Prop_Mode_Type;
       Window   : Window_Id_Type;
-      Property : Atom_Id_Type;
-      Kind     : Atom_Id_Type;
+      Property : Atom_Type;
+      Kind     : Atom_Type;
       Format   : Interfaces.Unsigned_8;
       Data_Len : Interfaces.Unsigned_32;
       Data     : System.Address) return Void_Cookie_Type;
