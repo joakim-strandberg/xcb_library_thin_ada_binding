@@ -2644,7 +2644,7 @@ package XCB is
 
    function Change_Property_Checked
      (C        : Connection_Access_Type;
-      Mode     : Interfaces.Unsigned_8;
+      Mode     : Prop_Mode_Type;
       Window   : Window_Id_Type;
       Property : Atom_Id_Type;
       Kind     : Atom_Id_Type;
@@ -2655,7 +2655,7 @@ package XCB is
 
    function Change_Property
      (C        : Connection_Access_Type;
-      Mode     : Interfaces.Unsigned_8;
+      Mode     : Prop_Mode_Type;
       Window   : Window_Id_Type;
       Property : Atom_Id_Type;
       Kind     : Atom_Id_Type;
