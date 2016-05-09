@@ -2033,6 +2033,8 @@ package XCB is
 
    function Generate_Id (C : Connection_Access_Type) return Drawable_Id_Type;
 
+   function Generate_Id (C : Connection_Access_Type) return Colormap_Id_Type;
+
    type Auth_Info_Type is record
       Name_Length : aliased Interfaces.C.int;
       Name        : Interfaces.C.Strings.chars_ptr;
