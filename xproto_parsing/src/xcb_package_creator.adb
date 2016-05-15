@@ -776,7 +776,7 @@ package body XCB_Package_Creator is
                         elsif Children.Element (I).L.Kind.Value.To_String = "KEYSYM" then
                            Put_Tabs (2); Put (Field_Name.To_String & " : access Keysym_Type");
                         elsif Children.Element (I).L.Kind.Value.To_String = "ATOM" then
-                           Put_Tabs (2); Put (Field_Name.To_String & " : access Atom_Type");
+                           Put_Tabs (2); Put (Field_Name.To_String & " : access Atom_Id_Type");
                         elsif Children.Element (I).L.Kind.Value.To_String = "KEYCODE" then
                            Put_Tabs (2); Put (Field_Name.To_String & " : access Keycode_Type");
                         else
@@ -935,6 +935,71 @@ package body XCB_Package_Creator is
 
       Put_Line ("");
 
+      Put_Tabs (1); Put_Line ("-- Identifier for objects in the XCB library. For example Windows,");
+      Put_Tabs (1); Put_Line ("-- Graphical Contexts,...");
+      Put_Tabs (1); Put_Line ("type X_Id_Type is new Interfaces.Unsigned_32;");
+      Put_Line ("");
+
+      for X_Id_Union of Xcb.X_Id_Unions loop
+         if X_Id_Union.Name.Exists then
+            Generate_Code_For_X_Id (X_Id_Union.Name.Value,
+                                    "X_Id_Type",
+                                    How => Use_The_New_Keyword);
+
+            declare
+               Searched_For : Aida.Strings.Unbounded_String_Type;
+               C : Original_Name_To_Adaified_Name_Type_Owner.Cursor;
+               X_Id_Union_Type_Name : Aida.Strings.Unbounded_String_Type;
+            begin
+               Searched_For.Initialize (X_Id_Union.Name.Value.To_String);
+               C := Original_Name_To_Adaified_Name.Find (Key => Searched_For);
+               if Original_Name_To_Adaified_Name_Type_Owner.Has_Element (C) then
+                  X_Id_Union_Type_Name := Original_Name_To_Adaified_Name_Type_Owner.Element (C);
+
+                  for Kind of X_Id_Union.Kinds loop
+                     if Kind.Value.Exists then
+                        for X_Id of Xcb.X_Ids loop
+                           if X_Id.Name.Exists then
+                              if Kind.Value.Value.To_String = X_Id.Name.Value.To_String then
+                                 Generate_Code_For_X_Id (X_Id.Name.Value,
+                                                         X_Id_Union_Type_Name.To_String,
+                                                         How => Use_The_Subtype_Keyword);
+
+                                 Processed_X_Ids.Append (X_Id.Name.Value);
+
+                                 exit;
+                              end if;
+                           else
+                              Number_Of_X_Ids_Without_Name := Number_Of_X_Ids_Without_Name + 1;
+                           end if;
+                        end loop;
+                     else
+                        Ada.Text_IO.Put_Line ("xidunion " & X_Id_Union.Name.Value.To_String & " has errors");
+                     end if;
+                  end loop;
+               else
+                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Failed to translate: " & Searched_For.To_String);
+               end if;
+            end;
+         else
+            Number_Of_X_Unions_Without_Name := Number_Of_X_Unions_Without_Name + 1;
+         end if;
+      end loop;
+
+      for X_Id of Xcb.X_Ids loop
+         if X_Id.Name.Exists then
+            if not Processed_X_Ids.Contains (X_Id.Name.Value) then
+               Generate_Code_For_X_Id (X_Id.Name.Value,
+                                       "X_Id_Type",
+                                       How => Use_The_New_Keyword);
+            end if;
+         else
+            Number_Of_X_Ids_Without_Name := Number_Of_X_Ids_Without_Name + 1;
+         end if;
+      end loop;
+
+      Put_Line ("");
+
       for Enum of Xcb.Enums loop
          if Enum.Name.Exists then
             declare
@@ -983,46 +1048,46 @@ package body XCB_Package_Creator is
                   Generate_Struct_Name (Old_Name => Enum.Name.Value.To_String,
                                         New_Name => Enum_Prefix_Name);
 
-                  --                    if Number_Of_Values = Integer (Enum.Items.Length) and Are_Values_In_Increasing_Order then
-                  --                       Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is");
-                  --                       Put_Tabs (2); Put_Line ("(");
-                  --
-                  --                       for I in Positive range Enum.Items.First_Index..(Enum.Items.Last_Index - 1) loop
-                  --                          Generate_Struct_Name (Old_Name => Enum.Items.Element (I).Name.Value.To_String,
-                  --                                                New_Name => Enum_Value_Name);
-                  --
-                  --                          Put_Tabs (2); Put_Line (Enum_Prefix_Name.To_String & "_" & Enum_Value_Name.To_String & ",");
-                  --                       end loop;
-                  --
-                  --                       Generate_Struct_Name (Old_Name => Enum.Items.Element (Enum.Items.Last_Index).Name.Value.To_String,
-                  --                                             New_Name => Enum_Value_Name);
-                  --                       Put_Tabs (2); Put_Line (Enum_Prefix_Name.To_String & "_" & Enum_Value_Name.To_String);
-                  --
-                  --                       Put_Tabs (2); Put_Line (");");
-                  --                       Put_Tabs (1); Put_Line ("pragma Convention (C, " & New_Variable_Type_Name.To_String & ");");
-                  --                       Put_Tabs (2); Put_Line ("");
-                  --                    else
-                  declare
-                     Largest_Value : Long_Integer := Determine_Largest_Value (Enum.Items);
-                  begin
-                     if Largest_Value <= 127 then
-                        Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new Interfaces.Unsigned_8;");
-                        Eight_Bit_Variable_Type_Names.Append (Enum.Name.Value);
-                     else
-                        Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new Interfaces.Unsigned_32;");
-                     end if;
-
-                     Original_Name_To_Adaified_Name.Insert (Key      => Enum.Name.Value,
-                                                            New_Item => New_Variable_Type_Name);
-
-
+                  if Enum.Name.Value.To_String = "Atom" then
                      for I in Positive range Enum.Items.First_Index..Enum.Items.Last_Index loop
                         Generate_Struct_Name (Old_Name => Enum.Items.Element (I).Name.Value.To_String,
                                               New_Name => Enum_Value_Name);
 
-                        Put_Tabs (1); Put ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (Enum_Prefix_Name.To_String & "_" & Enum_Value_Name.To_String) & " : constant " &
-                                             New_Variable_Type_Name.To_String & " :=");
+                        Put_Tabs (1); Put ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (Enum_Prefix_Name.To_String & "_" & Enum_Value_Name.To_String) & " : constant Atom_Id_Type :=");
                         case Enum.Items.Element (I).Kind_Id is
+                        when X_Proto.Not_Specified =>
+                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", should never happen");
+                           Put_Line ("0;");
+                        when X_Proto.Specified_As_Value =>
+                           Put_Line (Enum.Items.Element (I).Value'Img & ";");
+                        when X_Proto.Specified_As_Bit =>
+                           Put_Line (Value_Of_Bit (Enum.Items.Element (I).Bit)'Img & ";");
+                        end case;
+                     end loop;
+                     Put_Tabs (1); Put_Line ("");
+                  else
+
+                     declare
+                        Largest_Value : Long_Integer := Determine_Largest_Value (Enum.Items);
+                     begin
+                        if Largest_Value <= 127 then
+                           Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new Interfaces.Unsigned_8;");
+                           Eight_Bit_Variable_Type_Names.Append (Enum.Name.Value);
+                        else
+                           Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new Interfaces.Unsigned_32;");
+                        end if;
+
+                        Original_Name_To_Adaified_Name.Insert (Key      => Enum.Name.Value,
+                                                               New_Item => New_Variable_Type_Name);
+
+
+                        for I in Positive range Enum.Items.First_Index..Enum.Items.Last_Index loop
+                           Generate_Struct_Name (Old_Name => Enum.Items.Element (I).Name.Value.To_String,
+                                                 New_Name => Enum_Value_Name);
+
+                           Put_Tabs (1); Put ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (Enum_Prefix_Name.To_String & "_" & Enum_Value_Name.To_String) & " : constant " &
+                                                New_Variable_Type_Name.To_String & " :=");
+                           case Enum.Items.Element (I).Kind_Id is
                            when X_Proto.Not_Specified =>
                               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", should never happen");
                               Put_Line ("0;");
@@ -1030,11 +1095,11 @@ package body XCB_Package_Creator is
                               Put_Line (Enum.Items.Element (I).Value'Img & ";");
                            when X_Proto.Specified_As_Bit =>
                               Put_Line (Value_Of_Bit (Enum.Items.Element (I).Bit)'Img & ";");
-                        end case;
-                     end loop;
-                     Put_Tabs (1); Put_Line ("");
-                  end;
-                  --                    end if;
+                           end case;
+                        end loop;
+                        Put_Tabs (1); Put_Line ("");
+                     end;
+                  end if;
                end;
             end;
          else
@@ -1116,69 +1181,6 @@ package body XCB_Package_Creator is
             end;
          else
             Number_Of_Non_Valid_Type_Definitions := Number_Of_Non_Valid_Type_Definitions + 1;
-         end if;
-      end loop;
-
-      Put_Tabs (1); Put_Line ("-- Identifier for objects in the XCB library. For example Windows,");
-      Put_Tabs (1); Put_Line ("-- Graphical Contexts,...");
-      Put_Tabs (1); Put_Line ("type X_Id_Type is new Interfaces.Unsigned_32;");
-      Put_Line ("");
-
-      for X_Id_Union of Xcb.X_Id_Unions loop
-         if X_Id_Union.Name.Exists then
-            Generate_Code_For_X_Id (X_Id_Union.Name.Value,
-                                    "X_Id_Type",
-                                    How => Use_The_New_Keyword);
-
-            declare
-               Searched_For : Aida.Strings.Unbounded_String_Type;
-               C : Original_Name_To_Adaified_Name_Type_Owner.Cursor;
-               X_Id_Union_Type_Name : Aida.Strings.Unbounded_String_Type;
-            begin
-               Searched_For.Initialize (X_Id_Union.Name.Value.To_String);
-               C := Original_Name_To_Adaified_Name.Find (Key => Searched_For);
-               if Original_Name_To_Adaified_Name_Type_Owner.Has_Element (C) then
-                  X_Id_Union_Type_Name := Original_Name_To_Adaified_Name_Type_Owner.Element (C);
-
-                  for Kind of X_Id_Union.Kinds loop
-                     if Kind.Value.Exists then
-                        for X_Id of Xcb.X_Ids loop
-                           if X_Id.Name.Exists then
-                              if Kind.Value.Value.To_String = X_Id.Name.Value.To_String then
-                                 Generate_Code_For_X_Id (X_Id.Name.Value,
-                                                         X_Id_Union_Type_Name.To_String,
-                                                         How => Use_The_Subtype_Keyword);
-
-                                 Processed_X_Ids.Append (X_Id.Name.Value);
-
-                                 exit;
-                              end if;
-                           else
-                              Number_Of_X_Ids_Without_Name := Number_Of_X_Ids_Without_Name + 1;
-                           end if;
-                        end loop;
-                     else
-                        Ada.Text_IO.Put_Line ("xidunion " & X_Id_Union.Name.Value.To_String & " has errors");
-                     end if;
-                  end loop;
-               else
-                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Failed to translate: " & Searched_For.To_String);
-               end if;
-            end;
-         else
-            Number_Of_X_Unions_Without_Name := Number_Of_X_Unions_Without_Name + 1;
-         end if;
-      end loop;
-
-      for X_Id of Xcb.X_Ids loop
-         if X_Id.Name.Exists then
-            if not Processed_X_Ids.Contains (X_Id.Name.Value) then
-               Generate_Code_For_X_Id (X_Id.Name.Value,
-                                       "X_Id_Type",
-                                       How => Use_The_New_Keyword);
-            end if;
-         else
-            Number_Of_X_Ids_Without_Name := Number_Of_X_Ids_Without_Name + 1;
          end if;
       end loop;
 
@@ -2032,6 +2034,8 @@ package body XCB_Package_Creator is
       Put_Tabs (1); Put_Line ("function Generate_Id (C : Connection_Access_Type) return Fontable_Id_Type;");
       Put_Line ("");
       Put_Tabs (1); Put_Line ("function Generate_Id (C : Connection_Access_Type) return Drawable_Id_Type;");
+      Put_Line ("");
+      Put_Tabs (1); Put_Line ("function Generate_Id (C : Connection_Access_Type) return Colormap_Id_Type;");
       Put_Line ("");
       Put_Tabs (1); Put_Line ("type Auth_Info_Type is record");
       Put_Tabs (1); Put_Line ("   Name_Length : aliased Interfaces.C.int;");
