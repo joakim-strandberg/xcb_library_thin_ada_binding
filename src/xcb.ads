@@ -518,7 +518,7 @@ package XCB is
    XCB_MAPPING_KEYBOARD : constant Mapping_Type := 1;
    XCB_MAPPING_POINTER  : constant Mapping_Type := 2;
 
-   type Window_Class_Type is new Interfaces.Unsigned_8;
+   type Window_Class_Type is new Interfaces.Unsigned_16;
    XCB_WINDOW_CLASS_COPY_FROM_PARENT : constant Window_Class_Type := 0;
    XCB_WINDOW_CLASS_INPUT_OUTPUT     : constant Window_Class_Type := 1;
    XCB_WINDOW_CLASS_INPUT_ONLY       : constant Window_Class_Type := 2;
@@ -2291,7 +2291,7 @@ package XCB is
       Width        : Interfaces.Unsigned_16;
       Height       : Interfaces.Unsigned_16;
       Border_Width : Interfaces.Unsigned_16;
-      Class        : Interfaces.Unsigned_16;
+      Class        : Window_Class_Type;
       Visual       : Visual_Id_Type;
       Value_Mask   : Interfaces.Unsigned_32;
       Value_List   : Value_List_Array) return Void_Cookie_Type;
@@ -2307,7 +2307,7 @@ package XCB is
       Width        : Interfaces.Unsigned_16;
       Height       : Interfaces.Unsigned_16;
       Border_Width : Interfaces.Unsigned_16;
-      Class        : Interfaces.Unsigned_16;
+      Class        : Window_Class_Type;
       Visual       : Visual_Id_Type;
       Value_Mask   : Interfaces.Unsigned_32;
       Value_List   : Value_List_Array) return Void_Cookie_Type;
@@ -2397,13 +2397,13 @@ package XCB is
 
    function Change_Save_Set_Checked
      (C      : Connection_Access_Type;
-      Mode   : Interfaces.Unsigned_8;
+      Mode   : Set_Mode_Type;
       Window : Window_Id_Type) return Void_Cookie_Type;
    pragma Import (C, Change_Save_Set_Checked, "xcb_change_save_set_checked");
 
    function Change_Save_Set
      (C      : Connection_Access_Type;
-      Mode   : Interfaces.Unsigned_8;
+      Mode   : Set_Mode_Type;
       Window : Window_Id_Type) return Void_Cookie_Type;
    pragma Import (C, Change_Save_Set, "xcb_change_save_set");
 
@@ -2472,13 +2472,13 @@ package XCB is
 
    function Circulate_Window_Checked
      (C         : Connection_Access_Type;
-      Direction : Interfaces.Unsigned_8;
+      Direction : Circulate_Type;
       Window    : Window_Id_Type) return Void_Cookie_Type;
    pragma Import (C, Circulate_Window_Checked, "xcb_circulate_window_checked");
 
    function Circulate_Window
      (C         : Connection_Access_Type;
-      Direction : Interfaces.Unsigned_8;
+      Direction : Circulate_Type;
       Window    : Window_Id_Type) return Void_Cookie_Type;
    pragma Import (C, Circulate_Window, "xcb_circulate_window");
 
@@ -2645,7 +2645,7 @@ package XCB is
 
    function Change_Property_Checked
      (C        : Connection_Access_Type;
-      Mode     : Interfaces.Unsigned_8;
+      Mode     : Prop_Mode_Type;
       Window   : Window_Id_Type;
       Property : Atom_Id_Type;
       Kind     : Atom_Id_Type;
@@ -2656,7 +2656,7 @@ package XCB is
 
    function Change_Property
      (C        : Connection_Access_Type;
-      Mode     : Interfaces.Unsigned_8;
+      Mode     : Prop_Mode_Type;
       Window   : Window_Id_Type;
       Property : Atom_Id_Type;
       Kind     : Atom_Id_Type;
@@ -2880,8 +2880,8 @@ package XCB is
       Owner_Events  : Interfaces.Unsigned_8;
       Grab_Window   : Window_Id_Type;
       Event_Mask    : Interfaces.Unsigned_16;
-      Pointer_Mode  : Interfaces.Unsigned_8;
-      Keyboard_Mode : Interfaces.Unsigned_8;
+      Pointer_Mode  : Grab_Mode_Type;
+      Keyboard_Mode : Grab_Mode_Type;
       Confine_To    : Window_Id_Type;
       Cursor        : Cursor_Id_Type;
       Time          : Timestamp_Type) return Grab_Pointer_Cookie_Type;
@@ -2892,8 +2892,8 @@ package XCB is
       Owner_Events  : Interfaces.Unsigned_8;
       Grab_Window   : Window_Id_Type;
       Event_Mask    : Interfaces.Unsigned_16;
-      Pointer_Mode  : Interfaces.Unsigned_8;
-      Keyboard_Mode : Interfaces.Unsigned_8;
+      Pointer_Mode  : Grab_Mode_Type;
+      Keyboard_Mode : Grab_Mode_Type;
       Confine_To    : Window_Id_Type;
       Cursor        : Cursor_Id_Type;
       Time          : Timestamp_Type) return Grab_Pointer_Cookie_Type;
@@ -2912,11 +2912,11 @@ package XCB is
       Owner_Events  : Interfaces.Unsigned_8;
       Grab_Window   : Window_Id_Type;
       Event_Mask    : Interfaces.Unsigned_16;
-      Pointer_Mode  : Interfaces.Unsigned_8;
-      Keyboard_Mode : Interfaces.Unsigned_8;
+      Pointer_Mode  : Grab_Mode_Type;
+      Keyboard_Mode : Grab_Mode_Type;
       Confine_To    : Window_Id_Type;
       Cursor        : Cursor_Id_Type;
-      Button        : Interfaces.Unsigned_8;
+      Button        : Button_Index_Type;
       Modifiers     : Interfaces.Unsigned_16) return Void_Cookie_Type;
    pragma Import (C, Grab_Button_Checked, "xcb_grab_button_checked");
 
@@ -2925,24 +2925,24 @@ package XCB is
       Owner_Events  : Interfaces.Unsigned_8;
       Grab_Window   : Window_Id_Type;
       Event_Mask    : Interfaces.Unsigned_16;
-      Pointer_Mode  : Interfaces.Unsigned_8;
-      Keyboard_Mode : Interfaces.Unsigned_8;
+      Pointer_Mode  : Grab_Mode_Type;
+      Keyboard_Mode : Grab_Mode_Type;
       Confine_To    : Window_Id_Type;
       Cursor        : Cursor_Id_Type;
-      Button        : Interfaces.Unsigned_8;
+      Button        : Button_Index_Type;
       Modifiers     : Interfaces.Unsigned_16) return Void_Cookie_Type;
    pragma Import (C, Grab_Button, "xcb_grab_button");
 
    function Ungrab_Button_Checked
      (C           : Connection_Access_Type;
-      Button      : Interfaces.Unsigned_8;
+      Button      : Button_Index_Type;
       Grab_Window : Window_Id_Type;
       Modifiers   : Interfaces.Unsigned_16) return Void_Cookie_Type;
    pragma Import (C, Ungrab_Button_Checked, "xcb_ungrab_button_checked");
 
    function Ungrab_Button
      (C           : Connection_Access_Type;
-      Button      : Interfaces.Unsigned_8;
+      Button      : Button_Index_Type;
       Grab_Window : Window_Id_Type;
       Modifiers   : Interfaces.Unsigned_16) return Void_Cookie_Type;
    pragma Import (C, Ungrab_Button, "xcb_ungrab_button");
@@ -2989,8 +2989,8 @@ package XCB is
       Owner_Events  : Interfaces.Unsigned_8;
       Grab_Window   : Window_Id_Type;
       Time          : Timestamp_Type;
-      Pointer_Mode  : Interfaces.Unsigned_8;
-      Keyboard_Mode : Interfaces.Unsigned_8) return Grab_Keyboard_Cookie_Type;
+      Pointer_Mode  : Grab_Mode_Type;
+      Keyboard_Mode : Grab_Mode_Type) return Grab_Keyboard_Cookie_Type;
    pragma Import (C, Grab_Keyboard_Unchecked, "xcb_grab_keyboard_unchecked");
 
    function Grab_Keyboard
@@ -2998,8 +2998,8 @@ package XCB is
       Owner_Events  : Interfaces.Unsigned_8;
       Grab_Window   : Window_Id_Type;
       Time          : Timestamp_Type;
-      Pointer_Mode  : Interfaces.Unsigned_8;
-      Keyboard_Mode : Interfaces.Unsigned_8) return Grab_Keyboard_Cookie_Type;
+      Pointer_Mode  : Grab_Mode_Type;
+      Keyboard_Mode : Grab_Mode_Type) return Grab_Keyboard_Cookie_Type;
    pragma Import (C, Grab_Keyboard, "xcb_grab_keyboard");
 
    function Ungrab_Keyboard_Checked
@@ -3016,8 +3016,8 @@ package XCB is
       Grab_Window   : Window_Id_Type;
       Modifiers     : Interfaces.Unsigned_16;
       Key           : Keycode_Type;
-      Pointer_Mode  : Interfaces.Unsigned_8;
-      Keyboard_Mode : Interfaces.Unsigned_8) return Void_Cookie_Type;
+      Pointer_Mode  : Grab_Mode_Type;
+      Keyboard_Mode : Grab_Mode_Type) return Void_Cookie_Type;
    pragma Import (C, Grab_Key_Checked, "xcb_grab_key_checked");
 
    function Grab_Key
@@ -3026,8 +3026,8 @@ package XCB is
       Grab_Window   : Window_Id_Type;
       Modifiers     : Interfaces.Unsigned_16;
       Key           : Keycode_Type;
-      Pointer_Mode  : Interfaces.Unsigned_8;
-      Keyboard_Mode : Interfaces.Unsigned_8) return Void_Cookie_Type;
+      Pointer_Mode  : Grab_Mode_Type;
+      Keyboard_Mode : Grab_Mode_Type) return Void_Cookie_Type;
    pragma Import (C, Grab_Key, "xcb_grab_key");
 
    function Ungrab_Key_Checked
@@ -3046,13 +3046,13 @@ package XCB is
 
    function Allow_Events_Checked
      (C    : Connection_Access_Type;
-      Mode : Interfaces.Unsigned_8;
+      Mode : Allow_Type;
       Time : Timestamp_Type) return Void_Cookie_Type;
    pragma Import (C, Allow_Events_Checked, "xcb_allow_events_checked");
 
    function Allow_Events
      (C    : Connection_Access_Type;
-      Mode : Interfaces.Unsigned_8;
+      Mode : Allow_Type;
       Time : Timestamp_Type) return Void_Cookie_Type;
    pragma Import (C, Allow_Events, "xcb_allow_events");
 
@@ -3221,14 +3221,14 @@ package XCB is
 
    function Set_Input_Focus_Checked
      (C         : Connection_Access_Type;
-      Revert_To : Interfaces.Unsigned_8;
+      Revert_To : Input_Focus_Type;
       Focus     : Window_Id_Type;
       Time      : Timestamp_Type) return Void_Cookie_Type;
    pragma Import (C, Set_Input_Focus_Checked, "xcb_set_input_focus_checked");
 
    function Set_Input_Focus
      (C         : Connection_Access_Type;
-      Revert_To : Interfaces.Unsigned_8;
+      Revert_To : Input_Focus_Type;
       Focus     : Window_Id_Type;
       Time      : Timestamp_Type) return Void_Cookie_Type;
    pragma Import (C, Set_Input_Focus, "xcb_set_input_focus");
@@ -3388,7 +3388,9 @@ package XCB is
    for Query_Text_Extents_Reply_Access_Type'Storage_Size use 0;
    pragma Convention (C, Query_Text_Extents_Reply_Access_Type);
 
-   function Query_Text_Extents_Size_Of (Buffer : System.Address; Text_Length : Interfaces.Unsigned_32) return Interfaces.C.int;
+   function Query_Text_Extents_Size_Of
+     (Buffer      : System.Address;
+      Text_Length : Interfaces.Unsigned_32) return Interfaces.C.int;
    pragma Import (C, Query_Text_Extents_Size_Of, "xcb_query_text_extents_sizeof");
 
    type Query_Text_Extents_Cookie_Type is record
@@ -3664,7 +3666,7 @@ package XCB is
 
    function Set_Clip_Rectangles_Checked
      (C                 : Connection_Access_Type;
-      Ordering          : Interfaces.Unsigned_8;
+      Ordering          : Clip_Ordering_Type;
       Gc                : Gcontext_Id_Type;
       Clip_X_Origin     : Interfaces.Integer_16;
       Clip_Y_Origin     : Interfaces.Integer_16;
@@ -3674,7 +3676,7 @@ package XCB is
 
    function Set_Clip_Rectangles
      (C                 : Connection_Access_Type;
-      Ordering          : Interfaces.Unsigned_8;
+      Ordering          : Clip_Ordering_Type;
       Gc                : Gcontext_Id_Type;
       Clip_X_Origin     : Interfaces.Integer_16;
       Clip_Y_Origin     : Interfaces.Integer_16;
@@ -3767,7 +3769,7 @@ package XCB is
 
    function Poly_Point_Checked
      (C               : Connection_Access_Type;
-      Coordinate_Mode : Interfaces.Unsigned_8;
+      Coordinate_Mode : Coord_Mode_Type;
       Drawable        : Drawable_Id_Type;
       Gc              : Gcontext_Id_Type;
       Points_Length   : Interfaces.Unsigned_32;
@@ -3776,7 +3778,7 @@ package XCB is
 
    function Poly_Point
      (C               : Connection_Access_Type;
-      Coordinate_Mode : Interfaces.Unsigned_8;
+      Coordinate_Mode : Coord_Mode_Type;
       Drawable        : Drawable_Id_Type;
       Gc              : Gcontext_Id_Type;
       Points_Length   : Interfaces.Unsigned_32;
@@ -3788,7 +3790,7 @@ package XCB is
 
    function Poly_Line_Checked
      (C               : Connection_Access_Type;
-      Coordinate_Mode : Interfaces.Unsigned_8;
+      Coordinate_Mode : Coord_Mode_Type;
       Drawable        : Drawable_Id_Type;
       Gc              : Gcontext_Id_Type;
       Points_Length   : Interfaces.Unsigned_32;
@@ -3797,7 +3799,7 @@ package XCB is
 
    function Poly_Line
      (C               : Connection_Access_Type;
-      Coordinate_Mode : Interfaces.Unsigned_8;
+      Coordinate_Mode : Coord_Mode_Type;
       Drawable        : Drawable_Id_Type;
       Gc              : Gcontext_Id_Type;
       Points_Length   : Interfaces.Unsigned_32;
@@ -3868,8 +3870,8 @@ package XCB is
      (C               : Connection_Access_Type;
       Drawable        : Drawable_Id_Type;
       Gc              : Gcontext_Id_Type;
-      Shape           : Interfaces.Unsigned_8;
-      Coordinate_Mode : Interfaces.Unsigned_8;
+      Shape           : Poly_Shape_Type;
+      Coordinate_Mode : Coord_Mode_Type;
       Points_Length   : Interfaces.Unsigned_32;
       Points          : Point_Array_Type) return Void_Cookie_Type;
    pragma Import (C, Fill_Poly_Checked, "xcb_fill_poly_checked");
@@ -3878,8 +3880,8 @@ package XCB is
      (C               : Connection_Access_Type;
       Drawable        : Drawable_Id_Type;
       Gc              : Gcontext_Id_Type;
-      Shape           : Interfaces.Unsigned_8;
-      Coordinate_Mode : Interfaces.Unsigned_8;
+      Shape           : Poly_Shape_Type;
+      Coordinate_Mode : Coord_Mode_Type;
       Points_Length   : Interfaces.Unsigned_32;
       Points          : Point_Array_Type) return Void_Cookie_Type;
    pragma Import (C, Fill_Poly, "xcb_fill_poly");
@@ -3927,7 +3929,7 @@ package XCB is
 
    function Put_Image_Checked
      (C           : Connection_Access_Type;
-      Format      : Interfaces.Unsigned_8;
+      Format      : Image_Format_Type;
       Drawable    : Drawable_Id_Type;
       Gc          : Gcontext_Id_Type;
       Width       : Interfaces.Unsigned_16;
@@ -3942,7 +3944,7 @@ package XCB is
 
    function Put_Image
      (C           : Connection_Access_Type;
-      Format      : Interfaces.Unsigned_8;
+      Format      : Image_Format_Type;
       Drawable    : Drawable_Id_Type;
       Gc          : Gcontext_Id_Type;
       Width       : Interfaces.Unsigned_16;
@@ -3986,7 +3988,7 @@ package XCB is
 
    function Get_Image_Unchecked
      (C          : Connection_Access_Type;
-      Format     : Interfaces.Unsigned_8;
+      Format     : Image_Format_Type;
       Drawable   : Drawable_Id_Type;
       X          : Interfaces.Integer_16;
       Y          : Interfaces.Integer_16;
@@ -3997,7 +3999,7 @@ package XCB is
 
    function Get_Image
      (C          : Connection_Access_Type;
-      Format     : Interfaces.Unsigned_8;
+      Format     : Image_Format_Type;
       Drawable   : Drawable_Id_Type;
       X          : Interfaces.Integer_16;
       Y          : Interfaces.Integer_16;
@@ -4100,7 +4102,7 @@ package XCB is
 
    function Create_Colormap_Checked
      (C      : Connection_Access_Type;
-      Alloc  : Interfaces.Unsigned_8;
+      Alloc  : Colormap_Alloc_Type;
       Mid    : Colormap_Id_Type;
       Window : Window_Id_Type;
       Visual : Visual_Id_Type) return Void_Cookie_Type;
@@ -4108,7 +4110,7 @@ package XCB is
 
    function Create_Colormap
      (C      : Connection_Access_Type;
-      Alloc  : Interfaces.Unsigned_8;
+      Alloc  : Colormap_Alloc_Type;
       Mid    : Colormap_Id_Type;
       Window : Window_Id_Type;
       Visual : Visual_Id_Type) return Void_Cookie_Type;
@@ -4643,7 +4645,7 @@ package XCB is
 
    function Query_Best_Size_Unchecked
      (C        : Connection_Access_Type;
-      Class    : Interfaces.Unsigned_8;
+      Class    : Query_Shape_Of_Type;
       Drawable : Drawable_Id_Type;
       Width    : Interfaces.Unsigned_16;
       Height   : Interfaces.Unsigned_16) return Query_Best_Size_Cookie_Type;
@@ -4651,7 +4653,7 @@ package XCB is
 
    function Query_Best_Size
      (C        : Connection_Access_Type;
-      Class    : Interfaces.Unsigned_8;
+      Class    : Query_Shape_Of_Type;
       Drawable : Drawable_Id_Type;
       Width    : Interfaces.Unsigned_16;
       Height   : Interfaces.Unsigned_16) return Query_Best_Size_Cookie_Type;
@@ -4909,16 +4911,16 @@ package XCB is
      (C               : Connection_Access_Type;
       Timeout         : Interfaces.Integer_16;
       Interval        : Interfaces.Integer_16;
-      Prefer_Blanking : Interfaces.Unsigned_8;
-      Allow_Exposures : Interfaces.Unsigned_8) return Void_Cookie_Type;
+      Prefer_Blanking : Blanking_Type;
+      Allow_Exposures : Exposures_Type) return Void_Cookie_Type;
    pragma Import (C, Set_Screen_Saver_Checked, "xcb_set_screen_saver_checked");
 
    function Set_Screen_Saver
      (C               : Connection_Access_Type;
       Timeout         : Interfaces.Integer_16;
       Interval        : Interfaces.Integer_16;
-      Prefer_Blanking : Interfaces.Unsigned_8;
-      Allow_Exposures : Interfaces.Unsigned_8) return Void_Cookie_Type;
+      Prefer_Blanking : Blanking_Type;
+      Allow_Exposures : Exposures_Type) return Void_Cookie_Type;
    pragma Import (C, Set_Screen_Saver, "xcb_set_screen_saver");
 
    type Get_Screen_Saver_Reply_Padding_1_Array_Type is array (0 .. 17) of aliased Interfaces.Unsigned_8;
@@ -4961,16 +4963,16 @@ package XCB is
 
    function Change_Hosts_Checked
      (C           : Connection_Access_Type;
-      Mode        : Interfaces.Unsigned_8;
-      Family      : Interfaces.Unsigned_8;
+      Mode        : Host_Mode_Type;
+      Family      : Family_Type;
       Address_Len : Interfaces.Unsigned_16;
       Address     : Byte_Array_Type) return Void_Cookie_Type;
    pragma Import (C, Change_Hosts_Checked, "xcb_change_hosts_checked");
 
    function Change_Hosts
      (C           : Connection_Access_Type;
-      Mode        : Interfaces.Unsigned_8;
-      Family      : Interfaces.Unsigned_8;
+      Mode        : Host_Mode_Type;
+      Family      : Family_Type;
       Address_Len : Interfaces.Unsigned_16;
       Address     : Byte_Array_Type) return Void_Cookie_Type;
    pragma Import (C, Change_Hosts, "xcb_change_hosts");
@@ -5012,22 +5014,20 @@ package XCB is
 
    function Set_Access_Control_Checked
      (C    : Connection_Access_Type;
-      Mode : Interfaces.Unsigned_8) return Void_Cookie_Type;
+      Mode : Access_Control_Type) return Void_Cookie_Type;
    pragma Import (C, Set_Access_Control_Checked, "xcb_set_access_control_checked");
 
    function Set_Access_Control
      (C    : Connection_Access_Type;
-      Mode : Interfaces.Unsigned_8) return Void_Cookie_Type;
+      Mode : Access_Control_Type) return Void_Cookie_Type;
    pragma Import (C, Set_Access_Control, "xcb_set_access_control");
 
    function Set_Close_Down_Mode_Checked
      (C    : Connection_Access_Type;
-      Mode : Interfaces.Unsigned_8) return Void_Cookie_Type;
+      Mode : Close_Down_Type) return Void_Cookie_Type;
    pragma Import (C, Set_Close_Down_Mode_Checked, "xcb_set_close_down_mode_checked");
 
-   function Set_Close_Down_Mode
-     (C    : Connection_Access_Type;
-      Mode : Interfaces.Unsigned_8) return Void_Cookie_Type;
+   function Set_Close_Down_Mode (C : Connection_Access_Type; Mode : Close_Down_Type) return Void_Cookie_Type;
    pragma Import (C, Set_Close_Down_Mode, "xcb_set_close_down_mode");
 
    function Kill_Client_Checked
@@ -5061,12 +5061,10 @@ package XCB is
 
    function Force_Screen_Saver_Checked
      (C    : Connection_Access_Type;
-      Mode : Interfaces.Unsigned_8) return Void_Cookie_Type;
+      Mode : Screen_Saver_Type) return Void_Cookie_Type;
    pragma Import (C, Force_Screen_Saver_Checked, "xcb_force_screen_saver_checked");
 
-   function Force_Screen_Saver
-     (C    : Connection_Access_Type;
-      Mode : Interfaces.Unsigned_8) return Void_Cookie_Type;
+   function Force_Screen_Saver (C : Connection_Access_Type; Mode : Screen_Saver_Type) return Void_Cookie_Type;
    pragma Import (C, Force_Screen_Saver, "xcb_force_screen_saver");
 
    type Set_Pointer_Mapping_Reply_Type is record

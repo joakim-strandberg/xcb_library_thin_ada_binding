@@ -54,7 +54,7 @@ begin
                                        Width        => 100,
                                        Height       => 100,
                                        Border_Width => 1,
-                                       Class        => Interfaces.Unsigned_16 (XCB.XCB_WINDOW_CLASS_INPUT_OUTPUT),
+                                       Class        => XCB.XCB_WINDOW_CLASS_INPUT_OUTPUT,
                                        Visual       => S.Root_Visual,
                                        Value_Mask   => Interfaces.Unsigned_32 (Mask),
                                        Value_List   => Values);

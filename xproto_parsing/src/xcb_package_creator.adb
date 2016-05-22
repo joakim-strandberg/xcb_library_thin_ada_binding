@@ -7,6 +7,7 @@ with GNAT.Source_Info;
 with Ada.Containers.Hashed_Maps;
 with Ada.Strings.Hash;
 with Ada.Containers.Vectors;
+with Ada.Strings.Fixed.Hash;
 --      if checked:
 --          _h(' * This form can be used only if the request will not cause')
 --          _h(' * a reply to be generated. Any returned error will be')
@@ -672,7 +673,21 @@ package body XCB_Package_Creator is
                                  if Is_First_Parameter then
                                     Is_First_Parameter := False;
                                  end if;
-                                 Put_Tabs (2); Put (Field_Name.To_String & " : " & Variable_Type_Name.To_String);
+
+                                 if Children.Element (I).F.Enum.Exists then
+                                    declare
+                                       C : Original_Name_To_Adaified_Name_Type_Owner.Cursor :=
+                                         Original_Name_To_Adaified_Name.Find (Children.Element (I).F.Enum.Value);
+                                    begin
+                                       if Original_Name_To_Adaified_Name_Type_Owner.Has_Element (C) then
+                                          Put_Tabs (2); Put (Field_Name.To_String & " : " & Original_Name_To_Adaified_Name_Type_Owner.Element (C).To_String);
+                                       else
+                                          Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", could not find enum type name " & Children.Element (I).F.Enum.Value.To_String);
+                                       end if;
+                                    end;
+                                 else
+                                    Put_Tabs (2); Put (Field_Name.To_String & " : " & Variable_Type_Name.To_String);
+                                 end if;
                               end;
                            else
                               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & Children.Element (I).F.Kind.Value.To_String);
@@ -801,6 +816,91 @@ package body XCB_Package_Creator is
 
       Names_Of_Types_To_Make_Array_Types : Unbounded_String_Vectors.Vector;
 
+      function Hash_Of_Enum_Name (This : Aida.Strings.Unbounded_String_Type) return Ada.Containers.Hash_Type is (Ada.Strings.Fixed.Hash (This.To_String));
+
+      package Enum_Name_To_Size_Identifier_Map_Type_Owner is new Ada.Containers.Hashed_Maps (Key_Type        => Aida.Strings.Unbounded_String_Type,
+                                                                                             Element_Type    => Aida.Strings.Unbounded_String_Type,
+                                                                                             Hash            => Hash_Of_Enum_Name,
+                                                                                             Equivalent_Keys => Aida.Strings."=",
+                                                                                             "="             => Aida.Strings."=");
+
+      use type Enum_Name_To_Size_Identifier_Map_Type_Owner.Cursor;
+      use type Aida.Strings.Unbounded_String_Type;
+
+      Enum_Name_To_Size_Identifier_Map : Enum_Name_To_Size_Identifier_Map_Type_Owner.Map;
+
+      procedure Pre_Process_Requests is
+      begin
+         for Request of XCB.Requests loop
+            if Request.Name.Exists then
+               declare
+                  procedure Handle_Request_Field (F : X_Proto.Field_Type) is
+                     C : Enum_Name_To_Size_Identifier_Map_Type_Owner.Cursor;
+
+                     Is_Success : Boolean;
+                     Translated_Name : Aida.Strings.Unbounded_String_Type;
+                  begin
+                     if F.Enum.Exists then
+                        Translate_Classic_Variable_Type_Name (Variable_Type_Name => F.Kind.Value.To_String,
+                                                              Is_Success         => Is_Success,
+                                                              Translated_Name    => Translated_Name);
+
+                        if Is_Success then
+                           C := Enum_Name_To_Size_Identifier_Map.Find (F.Enum.Value);
+
+                           if C /= Enum_Name_To_Size_Identifier_Map_Type_Owner.No_Element then
+                              if Enum_Name_To_Size_Identifier_Map_Type_Owner.Element (C) /= Translated_Name then
+                                 Ada.Text_IO.Put_Line ("Expected: '" & Translated_Name.To_String & "', but was: " &
+                                                         Enum_Name_To_Size_Identifier_Map_Type_Owner.Element (C).To_String & "'");
+                              end if;
+                           else
+                              Enum_Name_To_Size_Identifier_Map.Include (Key      => F.Enum.Value,
+                                                                        New_Item => Translated_Name);
+                           end if;
+                        else
+                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location  & ", could not translate " & F.Kind.Value.To_String);
+                        end if;
+                     else
+                        null; -- Far from all fields are expected to have an enum specified
+                     end if;
+                  end Handle_Request_Field;
+
+                  procedure Process_Request_Child (Request_Child : X_Proto.Request_Child_Access_Type) is
+                  begin
+                     case Request_Child.Kind_Id is
+                        when X_Proto.Request_Child_Field            =>
+                           Handle_Request_Field (Request_Child.F);
+                        when X_Proto.Request_Child_Pad              =>
+                           null;
+                        when X_Proto.Request_Child_Value_Param      =>
+                           null;
+                        when X_Proto.Request_Child_Documentation    =>
+                           null;
+                        when X_Proto.Request_Child_Reply            =>
+                           null;
+                        when X_Proto.Request_Child_List             =>
+                           if
+                             Request_Child.L.Members.Is_Empty and
+                             Request_Child.L.Name.Exists and
+                             Request_Child.L.Kind.Exists
+                           then
+                              if not Names_Of_Types_To_Make_Array_Types.Contains (Request_Child.L.Kind.Value) then
+                                 Names_Of_Types_To_Make_Array_Types.Append (Request_Child.L.Kind.Value);
+                              end if;
+                           end if;
+                        when X_Proto.Request_Child_Expression_Field =>
+                           null;
+                     end case;
+                  end Process_Request_Child;
+               begin
+                  for I in Positive range Request.Children.First_Index..Request.Children.Last_Index loop
+                     Process_Request_Child (Request.Children.Element (I));
+                  end loop;
+               end;
+            end if;
+         end loop;
+      end Pre_Process_Requests;
+
    begin
       declare
          Ada_Name : Aida.Strings.Unbounded_String_Type;
@@ -838,6 +938,8 @@ package body XCB_Package_Creator is
       Put_Tabs (1); Put_Line ("XCB_CURRENT_TIME                 : constant := 0;");
       Put_Tabs (1); Put_Line ("XCB_NO_SYMBOL                    : constant := 0;");
       Put_Line ("");
+
+      Pre_Process_Requests;
 
       for Event of Xcb.Events loop
          if
@@ -1069,12 +1171,20 @@ package body XCB_Package_Creator is
 
                      declare
                         Largest_Value : Long_Integer := Determine_Largest_Value (Enum.Items);
+
+                        C : Enum_Name_To_Size_Identifier_Map_Type_Owner.Cursor :=
+                          Enum_Name_To_Size_Identifier_Map.Find (Enum.Name.Value);
                      begin
-                        if Largest_Value <= 127 then
-                           Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new Interfaces.Unsigned_8;");
-                           Eight_Bit_Variable_Type_Names.Append (Enum.Name.Value);
+                        if C /= Enum_Name_To_Size_Identifier_Map_Type_Owner.No_Element then
+                           Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new " &
+                                                   Enum_Name_To_Size_Identifier_Map_Type_Owner.Element (C).To_String &";");
                         else
-                           Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new Interfaces.Unsigned_32;");
+                           if Largest_Value <= 127 then
+                              Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new Interfaces.Unsigned_8;");
+                              Eight_Bit_Variable_Type_Names.Append (Enum.Name.Value);
+                           else
+                              Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new Interfaces.Unsigned_32;");
+                           end if;
                         end if;
 
                         Original_Name_To_Adaified_Name.Insert (Key      => Enum.Name.Value,
@@ -1088,13 +1198,13 @@ package body XCB_Package_Creator is
                            Put_Tabs (1); Put ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (Enum_Prefix_Name.To_String & "_" & Enum_Value_Name.To_String) & " : constant " &
                                                 New_Variable_Type_Name.To_String & " :=");
                            case Enum.Items.Element (I).Kind_Id is
-                           when X_Proto.Not_Specified =>
-                              Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", should never happen");
-                              Put_Line ("0;");
-                           when X_Proto.Specified_As_Value =>
-                              Put_Line (Enum.Items.Element (I).Value'Img & ";");
-                           when X_Proto.Specified_As_Bit =>
-                              Put_Line (Value_Of_Bit (Enum.Items.Element (I).Bit)'Img & ";");
+                              when X_Proto.Not_Specified =>
+                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", should never happen");
+                                 Put_Line ("0;");
+                              when X_Proto.Specified_As_Value =>
+                                 Put_Line (Enum.Items.Element (I).Value'Img & ";");
+                              when X_Proto.Specified_As_Bit =>
+                                 Put_Line (Value_Of_Bit (Enum.Items.Element (I).Bit)'Img & ";");
                            end case;
                         end loop;
                         Put_Tabs (1); Put_Line ("");
@@ -1321,53 +1431,6 @@ package body XCB_Package_Creator is
             Number_Of_Structs_Without_Name := Number_Of_Structs_Without_Name + 1;
          end if;
          Total_Number_Of_Structs := Total_Number_Of_Structs + 1;
-      end loop;
-
-      -- It seems generating the code for the requests is the hardest pars since there does not seem
-      -- to exist a simple pattern for generating the code. Analysis indicates there is
-      -- special handling depending upon the "opcode" in the requests (xproto.xml).
-      -- There is no known document describing how to interpret the "opcode".
-      --
-      -- Opcodes requiring special handling: 39
-      --
-      -- Opcodes for checked: 1, 2, 4, 5, 6, 7,
-      -- Opcodes for unchecked: 3, 14, 15,..52, 73, 83
-      for Request of XCB.Requests loop
-         if Request.Name.Exists then
-            declare
-               procedure Process_Request_Child (Request_Child : X_Proto.Request_Child_Access_Type) is
-               begin
-                  case Request_Child.Kind_Id is
-                     when X_Proto.Request_Child_Field            =>
-                        null;
-                     when X_Proto.Request_Child_Pad              =>
-                        null;
-                     when X_Proto.Request_Child_Value_Param      =>
-                        null;
-                     when X_Proto.Request_Child_Documentation    =>
-                        null;
-                     when X_Proto.Request_Child_Reply            =>
-                        null;
-                     when X_Proto.Request_Child_List             =>
-                        if
-                          Request_Child.L.Members.Is_Empty and
-                          Request_Child.L.Name.Exists and
-                          Request_Child.L.Kind.Exists
-                        then
-                           if not Names_Of_Types_To_Make_Array_Types.Contains (Request_Child.L.Kind.Value) then
-                              Names_Of_Types_To_Make_Array_Types.Append (Request_Child.L.Kind.Value);
-                           end if;
-                        end if;
-                     when X_Proto.Request_Child_Expression_Field =>
-                        null;
-                  end case;
-               end Process_Request_Child;
-            begin
-               for I in Positive range Request.Children.First_Index..Request.Children.Last_Index loop
-                  Process_Request_Child (Request.Children.Element (I));
-               end loop;
-            end;
-         end if;
       end loop;
 
       for Text of Names_Of_Types_To_Make_Array_Types loop
