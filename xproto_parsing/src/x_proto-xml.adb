@@ -130,7 +130,7 @@ package body X_Proto.XML is
          when Field            => Field            : Field_Access_Type;
          when X_Id_Kind        => X_Id_Kind_V      : X_Id_Type.Ptr;
          when Enum_X_Id_Union  => X_Id_Union_V     : X_Id_Union.Ptr;
-         when Kind             => Kind             : Kind_Access_Type;
+         when Kind             => Kind             : Type_P.Ptr;
          when Type_Definition  => Type_Definition  : Type_Definition_Access_Type;
          when Pad              => Pad              : Pad_Access_Type;
          when Enum             => Enum             : Enum_Access_Type;
@@ -433,7 +433,7 @@ package body X_Proto.XML is
             when Tag_Id.Enum_X_Id_Union =>
                if Tag_Name = Tag_Kind then
                   declare
-                     Kind : Kind_Access_Type := new Kind_Type;
+                     Kind : Type_P.Ptr := new Type_P.T;
                   begin
                      Prev_Tag.X_Id_Union_V.Append_Kind (Kind);
                      Is_Success := True;
@@ -1515,8 +1515,7 @@ package body X_Proto.XML is
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Tag_Value);
-                     Current_Tag.Kind.Value := (Exists => True,
-                                                Value  => V);
+                     Current_Tag.Kind.Set_Value (V);
                   end;
                when Tag_Id.Field =>
                   declare

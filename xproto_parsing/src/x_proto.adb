@@ -45,6 +45,22 @@ package body X_Proto is
 
    end X_Id_Type;
 
+   package body Type_P is
+
+      function Value (This : T) return Fs.Value_Const_Ptr is
+      begin
+         return This.My_Value'Unchecked_Access;
+      end Value;
+
+      procedure Set_Value (This : in out T;
+                           Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Value := (Exists => True,
+                           Value  => Name);
+      end Set_Value;
+
+   end Type_P;
+
    package body X_Id_Union is
 
       function Name (This : T) return Fs.Name_Const_Ptr is
@@ -52,9 +68,9 @@ package body X_Proto is
          return This.My_Name'Unchecked_Access;
       end Name;
 
-      function Kinds (This : T) return Kind_Vectors.Vector is
+      function Kinds (This : T) return Fs.Type_Vector_Const_Ptr is
       begin
-         return This.My_Kinds;
+         return This.My_Kinds'Unchecked_Access;
       end Kinds;
 
       procedure Set_Name (This : in out T;
@@ -65,7 +81,7 @@ package body X_Proto is
       end Set_Name;
 
       procedure Append_Kind (This : in out T;
-                             Kind : Kind_Access_Type) is
+                             Kind : Type_P.Ptr) is
       begin
          This.My_Kinds.Append (Kind);
       end Append_Kind;

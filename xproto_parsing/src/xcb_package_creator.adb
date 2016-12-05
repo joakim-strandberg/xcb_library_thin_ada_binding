@@ -1060,7 +1060,7 @@ package body XCB_Package_Creator is
                if Original_Name_To_Adaified_Name_Type_Owner.Has_Element (C) then
                   X_Id_Union_Type_Name := Original_Name_To_Adaified_Name_Type_Owner.Element (C);
 
-                  for Kind of X_Id_Union.Kinds loop
+                  for Kind of X_Id_Union.Kinds.all loop
                      if Kind.Value.Exists then
                         for X_Id of Xcb.X_Ids loop
                            if X_Id.Name.Exists then

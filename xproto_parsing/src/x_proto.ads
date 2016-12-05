@@ -25,13 +25,6 @@ package X_Proto is
       end case;
    end record;
 
-   type Kind_Value_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
    type Type_Definition_Old_Name_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
@@ -630,14 +623,38 @@ package X_Proto is
                                                             Element_Type => X_Id_Type.Ptr,
                                                             "="          => X_Id_Type."=");
 
-   type Kind_Type is tagged limited private;
+   package Type_P is
 
-   function Value (This : Kind_Type) return Kind_Value_Type;
+      package Fs is
 
-   type Kind_Access_Type is access all Kind_Type;
+         type Value_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   package Kind_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                       Element_Type => Kind_Access_Type);
+         type Value_Const_Ptr is access constant Value_Type;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Value (This : T) return Fs.Value_Const_Ptr;
+
+      procedure Set_Value (This : in out T;
+                           Name : Aida.Strings.Unbounded_String_Type);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Value : aliased Fs.Value_Type;
+         end record;
+
+   end Type_P;
 
    package X_Id_Union is
 
@@ -652,19 +669,25 @@ package X_Proto is
 
          type Name_Const_Ptr is access constant Name_Type;
 
+         package Type_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                             Element_Type => Type_P.Ptr,
+                                                             "="          => Type_P."=");
+
+         type Type_Vector_Const_Ptr is access constant Type_Vectors.Vector;
+
       end Fs;
 
       type T is tagged limited private;
 
       function Name (This : T) return Fs.Name_Const_Ptr;
 
-      function Kinds (This : T) return Kind_Vectors.Vector;
+      function Kinds (This : T) return Fs.Type_Vector_Const_Ptr;
 
       procedure Set_Name (This : in out T;
                           Name : Aida.Strings.Unbounded_String_Type);
 
       procedure Append_Kind (This : in out T;
-                             Kind : Kind_Access_Type);
+                             Kind : Type_P.Ptr);
 
       type Ptr is access T;
 
@@ -672,7 +695,7 @@ package X_Proto is
       type T is tagged limited
          record
             My_Name  : aliased Fs.Name_Type;
-            My_Kinds : aliased Kind_Vectors.Vector;
+            My_Kinds : aliased Fs.Type_Vectors.Vector;
          end record;
 
    end X_Id_Union;
@@ -1133,13 +1156,6 @@ private
    function Old_Name (This : Type_Definition_Type) return Type_Definition_Old_Name_Type is (This.Old_Name);
 
    function New_Name (This : Type_Definition_Type) return Type_Definition_New_Name_Type is (This.New_Name);
-
-   type Kind_Type is tagged limited
-      record
-         Value : Kind_Value_Type;
-      end record;
-
-   function Value (This : Kind_Type) return Kind_Value_Type is (This.Value);
 
    type Field_Type is tagged limited
       record
