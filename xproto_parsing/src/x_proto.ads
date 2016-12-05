@@ -11,13 +11,6 @@ package X_Proto is
       end case;
    end record;
 
-   type Struct_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
    type Field_Kind_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
@@ -26,20 +19,6 @@ package X_Proto is
    end record;
 
    type Field_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type X_Id_Kind_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type X_Id_Union_Name_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
          when False => null;
@@ -433,24 +412,7 @@ package X_Proto is
 
    function Members (This : List_Type) return List_Member_Vectors.Vector;
 
-   type Struct_Member_Kind_Id_Type is (
-                                       Field_Member,
-                                       Pad_Member,
-                                       List_Member
-                                      );
 
-   type Struct_Member_Type (Kind_Id : Struct_Member_Kind_Id_Type) is record
-      case Kind_Id is
-         when Field_Member => F : aliased Field_Type;
-         when Pad_Member   => P : aliased Pad_Type;
-         when List_Member  => L : aliased List_Type;
-      end case;
-   end record;
-
-   type Struct_Member_Access_Type is access all Struct_Member_Type;
-
-   package Struct_Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                Element_Type => Struct_Member_Access_Type);
 
    type Enum_Item_Kind_Id_Type is (
                                    Not_Specified,
@@ -631,14 +593,42 @@ package X_Proto is
    package Event_Copy_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
                                                              Element_Type => Event_Copy_Access_Type);
 
-   type X_Id_Kind_Type is tagged limited private;
+   package X_Id_Type is
 
-   function Name (This : X_Id_Kind_Type) return X_Id_Kind_Name_Type;
+      package Fs is
 
-   type X_Id_Kind_Access_Type is access all X_Id_Kind_Type;
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
+
+         type Name_Const_Ptr is access constant Name_Type;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Name (This : T) return Fs.Name_Const_Ptr;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      type Ptr is access T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Name : aliased Fs.Name_Type;
+         end record;
+
+   end X_Id_Type;
 
    package X_Id_Kind_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                            Element_Type => X_Id_Kind_Access_Type);
+                                                            Element_Type => X_Id_Type.Ptr,
+                                                            "="          => X_Id_Type."=");
 
    type Kind_Type is tagged limited private;
 
@@ -649,16 +639,47 @@ package X_Proto is
    package Kind_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
                                                        Element_Type => Kind_Access_Type);
 
-   type X_Id_Union_Type is tagged limited private;
+   package X_Id_Union is
 
-   function Name (This : X_Id_Union_Type) return X_Id_Union_Name_Type;
+      package Fs is
 
-   function Kinds (This : X_Id_Union_Type) return Kind_Vectors.Vector;
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+            when True  => Value : Aida.Strings.Unbounded_String_Type;
+            when False => null;
+            end case;
+         end record;
 
-   type X_Id_Union_Access_Type is access all X_Id_Union_Type;
+         type Name_Const_Ptr is access constant Name_Type;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Name (This : T) return Fs.Name_Const_Ptr;
+
+      function Kinds (This : T) return Kind_Vectors.Vector;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      procedure Append_Kind (This : in out T;
+                             Kind : Kind_Access_Type);
+
+      type Ptr is access T;
+
+   private
+      type T is tagged limited
+         record
+            My_Name  : aliased Fs.Name_Type;
+            My_Kinds : aliased Kind_Vectors.Vector;
+         end record;
+
+   end X_Id_Union;
 
    package X_Id_Union_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                             Element_Type => X_Id_Union_Access_Type);
+                                                             Element_Type => X_Id_Union.Ptr,
+                                                             "="          => X_Id_Union."=");
 
    type Type_Definition_Type is tagged limited private;
 
@@ -710,16 +731,71 @@ package X_Proto is
    package Union_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
                                                         Element_Type => Union_Access_Type);
 
-   type Struct_Type is tagged limited private;
+   package Struct is
 
-   function Name (This : Struct_Type) return Struct_Name_Type;
+      package Fs is
 
-   function Members (This : Struct_Type) return Struct_Member_Vectors.Vector;
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   type Struct_Access_Type is access all Struct_Type;
+         type Const_Name_Ptr is access constant Name_Type;
+
+         package Member_Kind_Id is
+            type Enum_T is (
+                            Field_Member,
+                            Pad_Member,
+                            List_Member
+                           );
+         end Member_Kind_Id;
+
+         use Member_Kind_Id;
+
+         type Member_Type (Kind_Id : Member_Kind_Id.Enum_T) is record
+            case Kind_Id is
+               when Field_Member => F : aliased Field_Type;
+               when Pad_Member   => P : aliased Pad_Type;
+               when List_Member  => L : aliased List_Type;
+            end case;
+         end record;
+
+         type Member_Ptr is access Member_Type;
+
+         package Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                               Element_Type => Member_Ptr);
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Name (This : T) return Fs.Const_Name_Ptr;
+
+      function Members (This : T) return Fs.Member_Vectors.Vector;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      procedure Append_Member (This   : in out T;
+                               Member : Fs.Member_Ptr);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            Name    : aliased Fs.Name_Type;
+            Members : Fs.Member_Vectors.Vector;
+         end record;
+
+   end Struct;
 
    package Struct_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                         Element_Type => Struct_Access_Type);
+                                                         Element_Type => Struct.Ptr,
+                                                         "="          => Struct."=");
 
    type Event_Type is tagged limited private;
 
@@ -1065,23 +1141,6 @@ private
 
    function Value (This : Kind_Type) return Kind_Value_Type is (This.Value);
 
-   type X_Id_Kind_Type is tagged limited
-      record
-         Name : X_Id_Kind_Name_Type;
-      end record;
-
-   function Name (This : X_Id_Kind_Type) return X_Id_Kind_Name_Type is (This.Name);
-
-   type X_Id_Union_Type is tagged limited
-      record
-         Name  : X_Id_Union_Name_Type;
-         Kinds : Kind_Vectors.Vector;
-      end record;
-
-   function Name (This : X_Id_Union_Type) return X_Id_Union_Name_Type is (This.Name);
-
-   function Kinds (This : X_Id_Union_Type) return Kind_Vectors.Vector is (This.Kinds);
-
    type Field_Type is tagged limited
       record
          Kind     : Field_Kind_Type;
@@ -1103,16 +1162,6 @@ private
    function Alt_Enum (This : Field_Type) return Field_Alt_Enum_Type is (This.Alt_Enum);
 
    function Value (This : Field_Type) return Field_Value_Type is (This.Value);
-
-   type Struct_Type is tagged limited
-      record
-         Name    : Struct_Name_Type;
-         Members : Struct_Member_Vectors.Vector;
-      end record;
-
-   function Name (This : Struct_Type) return Struct_Name_Type is (This.Name);
-
-   function Members (This : Struct_Type) return Struct_Member_Vectors.Vector is (This.Members);
 
    type Xcb_Type is tagged limited
       record

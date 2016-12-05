@@ -9,6 +9,8 @@ with Ada.Exceptions;
 
 package body X_Proto.XML is
 
+   use Struct.Fs.Member_Kind_Id;
+
    Tag_Xcb                                    : constant String := "xcb";
    Tag_Xcb_Attribute_Header                   : constant String := "header";
    Tag_Struct                                 : constant String := "struct";
@@ -84,10 +86,10 @@ package body X_Proto.XML is
 
       type Enumeration_Type is (
                                 Xcb,
-                                Struct,
+                                Enum_Struct,
                                 Field,
                                 X_Id_Kind,
-                                X_Id_Union,
+                                Enum_X_Id_Union,
                                 Kind,
                                 Type_Definition,
                                 Pad,
@@ -124,10 +126,10 @@ package body X_Proto.XML is
       Find_Tag : Current_Tag_Access_Type := null;
       case Kind_Id is
          when Xcb              => Xcb              : Xcb_Access_Type;
-         when Struct           => Struct           : Struct_Access_Type;
+         when Enum_Struct      => Struct_V         : Struct.Ptr;
          when Field            => Field            : Field_Access_Type;
-         when X_Id_Kind        => X_Id_Kind        : X_Id_Kind_Access_Type;
-         when X_Id_Union       => X_Id_Union       : X_Id_Union_Access_Type;
+         when X_Id_Kind        => X_Id_Kind_V      : X_Id_Type.Ptr;
+         when Enum_X_Id_Union  => X_Id_Union_V     : X_Id_Union.Ptr;
          when Kind             => Kind             : Kind_Access_Type;
          when Type_Definition  => Type_Definition  : Type_Definition_Access_Type;
          when Pad              => Pad              : Pad_Access_Type;
@@ -261,15 +263,15 @@ package body X_Proto.XML is
             when Tag_Id.Xcb =>
                if Tag_Name = Tag_Struct then
                   declare
-                     Struct : Struct_Access_Type := new Struct_Type;
+                     Struct_V : Struct.Ptr := new Struct.T;
                   begin
                      case Prev_Tag.Kind_Id is
                         when Tag_Id.Xcb =>
-                           Prev_Tag.Xcb.Structs.Append (Struct);
+                           Prev_Tag.Xcb.Structs.Append (Struct_V);
                            Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                           I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Struct,
+                                                                           I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Enum_Struct,
                                                                                                       Find_Tag             => Prev_Tag,
-                                                                                                      Struct               => Struct));
+                                                                                                      Struct_V             => Struct_V));
                            Is_Success := True;
                         when others =>
                            Is_Success := False;
@@ -278,25 +280,25 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = Tag_X_Id_Kind then
                   declare
-                     X_Id_Kind : X_Id_Kind_Access_Type := new X_Id_Kind_Type;
+                     X_Id_Type_V : X_Id_Type.Ptr := new X_Id_Type.T;
                   begin
-                     Prev_Tag.Xcb.X_Ids.Append (X_Id_Kind);
+                     Prev_Tag.Xcb.X_Ids.Append (X_Id_Type_V);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id   => Tag_Id.X_Id_Kind,
-                                                                                                Find_Tag  => Prev_Tag,
-                                                                                                X_Id_Kind => X_Id_Kind));
+                                                                     I => new Current_Tag_Type'(Kind_Id     => Tag_Id.X_Id_Kind,
+                                                                                                Find_Tag    => Prev_Tag,
+                                                                                                X_Id_Kind_V => X_Id_Type_V));
                   end;
                elsif Tag_Name = Tag_X_Id_Union then
                   declare
-                     X_Id_Union : X_Id_Union_Access_Type := new X_Id_Union_Type;
+                     X_Id_Union_V : X_Id_Union.Ptr := new X_Id_Union.T;
                   begin
-                     Prev_Tag.Xcb.X_Id_Unions.Append (X_Id_Union);
+                     Prev_Tag.Xcb.X_Id_Unions.Append (X_Id_Union_V);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id    => Tag_Id.X_Id_Union,
-                                                                                                Find_Tag   => Prev_Tag,
-                                                                                                X_Id_Union => X_Id_Union));
+                                                                     I => new Current_Tag_Type'(Kind_Id      => Tag_Id.Enum_X_Id_Union,
+                                                                                                Find_Tag     => Prev_Tag,
+                                                                                                X_Id_Union_V => X_Id_Union_V));
                   end;
                elsif Tag_Name = Tag_Type_Definition then
                   declare
@@ -390,12 +392,12 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & "Found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Struct =>
+            when Tag_Id.Enum_Struct =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : Struct_Member_Access_Type := new Struct_Member_Type (Field_Member);
+                     F : Struct.Fs.Member_Ptr := new Struct.Fs.Member_Type (Field_Member);
                   begin
-                     Prev_Tag.Struct.Members.Append (F);
+                     Prev_Tag.Struct_V.Append_Member (F);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Field,
@@ -404,9 +406,9 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : Struct_Member_Access_Type := new Struct_Member_Type (Pad_Member);
+                     P : Struct.Fs.Member_Ptr := new Struct.Fs.Member_Type (Pad_Member);
                   begin
-                     Prev_Tag.Struct.Members.Append (P);
+                     Prev_Tag.Struct_V.Append_Member (P);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Pad,
@@ -415,9 +417,9 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     L : Struct_Member_Access_Type := new Struct_Member_Type (List_Member);
+                     L : Struct.Fs.Member_Ptr := new Struct.Fs.Member_Type (List_Member);
                   begin
-                     Prev_Tag.Struct.Members.Append (L);
+                     Prev_Tag.Struct_V.Append_Member (L);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id              => Tag_Id.List,
@@ -428,17 +430,17 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & "Found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.X_Id_Union =>
+            when Tag_Id.Enum_X_Id_Union =>
                if Tag_Name = Tag_Kind then
                   declare
                      Kind : Kind_Access_Type := new Kind_Type;
                   begin
-                     Prev_Tag.X_Id_Union.Kinds.Append (Kind);
+                     Prev_Tag.X_Id_Union_V.Append_Kind (Kind);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Kind,
-                                                                                                Find_Tag         => Prev_Tag,
-                                                                                                Kind                 => Kind));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Kind,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Kind     => Kind));
                   end;
                else
                   Is_Success := False;
@@ -888,14 +890,13 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Struct =>
+            when Tag_Id.Enum_Struct =>
                if Attribute_Name = Tag_Struct_Attribute_Name then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Struct.Name := (Exists => True,
-                                                 Value  => V);
+                     Current_Tag.Struct_V.Set_Name (V);
                   end;
                else
                   Is_Success := False;
@@ -952,21 +953,19 @@ package body X_Proto.XML is
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.X_Id_Kind.Name := (Exists => True,
-                                                    Value  => V);
+                     Current_Tag.X_Id_Kind_V.Set_Name (V);
                   end;
                else
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.X_Id_Union =>
+            when Tag_Id.Enum_X_Id_Union =>
                if Attribute_Name = Tag_X_Id_Union_Attribute_Name then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.X_Id_Union.Name := (Exists => True,
-                                                     Value  => V);
+                     Current_Tag.X_Id_Union_V.Set_Name (V);
                   end;
                else
                   Is_Success := False;
@@ -1597,10 +1596,10 @@ package body X_Proto.XML is
                      Current_Tag.Field_Reference.all := V;
                   end;
                when Tag_Id.Xcb |
-                    Tag_Id.Struct |
+                    Tag_Id.Enum_Struct |
                     Tag_Id.Bit |
                     Tag_Id.X_Id_Kind |
-                    Tag_Id.X_Id_Union |
+                    Tag_Id.Enum_X_Id_Union |
                     Tag_Id.Type_Definition |
                     Tag_Id.Pad |
                     Tag_Id.Enum |

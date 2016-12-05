@@ -23,6 +23,8 @@ package body XCB_Package_Creator is
    use type X_Proto.Value_Type;
    use type X_Proto.Request_Child_Kind_Id_Type;
 
+   use X_Proto.Struct.Fs.Member_Kind_Id;
+
    package Unbounded_String_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
                                                                    Element_Type => Aida.Strings.Unbounded_String_Type,
                                                                    "="          => Aida.Strings."=");
@@ -1301,9 +1303,9 @@ package body XCB_Package_Creator is
             begin
                for Child of Struct.Members loop
                   case Child.Kind_Id is
-                     when X_Proto.Field_Member =>
+                     when Field_Member =>
                         null;
-                     when X_Proto.Pad_Member =>
+                     when Pad_Member =>
                         if Child.P.Bytes.Value > 1 then
                            declare
                               Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
@@ -1317,7 +1319,7 @@ package body XCB_Package_Creator is
                            end;
                         end if;
                         Padding_Number := Padding_Number  + 1;
-                     when X_Proto.List_Member =>
+                     when List_Member =>
                         null; -- This information does not have any impact on resulting Ada code. Why?
                   end case;
                end loop;
@@ -1347,7 +1349,7 @@ package body XCB_Package_Creator is
 
                for Child of Struct.Members loop
                   case Child.Kind_Id is
-                     when X_Proto.Field_Member =>
+                     when Field_Member =>
                         if Child.F.Kind.Exists then
                            declare
                               Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
@@ -1376,7 +1378,7 @@ package body XCB_Package_Creator is
                         else
                            Number_Of_Fields_Without_Kind := Number_Of_Fields_Without_Kind + 1;
                         end if;
-                     when X_Proto.Pad_Member =>
+                     when Pad_Member =>
                         if Child.P.Bytes.Value = 1 then
                            Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
                         else
@@ -1391,7 +1393,7 @@ package body XCB_Package_Creator is
                            end;
                         end if;
                         Padding_Number := Padding_Number + 1;
-                     when X_Proto.List_Member =>
+                     when List_Member =>
                         null; -- This information does not have any impact on resulting Ada code. Why?
                   end case;
                end loop;
