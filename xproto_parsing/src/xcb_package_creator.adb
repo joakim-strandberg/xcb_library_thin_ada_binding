@@ -836,7 +836,7 @@ package body XCB_Package_Creator is
          for Request of XCB.Requests loop
             if Request.Name.Exists then
                declare
-                  procedure Handle_Request_Field (F : X_Proto.Field_Type) is
+                  procedure Handle_Request_Field (F : X_Proto.Field.T) is
                      C : Enum_Name_To_Size_Identifier_Map_Type_Owner.Cursor;
 
                      Is_Success : Boolean;

@@ -87,12 +87,12 @@ package body X_Proto.XML is
       type Enumeration_Type is (
                                 Xcb,
                                 Enum_Struct,
-                                Field,
+                                Enum_Field,
                                 X_Id_Kind,
                                 Enum_X_Id_Union,
                                 Kind,
                                 Type_Definition,
-                                Pad,
+                                Enum_Pad,
                                 Enum,
                                 Item,
                                 Value,
@@ -127,12 +127,12 @@ package body X_Proto.XML is
       case Kind_Id is
          when Xcb              => Xcb              : Xcb_Access_Type;
          when Enum_Struct      => Struct_V         : Struct.Ptr;
-         when Field            => Field            : Field_Access_Type;
+         when Enum_Field       => Field_V          : Field.Ptr;
          when X_Id_Kind        => X_Id_Kind_V      : X_Id_Type.Ptr;
          when Enum_X_Id_Union  => X_Id_Union_V     : X_Id_Union.Ptr;
          when Kind             => Kind             : Type_P.Ptr;
          when Type_Definition  => Type_Definition  : Type_Definition_Access_Type;
-         when Pad              => Pad              : Pad_Access_Type;
+         when Enum_Pad         => Pad_V            : Pad.Ptr;
          when Enum             => Enum             : Enum_Access_Type;
          when Item             => Item             : Item_Access_Type;
          when Value            => Value            : Value_Access_Type;
@@ -400,9 +400,9 @@ package body X_Proto.XML is
                      Prev_Tag.Struct_V.Append_Member (F);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Field,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Field                => F.F'Access));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Field_V  => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
@@ -411,9 +411,9 @@ package body X_Proto.XML is
                      Prev_Tag.Struct_V.Append_Member (P);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Pad,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Pad                  => P.P'Access));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Pad_V    => P.P'Access));
                   end;
                elsif Tag_Name = Tag_List then
                   declare
@@ -422,9 +422,9 @@ package body X_Proto.XML is
                      Prev_Tag.Struct_V.Append_Member (L);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.List,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                List                 => L.L'Access));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.List,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                List     => L.L'Access));
                   end;
                else
                   Is_Success := False;
@@ -558,9 +558,9 @@ package body X_Proto.XML is
                      Prev_Tag.Event.Members.Append (F);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Field,
+                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Enum_Field,
                                                                                                 Find_Tag             => Prev_Tag,
-                                                                                                Field                => F.F'Access));
+                                                                                                Field_V              => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
@@ -569,9 +569,9 @@ package body X_Proto.XML is
                      Prev_Tag.Event.Members.Append (P);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Pad,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Pad                  => P.P'Access));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Pad_V    => P.P'Access));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
@@ -607,9 +607,9 @@ package body X_Proto.XML is
                      Prev_Tag.Documentation.Members.Append (D);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Field,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Field                => D.F'Access));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Field_V  => D.F'Access));
                   end;
                elsif Tag_Name = XML_Tag_See then
                   declare
@@ -660,9 +660,9 @@ package body X_Proto.XML is
                      Prev_Tag.Union.Children.Append (L);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.List,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                List                 => L.L'Access));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.List,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                List     => L.L'Access));
                   end;
                else
                   Is_Success := False;
@@ -676,9 +676,9 @@ package body X_Proto.XML is
                      Prev_Tag.Error.Children.Append (F);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Field,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Field                => F.F'Access));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Field_V  => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
@@ -687,9 +687,9 @@ package body X_Proto.XML is
                      Prev_Tag.Error.Children.Append (P);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Pad,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Pad                  => P.P'Access));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Pad_V    => P.P'Access));
                   end;
                else
                   Is_Success := False;
@@ -703,9 +703,9 @@ package body X_Proto.XML is
                      Prev_Tag.Request.Children.Append (F);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Field,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Field                => F.F'Access));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Field_V  => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
@@ -714,9 +714,9 @@ package body X_Proto.XML is
                      Prev_Tag.Request.Children.Append (P);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Pad,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Pad                  => P.P'Access));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Pad_V    => P.P'Access));
                   end;
                elsif Tag_Name = XML_Tag_Value_Param then
                   declare
@@ -785,9 +785,9 @@ package body X_Proto.XML is
                      Prev_Tag.Reply.Children.Append (F);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Field,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Field                => F.F'Access));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Field_V  => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
@@ -796,9 +796,9 @@ package body X_Proto.XML is
                      Prev_Tag.Reply.Children.Append (F);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Pad,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Pad                  => F.P'Access));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Pad_V    => F.P'Access));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
@@ -842,11 +842,11 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Field |
+            when Tag_Id.Enum_Field |
                  Tag_Id.X_Id_Kind |
                  Tag_Id.Kind |
                  Tag_Id.Type_Definition |
-                 Tag_Id.Pad |
+                 Tag_Id.Enum_Pad |
                  Tag_Id.Value |
                  Tag_Id.Bit |
                  Tag_Id.Field_Reference |
@@ -902,46 +902,41 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Field =>
+            when Tag_Id.Enum_Field =>
                if Attribute_Name = Tag_Field_Attribute_Kind then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Field.Kind := (Exists => True,
-                                                Value  => V);
+                     Current_Tag.Field_V.Set_Kind (V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Name then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Field.Name := (Exists => True,
-                                                Value  => V);
+                     Current_Tag.Field_V.Set_Name (V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Enum then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Field.Enum := (Exists => True,
-                                                Value  => V);
+                     Current_Tag.Field_V.Set_Enum (V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Mask then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Field.Mask := (Exists => True,
-                                                Value  => V);
+                     Current_Tag.Field_V.Set_Mask (V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Alt_Enum then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Field.Alt_Enum := (Exists => True,
-                                                    Value  => V);
+                     Current_Tag.Field_V.Set_Alt_Enum (V);
                   end;
                else
                   Is_Success := False;
@@ -992,7 +987,7 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Pad =>
+            when Tag_Id.Enum_Pad =>
                if Attribute_Name = Tag_Pad_Attribute_Bytes then
                   declare
                      V : Positive;
@@ -1007,8 +1002,7 @@ package body X_Proto.XML is
                         Is_Success := False;
                         Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Current_Tag.Pad.Bytes := (Exists => True,
-                                                  Value  => V);
+                        Current_Tag.Pad_V.Set_Bytes (V);
                      end if;
                   end;
                else
@@ -1517,13 +1511,12 @@ package body X_Proto.XML is
                      V.Initialize (Tag_Value);
                      Current_Tag.Kind.Set_Value (V);
                   end;
-               when Tag_Id.Field =>
+               when Tag_Id.Enum_Field =>
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Tag_Value);
-                     Current_Tag.Field.Value := (Exists => True,
-                                                 Value  => V);
+                     Current_Tag.Field_V.Set_Value (V);
                   end;
                when Tag_Id.Value =>
                   declare
@@ -1600,7 +1593,7 @@ package body X_Proto.XML is
                     Tag_Id.X_Id_Kind |
                     Tag_Id.Enum_X_Id_Union |
                     Tag_Id.Type_Definition |
-                    Tag_Id.Pad |
+                    Tag_Id.Enum_Pad |
                     Tag_Id.Enum |
                     Tag_Id.Item |
                     Tag_Id.List |

@@ -11,20 +11,6 @@ package X_Proto is
       end case;
    end record;
 
-   type Field_Kind_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Field_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
    type Type_Definition_Old_Name_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
@@ -35,13 +21,6 @@ package X_Proto is
    type Type_Definition_New_Name_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Pad_Bytes_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Positive;
          when False => null;
       end case;
    end record;
@@ -60,13 +39,6 @@ package X_Proto is
       end case;
    end record;
 
-   type Field_Enum_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
    type List_Kind_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
@@ -75,13 +47,6 @@ package X_Proto is
    end record;
 
    type List_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Field_Mask_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
          when False => null;
@@ -124,20 +89,6 @@ package X_Proto is
    end record;
 
    type See_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Field_Value_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Field_Alt_Enum_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
          when False => null;
@@ -319,27 +270,146 @@ package X_Proto is
       end case;
    end record;
 
-   type Field_Type is tagged limited private;
+   package Field is
 
-   function Kind (This : Field_Type) return Field_Kind_Type;
+      package Fs is
 
-   function Name (This : Field_Type) return Field_Name_Type;
+         type Kind_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   function Enum (This : Field_Type) return Field_Enum_Type;
+         type Kind_Const_Ptr is access constant Kind_Type;
 
-   function Mask (This : Field_Type) return Field_Mask_Type;
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   function Value (This : Field_Type) return Field_Value_Type;
+         type Name_Const_Ptr is access constant Name_Type;
 
-   function Alt_Enum (This : Field_Type) return Field_Alt_Enum_Type;
+         type Enum_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   type Field_Access_Type is access all Field_Type;
+         type Enum_Const_Ptr is access constant Enum_Type;
 
-   type Pad_Type is tagged limited private;
+         type Mask_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   function Bytes (This : Pad_Type) return Pad_Bytes_Type;
+         type Mask_Const_Ptr is access constant Mask_Type;
 
-   type Pad_Access_Type is access all Pad_Type;
+         type Value_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
+
+         type Value_Const_Ptr is access constant Value_Type;
+
+         type Alt_Enum_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
+
+         type Alt_Enum_Const_Ptr is access constant Alt_Enum_Type;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Kind (This : T) return Fs.Kind_Const_Ptr;
+
+      function Name (This : T) return Fs.Name_Const_Ptr;
+
+      function Enum (This : T) return Fs.Enum_Const_Ptr;
+
+      function Mask (This : T) return Fs.Mask_Const_Ptr;
+
+      function Value (This : T) return Fs.Value_Const_Ptr;
+
+      function Alt_Enum (This : T) return Fs.Alt_Enum_Const_Ptr;
+
+      procedure Set_Kind (This : in out T;
+                          Kind : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Enum (This : in out T;
+                          Enum : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Mask (This : in out T;
+                          Mask : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Value (This  : in out T;
+                           Value : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Alt_Enum (This     : in out T;
+                              Alt_Enum : Aida.Strings.Unbounded_String_Type);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Kind     : aliased Fs.Kind_Type;
+            My_Name     : aliased Fs.Name_Type;
+            My_Enum     : aliased Fs.Enum_Type;
+            My_Mask     : aliased Fs.Mask_Type;
+            My_Alt_Enum : aliased Fs.Alt_Enum_Type;
+            My_Value    : aliased Fs.Value_Type;
+         end record;
+
+   end Field;
+
+   package Pad is
+
+      package Fs is
+
+         type Bytes_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Positive;
+               when False => null;
+            end case;
+         end record;
+
+         type Bytes_Const_Ptr is access constant Bytes_Type;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Bytes (This : T) return Fs.Bytes_Const_Ptr;
+
+      procedure Set_Bytes (This  : in out T;
+                           Bytes : Positive);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Bytes : aliased Fs.Bytes_Type;
+         end record;
+
+   end Pad;
 
    type Field_Reference_Type is new Aida.Strings.Unbounded_String_Type with null record;
 
@@ -464,8 +534,8 @@ package X_Proto is
 
    type Error_Child_Type (Kind_Id : Error_Child_Kind_Id_Type) is record
       case Kind_Id is
-         when Error_Child_Field  => F : aliased Field_Type;
-         when Error_Child_Pad    => P : aliased Pad_Type;
+         when Error_Child_Field  => F : aliased Field.T;
+         when Error_Child_Pad    => P : aliased Pad.T;
       end case;
    end record;
 
@@ -527,7 +597,7 @@ package X_Proto is
 
    type Documentation_Member_Type (Kind_Id : Documentation_Member_Kind_Id_Type) is record
       case Kind_Id is
-         when Documentation_Member_Field   => F : aliased Field_Type;
+         when Documentation_Member_Field   => F : aliased Field.T;
          when Documentation_Member_See     => S : aliased See_Type;
          when Documentation_Member_Error   => E : aliased Error_Type;
          when Documentation_Member_Example => Ex : aliased Example_Type;
@@ -561,8 +631,8 @@ package X_Proto is
 
    type Event_Member_Type (Kind_Id : Event_Member_Kind_Id_Type) is record
       case Kind_Id is
-         when Event_Member_Field => F : aliased Field_Type;
-         when Event_Member_Pad   => P : aliased Pad_Type;
+         when Event_Member_Field => F : aliased Field.T;
+         when Event_Member_Pad   => P : aliased Pad.T;
          when Event_Member_Doc   => D : aliased Documentation_Type;
          when Event_Member_List  => L : aliased List_Type;
       end case;
@@ -779,8 +849,8 @@ package X_Proto is
 
          type Member_Type (Kind_Id : Member_Kind_Id.Enum_T) is record
             case Kind_Id is
-               when Field_Member => F : aliased Field_Type;
-               when Pad_Member   => P : aliased Pad_Type;
+               when Field_Member => F : aliased Field.T;
+               when Pad_Member   => P : aliased Pad.T;
                when List_Member  => L : aliased List_Type;
             end case;
          end record;
@@ -856,8 +926,8 @@ package X_Proto is
 
    type Reply_Child_Type (Kind_Id : Reply_Child_Kind_Id_Type) is record
       case Kind_Id is
-         when Reply_Child_Field         => F : aliased Field_Type;
-         when Reply_Child_Pad           => P : aliased Pad_Type;
+         when Reply_Child_Field         => F : aliased Field.T;
+         when Reply_Child_Pad           => P : aliased Pad.T;
          when Reply_Child_Documentation => D : aliased Documentation_Type;
          when Reply_Child_List          => L : aliased List_Type;
       end case;
@@ -886,8 +956,8 @@ package X_Proto is
 
    type Request_Child_Type (Kind_Id : Request_Child_Kind_Id_Type) is record
       case Kind_Id is
-         when Request_Child_Field            => F  : aliased Field_Type;
-         when Request_Child_Pad              => P  : aliased Pad_Type;
+         when Request_Child_Field            => F  : aliased Field.T;
+         when Request_Child_Pad              => P  : aliased Pad.T;
          when Request_Child_Value_Param      => V  : aliased Value_Param_Type;
          when Request_Child_Documentation    => D  : aliased Documentation_Type;
          when Request_Child_Reply            => R  : aliased Reply_Type;
@@ -1140,13 +1210,6 @@ private
 
    function Documentations (This : Enum_Type) return Documentation_Vectors.Vector is (This.Documentations);
 
-   type Pad_Type is tagged limited
-      record
-         Bytes : Pad_Bytes_Type;
-      end record;
-
-   function Bytes (This : Pad_Type) return Pad_Bytes_Type is (This.Bytes);
-
    type Type_Definition_Type is tagged limited
       record
          Old_Name : Type_Definition_Old_Name_Type;
@@ -1156,28 +1219,6 @@ private
    function Old_Name (This : Type_Definition_Type) return Type_Definition_Old_Name_Type is (This.Old_Name);
 
    function New_Name (This : Type_Definition_Type) return Type_Definition_New_Name_Type is (This.New_Name);
-
-   type Field_Type is tagged limited
-      record
-         Kind     : Field_Kind_Type;
-         Name     : Field_Name_Type;
-         Enum     : Field_Enum_Type;
-         Mask     : Field_Mask_Type;
-         Alt_Enum : Field_Alt_Enum_Type;
-         Value    : Field_Value_Type;
-      end record;
-
-   function Kind (This : Field_Type) return Field_Kind_Type is (This.Kind);
-
-   function Name (This : Field_Type) return Field_Name_Type is (This.Name);
-
-   function Enum (This : Field_Type) return Field_Enum_Type is (This.Enum);
-
-   function Mask (This : Field_Type) return Field_Mask_Type is (This.Mask);
-
-   function Alt_Enum (This : Field_Type) return Field_Alt_Enum_Type is (This.Alt_Enum);
-
-   function Value (This : Field_Type) return Field_Value_Type is (This.Value);
 
    type Xcb_Type is tagged limited
       record
