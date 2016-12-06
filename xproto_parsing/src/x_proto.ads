@@ -25,20 +25,6 @@ package X_Proto is
       end case;
    end record;
 
-   type Enum_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Item_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
    type List_Kind_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
@@ -475,32 +461,69 @@ package X_Proto is
 
    function Members (This : List_Type) return List_Member_Vectors.Vector;
 
+   package Item is
+
+      package Fs is
+
+         type Kind_Id_Type is (
+                               Not_Specified,
+                               Specified_As_Value,
+                               Specified_As_Bit
+                              );
+
+         type Bit_Type is new Natural;
+
+         type Bit_Ptr is access all Bit_Type;
+
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
+
+         type Name_Const_Ptr is access constant Name_Type;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Kind_Id (This : T) return Fs.Kind_Id_Type;
+
+      function Name (This : T) return Fs.Name_Const_Ptr;
+
+      function Value (This : T) return Value_Type;
+
+      function Bit (This : T) return Fs.Bit_Type;
+
+      procedure Set_Kind_Id (This    : in out T;
+                             Kind_Id : Fs.Kind_Id_Type);
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Value (This  : in out T;
+                           Value : Value_Type);
+
+      procedure Set_Bit (This : in out T;
+                         Bit  : Fs.Bit_Type);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited record
+         My_Kind_Id : aliased Fs.Kind_Id_Type := Fs.Not_Specified;
+         My_Name    : aliased Fs.Name_Type;
+         My_Value   : aliased Value_Type;
+         My_Bit     : aliased Fs.Bit_Type;
+      end record;
+
+   end Item;
 
 
-   type Enum_Item_Kind_Id_Type is (
-                                   Not_Specified,
-                                   Specified_As_Value,
-                                   Specified_As_Bit
-                                  );
-
-   type Bit_Type is new Natural;
-
-   type Bit_Access_Type is access all Bit_Type;
-
-   type Item_Type is record
-      Kind_Id : Enum_Item_Kind_Id_Type := Not_Specified;
-      Name    : Item_Name_Type;
-      Value   : Value_Type;
-      Bit     : Bit_Type;
-   end record;
-
-   type Item_Access_Type is access all Item_Type;
-
-   procedure Free is new Ada.Unchecked_Deallocation (Object => Item_Type,
-                                                     Name   => Item_Access_Type);
-
-   package Item_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                       Element_Type => Item_Access_Type);
+--     procedure Free is new Ada.Unchecked_Deallocation (Object => Item_Type,
+--                                                       Name   => Item_Access_Type);
 
    type Expression_Field_Child_Kind_Id_Type is (
                                      Expression_Field_Child_Operation
@@ -619,9 +642,6 @@ package X_Proto is
 
    type Documentation_Access_Type is access all Documentation_Type;
 
-   package Documentation_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                Element_Type => Documentation_Access_Type);
-
    type Event_Member_Kind_Id_Type is (
                                       Event_Member_Field,
                                       Event_Member_Pad,
@@ -732,8 +752,8 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-            when True  => Value : Aida.Strings.Unbounded_String_Type;
-            when False => null;
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
             end case;
          end record;
 
@@ -785,18 +805,65 @@ package X_Proto is
    package Type_Definition_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
                                                                   Element_Type => Type_Definition_Access_Type);
 
-   type Enum_Type is tagged limited private;
+   package Enum is
 
-   function Name (This : Enum_Type) return Enum_Name_Type;
+      package Fs is
 
-   function Items (This : Enum_Type) return Item_Vectors.Vector;
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   function Documentations (This : Enum_Type) return Documentation_Vectors.Vector;
+         type Name_Const_Ptr is access constant Name_Type;
 
-   type Enum_Access_Type is access all Enum_Type;
+         package Item_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                             Element_Type => Item.Ptr,
+                                                             "="          => Item."=");
+
+         type Items_Const_Ptr is access constant Item_Vectors.Vector;
+
+         package Documentation_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                                      Element_Type => Documentation_Access_Type);
+
+         type Documentations_Const_Ptr is access constant Documentation_Vectors.Vector;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Name (This : T) return Fs.Name_Const_Ptr;
+
+      function Items (This : T) return Fs.Items_Const_Ptr;
+
+      function Documentations (This : T) return Fs.Documentations_Const_Ptr;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      procedure Append_Item (This   : in out T;
+                             Item_V : Item.Ptr);
+
+      procedure Append_Documentation (This          : in out T;
+                                      Documentation : Documentation_Access_Type);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Name           : aliased Fs.Name_Type;
+            My_Items          : aliased Fs.Item_Vectors.Vector;
+            My_Documentations : aliased Fs.Documentation_Vectors.Vector;
+         end record;
+
+   end Enum;
 
    package Enum_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                       Element_Type => Enum_Access_Type);
+                                                       Element_Type => Enum.Ptr,
+                                                       "="          => Enum."=");
 
    type Union_Child_Kind_Id_Type is (
                                       Union_Child_List
@@ -1196,19 +1263,6 @@ private
    function Members (This : List_Type) return List_Member_Vectors.Vector is (This.Members);
 
    type List_Access_Type is access all List_Type;
-
-   type Enum_Type is tagged limited
-      record
-         Name           : Enum_Name_Type;
-         Items          : Item_Vectors.Vector;
-         Documentations : Documentation_Vectors.Vector;
-      end record;
-
-   function Name (This : Enum_Type) return Enum_Name_Type is (This.Name);
-
-   function Items (This : Enum_Type) return Item_Vectors.Vector is (This.Items);
-
-   function Documentations (This : Enum_Type) return Documentation_Vectors.Vector is (This.Documentations);
 
    type Type_Definition_Type is tagged limited
       record

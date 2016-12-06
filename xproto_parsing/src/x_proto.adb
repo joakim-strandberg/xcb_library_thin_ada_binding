@@ -180,4 +180,94 @@ package body X_Proto is
 
    end Pad;
 
+   package body Enum is
+
+      function Name (This : T) return Fs.Name_Const_Ptr is
+      begin
+         return This.My_Name'Unchecked_Access;
+      end Name;
+
+      function Items (This : T) return Fs.Items_Const_Ptr is
+      begin
+         return This.My_Items'Unchecked_Access;
+      end Items;
+
+      function Documentations (This : T) return Fs.Documentations_Const_Ptr is
+      begin
+         return This.My_Documentations'Unchecked_Access;
+      end Documentations;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Name := (Exists => True,
+                          Value  => Name);
+      end Set_Name;
+
+      procedure Append_Item (This   : in out T;
+                             Item_V : Item.Ptr) is
+      begin
+         Fs.Item_Vectors.Append (Container => This.My_Items,
+                                 New_Item  => Item_V);
+      end Append_Item;
+
+      procedure Append_Documentation (This          : in out T;
+                                      Documentation : Documentation_Access_Type) is
+      begin
+         Fs.Documentation_Vectors.Append (Container => This.My_Documentations,
+                                          New_Item  => Documentation);
+      end Append_Documentation;
+
+   end Enum;
+
+   package body Item is
+
+      function Kind_Id (This : T) return Fs.Kind_Id_Type is
+      begin
+         return This.My_Kind_Id;
+      end Kind_Id;
+
+      function Name (This : T) return Fs.Name_Const_Ptr is
+      begin
+         return This.My_Name'Unchecked_Access;
+      end Name;
+
+      function Value (This : T) return Value_Type is
+      begin
+         return This.My_Value;
+      end Value;
+
+      function Bit (This : T) return Fs.Bit_Type is
+      begin
+         return This.My_Bit;
+      end Bit;
+
+      procedure Set_Kind_Id (This    : in out T;
+                             Kind_Id : Fs.Kind_Id_Type) is
+      begin
+         This.My_Kind_Id := Kind_Id;
+      end Set_Kind_Id;
+
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Name := (Exists => True,
+                          Value  => Name);
+      end Set_Name;
+
+      procedure Set_Value (This  : in out T;
+                           Value : Value_Type) is
+      begin
+         This.My_Value := Value;
+      end Set_Value;
+
+      procedure Set_Bit (This : in out T;
+                         Bit  : Fs.Bit_Type) is
+      begin
+         This.My_Bit := Bit;
+      end Set_Bit;
+
+   end Item;
+
 end X_Proto;

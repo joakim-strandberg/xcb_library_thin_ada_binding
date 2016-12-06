@@ -35,7 +35,7 @@ package body XCB_Package_Creator is
 
    Thirty_Two_Bit_Variable_Type_Names : Unbounded_String_Vectors.Vector;
 
-   function Value_Of_Bit (B : X_Proto.Bit_Type) return Long_Integer is
+   function Value_Of_Bit (B : X_Proto.Item.Fs.Bit_Type) return Long_Integer is
    begin
       return 2 ** Integer (B);
    end Value_Of_Bit;
@@ -453,18 +453,18 @@ package body XCB_Package_Creator is
          end if;
       end Translate_To_Iterator_Access_Type_Name;
 
-      function Determine_Largest_Value (Items : X_Proto.Item_Vectors.Vector) return Long_Integer is
+      function Determine_Largest_Value (Items : X_Proto.Enum.Fs.Item_Vectors.Vector) return Long_Integer is
          R : Long_Integer := 0;
       begin
          for I in Positive range Items.First_Index..Items.Last_Index loop
             case Items.Element (I).Kind_Id is
-               when X_Proto.Not_Specified =>
+               when X_Proto.Item.Fs.Not_Specified =>
                   Ada.Text_IO.Put_Line ("Can never happen");
-               when X_Proto.Specified_As_Value =>
+               when X_Proto.Item.Fs.Specified_As_Value =>
                   if Long_Integer (Items.Element (I).Value) > R then
                      R := Long_Integer (Items.Element (I).Value);
                   end if;
-               when X_Proto.Specified_As_Bit =>
+               when X_Proto.Item.Fs.Specified_As_Bit =>
                   if Value_Of_Bit (Items.Element (I).Bit) > R then
                      R := Value_Of_Bit (Items.Element (I).Bit);
                   end if;
@@ -1122,11 +1122,11 @@ package body XCB_Package_Creator is
                Number_Of_Values : Integer := 0;
                Number_Of_Bits   : Integer := 0;
             begin
-               for Item of Enum.Items loop
+               for Item of Enum.Items.all loop
                   case Item.Kind_Id is
-                     when X_Proto.Not_Specified =>
+                     when X_Proto.Item.Fs.Not_Specified =>
                         Are_Correct := False;
-                     when X_Proto.Specified_As_Value =>
+                     when X_Proto.Item.Fs.Specified_As_Value =>
                         Number_Of_Values := Number_Of_Values + 1;
                         if Previous_Value.Exists then
                            if Item.Value /= Previous_Value.Value + 1 then
@@ -1135,7 +1135,7 @@ package body XCB_Package_Creator is
                         end if;
                         Previous_Value := (Exists => True,
                                            Value  => Item.Value);
-                     when X_Proto.Specified_As_Bit =>
+                     when X_Proto.Item.Fs.Specified_As_Bit =>
                         Number_Of_Bits := Number_Of_Bits + 1;
                   end case;
                end loop;
@@ -1159,12 +1159,12 @@ package body XCB_Package_Creator is
 
                         Put_Tabs (1); Put ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (Enum_Prefix_Name.To_String & "_" & Enum_Value_Name.To_String) & " : constant Atom_Id_Type :=");
                         case Enum.Items.Element (I).Kind_Id is
-                        when X_Proto.Not_Specified =>
+                        when X_Proto.Item.Fs.Not_Specified =>
                            Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", should never happen");
                            Put_Line ("0;");
-                        when X_Proto.Specified_As_Value =>
+                        when X_Proto.Item.Fs.Specified_As_Value =>
                            Put_Line (Enum.Items.Element (I).Value'Img & ";");
-                        when X_Proto.Specified_As_Bit =>
+                        when X_Proto.Item.Fs.Specified_As_Bit =>
                            Put_Line (Value_Of_Bit (Enum.Items.Element (I).Bit)'Img & ";");
                         end case;
                      end loop;
@@ -1172,7 +1172,7 @@ package body XCB_Package_Creator is
                   else
 
                      declare
-                        Largest_Value : Long_Integer := Determine_Largest_Value (Enum.Items);
+                        Largest_Value : Long_Integer := Determine_Largest_Value (Enum.Items.all);
 
                         C : Enum_Name_To_Size_Identifier_Map_Type_Owner.Cursor :=
                           Enum_Name_To_Size_Identifier_Map.Find (Enum.Name.Value);
@@ -1200,12 +1200,12 @@ package body XCB_Package_Creator is
                            Put_Tabs (1); Put ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (Enum_Prefix_Name.To_String & "_" & Enum_Value_Name.To_String) & " : constant " &
                                                 New_Variable_Type_Name.To_String & " :=");
                            case Enum.Items.Element (I).Kind_Id is
-                              when X_Proto.Not_Specified =>
+                              when X_Proto.Item.Fs.Not_Specified =>
                                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", should never happen");
                                  Put_Line ("0;");
-                              when X_Proto.Specified_As_Value =>
+                              when X_Proto.Item.Fs.Specified_As_Value =>
                                  Put_Line (Enum.Items.Element (I).Value'Img & ";");
-                              when X_Proto.Specified_As_Bit =>
+                              when X_Proto.Item.Fs.Specified_As_Bit =>
                                  Put_Line (Value_Of_Bit (Enum.Items.Element (I).Bit)'Img & ";");
                            end case;
                         end loop;

@@ -93,10 +93,10 @@ package body X_Proto.XML is
                                 Kind,
                                 Type_Definition,
                                 Enum_Pad,
-                                Enum,
-                                Item,
-                                Value,
-                                Bit,
+                                Enum_Enum,
+                                Item_Type_Id,
+                                Value_Type_Id,
+                                Bit_Type_Id,
                                 List,
                                 Field_Reference,
                                 Op,
@@ -133,10 +133,10 @@ package body X_Proto.XML is
          when Kind             => Kind             : Type_P.Ptr;
          when Type_Definition  => Type_Definition  : Type_Definition_Access_Type;
          when Enum_Pad         => Pad_V            : Pad.Ptr;
-         when Enum             => Enum             : Enum_Access_Type;
-         when Item             => Item             : Item_Access_Type;
-         when Value            => Value            : Value_Access_Type;
-         when Bit              => Bit              : Bit_Access_Type;
+         when Enum_Enum        => Enum_V           : Enum.Ptr;
+         when Item_Type_Id     => Item_V           : Item.Ptr;
+         when Value_Type_Id    => Value_V          : Value_Access_Type;
+         when Bit_Type_Id      => Bit_V            : Item.Fs.Bit_Ptr;
          when List             => List             : List_Access_Type;
          when Field_Reference  => Field_Reference  : Field_Reference_Access_Type;
          when Op               => Op               : Operation_Access_Type;
@@ -313,14 +313,14 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = Tag_Enum then
                   declare
-                     Enum : Enum_Access_Type := new Enum_Type;
+                     Enum_V : Enum.Ptr := new Enum.T;
                   begin
-                     Prev_Tag.Xcb.Enums.Append (Enum);
+                     Prev_Tag.Xcb.Enums.Append (Enum_V);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Enum,
-                                                                                                Find_Tag         => Prev_Tag,
-                                                                                                Enum                 => Enum));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Enum,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Enum_V   => Enum_V));
                   end;
                elsif Tag_Name = XML_Tag_Event then
                   declare
@@ -446,23 +446,23 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Enum =>
+            when Tag_Id.Enum_Enum =>
                if Tag_Name = Tag_Item then
                   declare
-                     Item : Item_Access_Type := new Item_Type;
+                     Item_V : Item.Ptr := new Item.T;
                   begin
-                     Prev_Tag.Enum.Items.Append (Item);
+                     Prev_Tag.Enum_V.Append_Item (Item_V);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Item,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Item                 => Item));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Item_Type_Id,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Item_V   => Item_V));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
                      D : Documentation_Access_Type := new Documentation_Type;
                   begin
-                     Prev_Tag.Enum.Documentations.Append (D);
+                     Prev_Tag.Enum_V.Append_Documentation (D);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation,
@@ -473,7 +473,7 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Item =>
+            when Tag_Id.Item_Type_Id =>
                if Tag_Name = XML_Tag_Value then
                   Is_Success := True;
                elsif Tag_Name = Tag_Bit then
@@ -503,9 +503,9 @@ package body X_Proto.XML is
                      Prev_Tag.List.Members.Append (V);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Value,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Value                => V.Value'Access));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Value_Type_Id,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Value_V  => V.Value'Access));
                   end;
                else
                   Is_Success := False;
@@ -542,9 +542,9 @@ package body X_Proto.XML is
                      Prev_Tag.Op.Members.Append (V);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Value,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Value                => V.Value'Access));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Value_Type_Id,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Value_V  => V.Value'Access));
                   end;
                else
                   Is_Success := False;
@@ -847,8 +847,8 @@ package body X_Proto.XML is
                  Tag_Id.Kind |
                  Tag_Id.Type_Definition |
                  Tag_Id.Enum_Pad |
-                 Tag_Id.Value |
-                 Tag_Id.Bit |
+                 Tag_Id.Value_Type_Id |
+                 Tag_Id.Bit_Type_Id |
                  Tag_Id.Field_Reference |
                  Tag_Id.See |
                  Tag_Id.Event_Copy |
@@ -1009,27 +1009,25 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Enum =>
+            when Tag_Id.Enum_Enum =>
                if Attribute_Name = Tag_Enum_Attribute_Name then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Enum.Name := (Exists => True,
-                                               Value  => V);
+                     Current_Tag.Enum_V.Set_Name (V);
                   end;
                else
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Item =>
+            when Tag_Id.Item_Type_Id =>
                if Attribute_Name = Tag_Item_Attribute_Name then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Item.Name := (Exists => True,
-                                               Value  => V);
+                     Current_Tag.Item_V.Set_Name (V);
                   end;
                else
                   Is_Success := False;
@@ -1361,8 +1359,8 @@ package body X_Proto.XML is
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Kind |
-                 Tag_Id.Value |
-                 Tag_Id.Bit |
+                 Tag_Id.Value_Type_Id |
+                 Tag_Id.Bit_Type_Id |
                  Tag_Id.Field_Reference |
                  Tag_Id.Documentation |
                  Tag_Id.Reply |
@@ -1422,7 +1420,7 @@ package body X_Proto.XML is
                end if;
 
                case Prev_Tag.Kind_Id is
-                  when Tag_Id.Item =>
+                  when Tag_Id.Item_Type_Id =>
                      declare
                         V : Value_Type;
                         Has_Failed : Boolean;
@@ -1435,22 +1433,22 @@ package body X_Proto.XML is
                            Is_Success := False;
                            Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", failed to interpret '" & Tag_Value & "' as a number for end tag " & Tag_Name);
                         else
-                           case Prev_Tag.Item.Kind_Id is
-                              when Not_Specified =>
+                           case Prev_Tag.Item_V.Kind_Id is
+                              when Item.Fs.Not_Specified =>
                                  if Tag_Name = XML_Tag_Value then
-                                    Prev_Tag.Item.Kind_Id := Specified_As_Value;
-                                    Prev_Tag.Item.Value := V;
+                                    Prev_Tag.Item_V.Set_Kind_Id (Item.Fs.Specified_As_Value);
+                                    Prev_Tag.Item_V.Set_Value (V);
                                  elsif Tag_Name = Tag_Bit then
-                                    Prev_Tag.Item.Kind_Id := Specified_As_Bit;
-                                    Prev_Tag.Item.Bit := Bit_Type (V);
+                                    Prev_Tag.Item_V.Set_Kind_Id (Item.Fs.Specified_As_Bit);
+                                    Prev_Tag.Item_V.Set_Bit (Item.Fs.Bit_Type (V));
                                  else
                                     Is_Success := False;
                                     Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", unknown end tag '" & Tag_Name & "'");
                                  end if;
-                              when Specified_As_Value |
-                                   Specified_As_Bit =>
+                              when Item.Fs.Specified_As_Value |
+                                   Item.Fs.Specified_As_Bit =>
                                  Is_Success := False;
-                                 Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", value already initialized for end tag " & Tag_Name & ", kind id " & Prev_Tag.Item.Kind_Id'Img);
+                                 Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", value already initialized for end tag " & Tag_Name & ", kind id " & Prev_Tag.Item_V.Kind_Id'Img);
                            end case;
                         end if;
                      end;
@@ -1518,7 +1516,7 @@ package body X_Proto.XML is
                      V.Initialize (Tag_Value);
                      Current_Tag.Field_V.Set_Value (V);
                   end;
-               when Tag_Id.Value =>
+               when Tag_Id.Value_Type_Id =>
                   declare
                      V : Value_Type;
                      Has_Failed : Boolean;
@@ -1531,7 +1529,7 @@ package body X_Proto.XML is
                         Is_Success := False;
                         Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", failed to interpret '" & Tag_Value & "' as a number for end tag " & Tag_Name);
                      else
-                        Current_Tag.Value.all := V;
+                        Current_Tag.Value_V.all := V;
                      end if;
                   end;
                when Tag_Id.Error =>
@@ -1589,13 +1587,13 @@ package body X_Proto.XML is
                   end;
                when Tag_Id.Xcb |
                     Tag_Id.Enum_Struct |
-                    Tag_Id.Bit |
+                    Tag_Id.Bit_Type_Id |
                     Tag_Id.X_Id_Kind |
                     Tag_Id.Enum_X_Id_Union |
                     Tag_Id.Type_Definition |
                     Tag_Id.Enum_Pad |
-                    Tag_Id.Enum |
-                    Tag_Id.Item |
+                    Tag_Id.Enum_Enum |
+                    Tag_Id.Item_Type_Id |
                     Tag_Id.List |
                     Tag_Id.Event |
                     Tag_id.Documentation |
