@@ -335,7 +335,7 @@ package body XCB_Package_Creator is
       end if;
    end Generate_Classic_Array_Type_Name;
 
-   procedure Create_XCB_Package (XCB : X_Proto.Xcb_Type) is
+   procedure Create_XCB_Package (XCB : X_Proto.Xcb.T) is
       File   : Ada.Text_IO.File_Type;
 
       procedure Put_Tabs (N : Natural) is
@@ -833,7 +833,7 @@ package body XCB_Package_Creator is
 
       procedure Pre_Process_Requests is
       begin
-         for Request of XCB.Requests loop
+         for Request of XCB.Requests.all loop
             if Request.Name.Exists then
                declare
                   procedure Handle_Request_Field (F : X_Proto.Field.T) is
@@ -943,7 +943,7 @@ package body XCB_Package_Creator is
 
       Pre_Process_Requests;
 
-      for Event of Xcb.Events loop
+      for Event of Xcb.Events.all loop
          if
            Event.Number.Exists and
            Event.Name.Exists
@@ -963,7 +963,7 @@ package body XCB_Package_Creator is
 
       Put_Line ("");
 
-      for Event_Copy of Xcb.Event_Copies loop
+      for Event_Copy of Xcb.Event_Copies.all loop
          if
            Event_Copy.Number.Exists and
            Event_Copy.Name.Exists
@@ -981,7 +981,7 @@ package body XCB_Package_Creator is
          end if;
       end loop;
 
-      for Error of Xcb.Errors loop
+      for Error of Xcb.Errors.all loop
          if
            Error.Number.Exists and
            Error.Name.Exists
@@ -999,7 +999,7 @@ package body XCB_Package_Creator is
          end if;
       end loop;
 
-      for Error_Copy of Xcb.Error_Copies loop
+      for Error_Copy of Xcb.Error_Copies.all loop
          if
            Error_Copy.Number.Exists and
            Error_Copy.Name.Exists
@@ -1019,7 +1019,7 @@ package body XCB_Package_Creator is
 
       Put_Line ("");
 
-      for Request of Xcb.Requests loop
+      for Request of Xcb.Requests.all loop
          if
            Request.Op_Code.Exists and
            Request.Name.Exists
@@ -1044,7 +1044,7 @@ package body XCB_Package_Creator is
       Put_Tabs (1); Put_Line ("type X_Id_Type is new Interfaces.Unsigned_32;");
       Put_Line ("");
 
-      for X_Id_Union of Xcb.X_Id_Unions loop
+      for X_Id_Union of Xcb.X_Id_Unions.all loop
          if X_Id_Union.Name.Exists then
             Generate_Code_For_X_Id (X_Id_Union.Name.Value,
                                     "X_Id_Type",
@@ -1062,7 +1062,7 @@ package body XCB_Package_Creator is
 
                   for Kind of X_Id_Union.Kinds.all loop
                      if Kind.Value.Exists then
-                        for X_Id of Xcb.X_Ids loop
+                        for X_Id of Xcb.X_Ids.all loop
                            if X_Id.Name.Exists then
                               if Kind.Value.Value.To_String = X_Id.Name.Value.To_String then
                                  Generate_Code_For_X_Id (X_Id.Name.Value,
@@ -1090,7 +1090,7 @@ package body XCB_Package_Creator is
          end if;
       end loop;
 
-      for X_Id of Xcb.X_Ids loop
+      for X_Id of Xcb.X_Ids.all loop
          if X_Id.Name.Exists then
             if not Processed_X_Ids.Contains (X_Id.Name.Value) then
                Generate_Code_For_X_Id (X_Id.Name.Value,
@@ -1104,7 +1104,7 @@ package body XCB_Package_Creator is
 
       Put_Line ("");
 
-      for Enum of Xcb.Enums loop
+      for Enum of Xcb.Enums.all loop
          if Enum.Name.Exists then
             declare
                Are_Correct : Boolean := True;
@@ -1219,7 +1219,7 @@ package body XCB_Package_Creator is
          end if;
       end loop;
 
-      for Type_Definition of Xcb.Type_Definitions loop
+      for Type_Definition of Xcb.Type_Definitions.all loop
          if Type_Definition.Old_Name.Exists and Type_Definition.New_Name.Exists then
             declare
                Old_Variable_Type_Name                 : Aida.Strings.Unbounded_String_Type;
@@ -1296,7 +1296,7 @@ package body XCB_Package_Creator is
          end if;
       end loop;
 
-      for Struct of XCB.Structs loop
+      for Struct of XCB.Structs.all loop
          if Struct.Name.Exists then
             declare
                Padding_Number : Integer := 0;
@@ -1458,7 +1458,7 @@ package body XCB_Package_Creator is
          end;
       end loop;
 
-      for Union of Xcb.Unions loop
+      for Union of Xcb.Unions.all loop
          if Union.Name.Exists then
             declare
                New_Variable_Type_Name                 : Aida.Strings.Unbounded_String_Type;
@@ -1580,7 +1580,7 @@ package body XCB_Package_Creator is
          end if;
       end loop;
 
-      for Event of Xcb.Events loop
+      for Event of Xcb.Events.all loop
          if Event.Name.Exists then
             declare
                New_Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
@@ -1767,7 +1767,7 @@ package body XCB_Package_Creator is
          end if;
       end loop;
 
-      for Event_Copy of Xcb.Event_Copies loop
+      for Event_Copy of Xcb.Event_Copies.all loop
          if Event_Copy.Name.Exists then
             if Event_Copy.Ref.Exists then
                declare
@@ -1799,7 +1799,7 @@ package body XCB_Package_Creator is
          end if;
       end loop;
 
-      for Error of Xcb.Errors loop
+      for Error of Xcb.Errors.all loop
          if Error.Name.Exists then
             declare
                Padding_Number : Integer := 0;
@@ -1895,7 +1895,7 @@ package body XCB_Package_Creator is
          end if;
       end loop;
 
-      for Error_Copy of Xcb.Error_Copies loop
+      for Error_Copy of Xcb.Error_Copies.all loop
          if Error_Copy.Name.Exists then
             if Error_Copy.Ref.Exists then
                declare
@@ -2148,7 +2148,7 @@ package body XCB_Package_Creator is
       Put_Tabs (1); Put_Line ("pragma Import (C, Discard_Reply, ""xcb_discard_reply"");");
       Put_Line ("");
 
-      for Struct of XCB.Structs loop
+      for Struct of XCB.Structs.all loop
          if Struct.Name.Exists then
             Generate_Code_For_Next_Procedure (Struct.Name.Value.To_String);
             Generate_Code_For_End_Function (Struct.Name.Value.To_String);
@@ -2157,7 +2157,7 @@ package body XCB_Package_Creator is
          end if;
       end loop;
 
-      for X_Id of XCB.X_Ids loop
+      for X_Id of XCB.X_Ids.all loop
          if X_Id.Name.Exists then
             Generate_Code_For_Next_Procedure (X_Id.Name.Value.To_String);
             Generate_Code_For_End_Function (X_Id.Name.Value.To_String);
@@ -2166,7 +2166,7 @@ package body XCB_Package_Creator is
          end if;
       end loop;
 
-      for Type_Def of XCB.Type_Definitions loop
+      for Type_Def of XCB.Type_Definitions.all loop
          if Type_Def.New_Name.Exists then
             Generate_Code_For_Next_Procedure (Type_Def.New_Name.Value.To_String);
             Generate_Code_For_End_Function (Type_Def.New_Name.Value.To_String);
@@ -2175,7 +2175,7 @@ package body XCB_Package_Creator is
          end if;
       end loop;
 
-      for Request of XCB.Requests loop
+      for Request of XCB.Requests.all loop
          if Request.Name.Exists then
             declare
                Does_Specified_Reply_Exist : Boolean := False;

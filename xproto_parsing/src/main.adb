@@ -27,7 +27,7 @@ procedure Main is
 
       Error_Message : SXML.Error_Message_Type;
 
-      Xcb : X_Proto.Xcb_Access_Type := null;
+      Xcb : X_Proto.Xcb.Ptr := null;
    begin
       File_String_IO.Open  (File, Mode => File_String_IO.In_File,
                             Name => File_Name);

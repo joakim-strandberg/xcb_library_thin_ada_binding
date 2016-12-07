@@ -29,7 +29,7 @@ package body X_Proto is
 
    end Struct;
 
-   package body X_Id_Type is
+   package body X_Id is
 
       function Name (This : T) return Fs.Name_Const_Ptr is
       begin
@@ -43,7 +43,7 @@ package body X_Proto is
                           Value  => Name);
       end Set_Name;
 
-   end X_Id_Type;
+   end X_Id;
 
    package body Type_P is
 
@@ -337,5 +337,181 @@ package body X_Proto is
       end Append_Member;
 
    end Operation;
+
+   package body Type_Definition is
+
+      function Old_Name (This : T) return Fs.Old_Name_Const_Ptr is
+      begin
+         return This.My_Old_Name'Unchecked_Access;
+      end Old_Name;
+
+      function New_Name (This : T) return Fs.New_Name_Const_Ptr is
+      begin
+         return This.My_New_Name'Unchecked_Access;
+      end New_Name;
+
+      procedure Set_Old_Name (This : in out T;
+                              Old_Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Old_Name := (Exists => True,
+                              Value  => Old_Name);
+      end Set_Old_Name;
+
+      procedure Set_New_Name (This     : in out T;
+                              New_Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_New_Name := (Exists => True,
+                              Value  => New_Name);
+      end Set_New_Name;
+
+   end Type_Definition;
+
+   package body Xcb is
+
+      function Header (This : T) return Fs.Header_Const_Ptr is
+      begin
+         return This.My_Header'Unchecked_Access;
+      end Header;
+
+      function Structs (This : T) return Fs.Structs_Const_Ptr is
+      begin
+         return This.My_Structs'Unchecked_Access;
+      end Structs;
+
+      function X_Ids (This : T) return Fs.X_Ids_Const_Ptr is
+      begin
+         return This.My_X_Ids'Unchecked_Access;
+      end X_Ids;
+
+      function X_Id_Unions (This : T) return Fs.X_Id_Unions_Const_Ptr is
+      begin
+         return This.My_X_Id_Unions'Unchecked_Access;
+      end X_Id_Unions;
+
+      function Type_Definitions (This : T) return Fs.Type_Definitions_Const_Ptr is
+      begin
+         return This.My_Type_Definitions'Unchecked_Access;
+      end Type_Definitions;
+
+      function Enums (This : T) return Fs.Enums_Const_Ptr is
+      begin
+         return This.My_Enums'Unchecked_Access;
+      end Enums;
+
+      function Events (This : T) return Fs.Events_Const_Ptr is
+      begin
+         return This.My_Events'Unchecked_Access;
+      end Events;
+
+      function Event_Copies (This : T) return Fs.Event_Copies_Const_Ptr is
+      begin
+         return This.My_Event_Copies'Unchecked_Access;
+      end Event_Copies;
+
+      function Unions (This : T) return Fs.Unions_Const_Ptr is
+      begin
+         return This.My_Unions'Unchecked_Access;
+      end Unions;
+
+      function Errors (This : T) return Fs.Errors_Const_Ptr is
+      begin
+         return This.My_Errors'Unchecked_Access;
+      end Errors;
+
+      function Error_Copies (This : T) return Fs.Error_Copies_Const_Ptr is
+      begin
+         return This.My_Error_Copies'Unchecked_Access;
+      end Error_Copies;
+
+      function Requests (This : T) return Fs.Requests_Const_Ptr is
+      begin
+         return This.My_Requests'Unchecked_Access;
+      end Requests;
+
+      procedure Set_Header (This : in out T;
+                            Text : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Header := (Exists => True,
+                            Value  => Text);
+      end Set_Header;
+
+      procedure Append_Struct (This : in out T;
+                               Item : Struct.Ptr) is
+      begin
+         Fs.Struct_Vectors.Append (Container => This.My_Structs,
+                                   New_Item  => Item);
+      end Append_Struct;
+
+      procedure Append_X_Id (This : in out T;
+                             Item : X_Id.Ptr) is
+      begin
+         Fs.X_Id_Vectors.Append (Container => This.My_X_Ids,
+                                 New_Item  => Item);
+      end Append_X_Id;
+
+      procedure Append_X_Id_Union (This : in out T;
+                                   Item : X_Id_Union.Ptr) is
+      begin
+         Fs.X_Id_Union_Vectors.Append (Container => This.My_X_Id_Unions,
+                                       New_Item  => Item);
+      end Append_X_Id_Union;
+
+      procedure Append_Type_Definition (This : in out T;
+                                        Item : Type_Definition.Ptr) is
+      begin
+         Fs.Type_Definition_Vectors.Append (Container => This.My_Type_Definitions,
+                                            New_Item  => Item);
+      end Append_Type_Definition;
+
+      procedure Append_Enum (This : in out T;
+                             Item : Enum.Ptr) is
+      begin
+         Fs.Enum_Vectors.Append (Container => This.My_Enums,
+                                 New_Item  => Item);
+      end Append_Enum;
+
+      procedure Append_Event (This : in out T;
+                              Item : Event_Access_Type) is
+      begin
+         Fs.Event_Vectors.Append (Container => This.My_Events,
+                                  New_Item  => Item);
+      end Append_Event;
+
+      procedure Append_Event_Copy (This : in out T;
+                                   Item : Event_Copy_Access_Type) is
+      begin
+         Fs.Event_Copy_Vectors.Append (Container => This.My_Event_Copies,
+                                       New_Item  => Item);
+      end Append_Event_Copy;
+
+      procedure Append_Union (This : in out T;
+                              Item : Union_Access_Type) is
+      begin
+         Fs.Union_Vectors.Append (Container => This.My_Unions,
+                                  New_Item  => Item);
+      end Append_Union;
+
+      procedure Append_Error (This : in out T;
+                              Item : Error_Access_Type) is
+      begin
+         Fs.Error_Vectors.Append (Container => This.My_Errors,
+                                  New_Item  => Item);
+      end Append_Error;
+
+      procedure Append_Error_Copy (This : in out T;
+                                   Item : Error_Copy_Access_Type) is
+      begin
+         Fs.Error_Copy_Vectors.Append (Container => This.My_Error_Copies,
+                                       New_Item  => Item);
+      end Append_Error_Copy;
+
+      procedure Append_Request (This : in out T;
+                                Item : Request_Access_Type) is
+      begin
+         Fs.Request_Vectors.Append (Container => This.My_Requests,
+                                    New_Item  => Item);
+      end Append_Request;
+
+   end Xcb;
 
 end X_Proto;

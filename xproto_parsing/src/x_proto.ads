@@ -3,27 +3,6 @@ with Aida.Strings;
 
 package X_Proto is
 
-   type XCB_Header_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Type_Definition_Old_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Type_Definition_New_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
    type Event_Name_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
@@ -629,9 +608,6 @@ package X_Proto is
 
    type Error_Access_Type is access all Error_Type;
 
-   package Error_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                        Element_Type => Error_Access_Type);
-
    type Error_Copy_Type is tagged limited private;
 
    function Name (This : Error_Copy_Type) return Error_Copy_Name_Type;
@@ -641,9 +617,6 @@ package X_Proto is
    function Ref (This : Error_Copy_Type) return Error_Copy_Ref_Type;
 
    type Error_Copy_Access_Type is access all Error_Copy_Type;
-
-   package Error_Copy_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                             Element_Type => Error_Copy_Access_Type);
 
    type Example_Type is tagged limited private;
 
@@ -721,10 +694,7 @@ package X_Proto is
 
    type Event_Copy_Access_Type is access all Event_Copy_Type;
 
-   package Event_Copy_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                             Element_Type => Event_Copy_Access_Type);
-
-   package X_Id_Type is
+   package X_Id is
 
       package Fs is
 
@@ -755,11 +725,7 @@ package X_Proto is
             My_Name : aliased Fs.Name_Type;
          end record;
 
-   end X_Id_Type;
-
-   package X_Id_Kind_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                            Element_Type => X_Id_Type.Ptr,
-                                                            "="          => X_Id_Type."=");
+   end X_Id;
 
    package Type_P is
 
@@ -838,20 +804,53 @@ package X_Proto is
 
    end X_Id_Union;
 
-   package X_Id_Union_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                             Element_Type => X_Id_Union.Ptr,
-                                                             "="          => X_Id_Union."=");
+   package Type_Definition is
 
-   type Type_Definition_Type is tagged limited private;
+      package Fs is
 
-   function Old_Name (This : Type_Definition_Type) return Type_Definition_Old_Name_Type;
+         type Old_Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   function New_Name (This : Type_Definition_Type) return Type_Definition_New_Name_Type;
+         type Old_Name_Const_Ptr is access constant Old_Name_Type;
 
-   type Type_Definition_Access_Type is access all Type_Definition_Type;
+         type New_Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   package Type_Definition_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                  Element_Type => Type_Definition_Access_Type);
+         type New_Name_Const_Ptr is access constant New_Name_Type;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Old_Name (This : T) return Fs.Old_Name_Const_Ptr;
+
+      function New_Name (This : T) return Fs.New_Name_Const_Ptr;
+
+      procedure Set_Old_Name (This     : in out T;
+                              Old_Name : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_New_Name (This     : in out T;
+                              New_Name : Aida.Strings.Unbounded_String_Type);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Old_Name : aliased Fs.Old_Name_Type;
+            My_New_Name : aliased Fs.New_Name_Type;
+         end record;
+
+   end Type_Definition;
 
    package Enum is
 
@@ -909,10 +908,6 @@ package X_Proto is
 
    end Enum;
 
-   package Enum_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                       Element_Type => Enum.Ptr,
-                                                       "="          => Enum."=");
-
    type Union_Child_Kind_Id_Type is (
                                       Union_Child_List
                                      );
@@ -935,9 +930,6 @@ package X_Proto is
    function Children (This : Union_Type) return Union_Child_Vectors.Vector;
 
    type Union_Access_Type is access all Union_Type;
-
-   package Union_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                        Element_Type => Union_Access_Type);
 
    package Struct is
 
@@ -1001,10 +993,6 @@ package X_Proto is
 
    end Struct;
 
-   package Struct_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                         Element_Type => Struct.Ptr,
-                                                         "="          => Struct."=");
-
    type Event_Type is tagged limited private;
 
    function Name (This : Event_Type) return Event_Name_Type;
@@ -1018,9 +1006,6 @@ package X_Proto is
    function Members (This : Event_Type) return Event_Member_Vectors.Vector;
 
    type Event_Access_Type is access all Event_Type;
-
-   package Event_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                        Element_Type => Event_Access_Type);
 
    type Value_Param_Type is tagged limited private;
 
@@ -1098,39 +1083,163 @@ package X_Proto is
 
    type Request_Access_Type is access all Request_Type;
 
-   package Request_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                          Element_Type => Request_Access_Type);
+   package Xcb is
 
-   type Xcb_Type is tagged limited private;
+      package Fs is
 
-   function Header (This : Xcb_Type) return XCB_Header_Type;
+         type Header_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   function Structs (This : Xcb_Type) return Struct_Vectors.Vector;
+         type Header_Const_Ptr is access constant Header_Type;
 
-   function X_Ids (This : Xcb_Type) return X_Id_Kind_Vectors.Vector;
+         package Struct_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                               Element_Type => Struct.Ptr,
+                                                               "="          => Struct."=");
 
-   function X_Id_Unions (This : Xcb_Type) return X_Id_Union_Vectors.Vector;
+         type Structs_Const_Ptr is access constant Struct_Vectors.Vector;
 
-   function Type_Definitions (This : Xcb_Type) return Type_Definition_Vectors.Vector;
+         package X_Id_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                             Element_Type => X_Id.Ptr,
+                                                             "="          => X_Id."=");
 
-   function Enums (This : Xcb_Type) return Enum_Vectors.Vector;
+         type X_Ids_Const_Ptr is access constant X_Id_Vectors.Vector;
 
-   function Events (This : Xcb_Type) return Event_Vectors.Vector;
+         package X_Id_Union_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                                   Element_Type => X_Id_Union.Ptr,
+                                                                   "="          => X_Id_Union."=");
 
-   function Event_Copies (This : Xcb_Type) return Event_Copy_Vectors.Vector;
+         type X_Id_Unions_Const_Ptr is access constant X_Id_Union_Vectors.Vector;
 
-   function Unions (This : Xcb_Type) return Union_Vectors.Vector;
+         package Type_Definition_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                                        Element_Type => Type_Definition.Ptr,
+                                                                        "="          => Type_Definition."=");
 
-   function Errors (This : Xcb_Type) return Error_Vectors.Vector;
+         type Type_Definitions_Const_Ptr is access constant Type_Definition_Vectors.Vector;
 
-   function Error_Copies (This : Xcb_Type) return Error_Copy_Vectors.Vector;
+         package Enum_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                             Element_Type => Enum.Ptr,
+                                                             "="          => Enum."=");
+         type Enums_Const_Ptr is access constant Enum_Vectors.Vector;
 
-   function Requests (This : Xcb_Type) return Request_Vectors.Vector;
+         package Event_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                              Element_Type => Event_Access_Type);
 
-   type Xcb_Access_Type is access all Xcb_Type;
+         type Events_Const_Ptr is access constant Event_Vectors.Vector;
 
-   package XCB_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                      Element_Type => Xcb_Access_Type);
+         package Event_Copy_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                                   Element_Type => Event_Copy_Access_Type);
+
+         type Event_Copies_Const_Ptr is access constant Event_Copy_Vectors.Vector;
+
+         package Union_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                              Element_Type => Union_Access_Type);
+
+         type Unions_Const_Ptr is access constant Union_Vectors.Vector;
+
+         package Error_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                              Element_Type => Error_Access_Type);
+
+         type Errors_Const_Ptr is access constant Error_Vectors.Vector;
+
+         package Error_Copy_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                                   Element_Type => Error_Copy_Access_Type);
+
+         type Error_Copies_Const_Ptr is access constant Error_Copy_Vectors.Vector;
+
+         package Request_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                                Element_Type => Request_Access_Type);
+
+         type Requests_Const_Ptr is access constant Request_Vectors.Vector;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Header (This : T) return Fs.Header_Const_Ptr;
+
+      function Structs (This : T) return Fs.Structs_Const_Ptr;
+
+      function X_Ids (This : T) return Fs.X_Ids_Const_Ptr;
+
+      function X_Id_Unions (This : T) return Fs.X_Id_Unions_Const_Ptr;
+
+      function Type_Definitions (This : T) return Fs.Type_Definitions_Const_Ptr;
+
+      function Enums (This : T) return Fs.Enums_Const_Ptr;
+
+      function Events (This : T) return Fs.Events_Const_Ptr;
+
+      function Event_Copies (This : T) return Fs.Event_Copies_Const_Ptr;
+
+      function Unions (This : T) return Fs.Unions_Const_Ptr;
+
+      function Errors (This : T) return Fs.Errors_Const_Ptr;
+
+      function Error_Copies (This : T) return Fs.Error_Copies_Const_Ptr;
+
+      function Requests (This : T) return Fs.Requests_Const_Ptr;
+
+      procedure Set_Header (This : in out T;
+                            Text : Aida.Strings.Unbounded_String_Type);
+
+      procedure Append_Struct (This : in out T;
+                               Item : Struct.Ptr);
+
+      procedure Append_X_Id (This : in out T;
+                             Item : X_Id.Ptr);
+
+      procedure Append_X_Id_Union (This : in out T;
+                                   Item : X_Id_Union.Ptr);
+
+      procedure Append_Type_Definition (This : in out T;
+                                        Item : Type_Definition.Ptr);
+
+      procedure Append_Enum (This : in out T;
+                             Item : Enum.Ptr);
+
+      procedure Append_Event (This : in out T;
+                              Item : Event_Access_Type);
+
+      procedure Append_Event_Copy (This : in out T;
+                                   Item : Event_Copy_Access_Type);
+
+      procedure Append_Union (This : in out T;
+                              Item : Union_Access_Type);
+
+      procedure Append_Error (This : in out T;
+                              Item : Error_Access_Type);
+
+      procedure Append_Error_Copy (This : in out T;
+                                   Item : Error_Copy_Access_Type);
+
+      procedure Append_Request (This : in out T;
+                                Item : Request_Access_Type);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Header           : aliased Fs.Header_Type;
+            My_Structs          : aliased Fs.Struct_Vectors.Vector;
+            My_X_Ids            : aliased Fs.X_Id_Vectors.Vector;
+            My_X_Id_Unions      : aliased Fs.X_Id_Union_Vectors.Vector;
+            My_Type_Definitions : aliased Fs.Type_Definition_Vectors.Vector;
+            My_Enums            : aliased Fs.Enum_Vectors.Vector;
+            My_Events           : aliased Fs.Event_Vectors.Vector;
+            My_Event_Copies     : aliased Fs.Event_Copy_Vectors.Vector;
+            My_Unions           : aliased Fs.Union_Vectors.Vector;
+            My_Errors           : aliased Fs.Error_Vectors.Vector;
+            My_Error_Copies     : aliased Fs.Error_Copy_Vectors.Vector;
+            My_Requests         : aliased Fs.Request_Vectors.Vector;
+         end record;
+
+   end Xcb;
 
 private
 
@@ -1287,60 +1396,10 @@ private
 
    function Members (This : Event_Type) return Event_Member_Vectors.Vector is (This.Members);
 
-   type Type_Definition_Type is tagged limited
-      record
-         Old_Name : Type_Definition_Old_Name_Type;
-         New_Name : Type_Definition_New_Name_Type;
-      end record;
-
-   function Old_Name (This : Type_Definition_Type) return Type_Definition_Old_Name_Type is (This.Old_Name);
-
-   function New_Name (This : Type_Definition_Type) return Type_Definition_New_Name_Type is (This.New_Name);
-
    type Operation_T is tagged limited
       record
          My_Op      : aliased Operation.Fs.Op_Type;
          My_Members : aliased Operation.Fs.Member_Vectors.Vector;
       end record;
-
-   type Xcb_Type is tagged limited
-      record
-         Header           : XCB_Header_Type;
-         Structs          : Struct_Vectors.Vector;
-         X_Ids            : X_Id_Kind_Vectors.Vector;
-         X_Id_Unions      : X_Id_Union_Vectors.Vector;
-         Type_Definitions : Type_Definition_Vectors.Vector;
-         Enums            : Enum_Vectors.Vector;
-         Events           : Event_Vectors.Vector;
-         Event_Copies     : Event_Copy_Vectors.Vector;
-         Unions           : Union_Vectors.Vector;
-         Errors           : Error_Vectors.Vector;
-         Error_Copies     : Error_Copy_Vectors.Vector;
-         Requests         : Request_Vectors.Vector;
-      end record;
-
-   function Header (This : Xcb_Type) return XCB_Header_Type is (This.Header);
-
-   function Structs (This : Xcb_Type) return Struct_Vectors.Vector is (This.Structs);
-
-   function X_Ids (This : Xcb_Type) return X_Id_Kind_Vectors.Vector is (This.X_Ids);
-
-   function X_Id_Unions (This : Xcb_Type) return X_Id_Union_Vectors.Vector is (This.X_Id_Unions);
-
-   function Type_Definitions (This : Xcb_Type) return Type_Definition_Vectors.Vector is (This.Type_Definitions);
-
-   function Enums (This : Xcb_Type) return Enum_Vectors.Vector is (This.Enums);
-
-   function Events (This : Xcb_Type) return Event_Vectors.Vector is (This.Events);
-
-   function Event_Copies (This : Xcb_Type) return Event_Copy_Vectors.Vector is (This.Event_Copies);
-
-   function Unions (This : Xcb_Type) return Union_Vectors.Vector is (This.Unions);
-
-   function Errors (This : Xcb_Type) return Error_Vectors.Vector is (This.Errors);
-
-   function Error_Copies (This : Xcb_Type) return Error_Copy_Vectors.Vector is (This.Error_Copies);
-
-   function Requests (This : Xcb_Type) return Request_Vectors.Vector is (This.Requests);
 
 end X_Proto;
