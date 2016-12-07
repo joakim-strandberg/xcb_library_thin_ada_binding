@@ -270,4 +270,72 @@ package body X_Proto is
 
    end Item;
 
+   package body List is
+
+      function Kind (This : T) return Fs.Kind_Const_Ptr is
+      begin
+         return This.My_Kind'Unchecked_Access;
+      end Kind;
+
+      function Name (This : T) return Fs.Name_Const_Ptr is
+      begin
+         return This.My_Name'Unchecked_Access;
+      end Name;
+
+      function Members (This : T) return Fs.Members_Const_Ptr is
+      begin
+         return This.My_Members'Unchecked_Access;
+      end Members;
+
+      procedure Set_Kind (This : in out T;
+                          Kind : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Kind := (Exists => True,
+                          Value  => Kind);
+      end Set_Kind;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Name := (Exists => True,
+                          Value  => Name);
+      end Set_Name;
+
+      procedure Append_Member (This   : in out T;
+                               Member : Fs.Member_Ptr) is
+      begin
+         Fs.Member_Vectors.Append (Container => This.My_Members,
+                                   New_Item  => Member);
+      end Append_Member;
+
+   end List;
+
+   package body Operation is
+
+      function Op (This : T) return Fs.Op_Const_Ptr is
+      begin
+         return This.My_Op'Unchecked_Access;
+      end Op;
+
+      function Members (This : T) return Fs.Members_Const_Ptr is
+      begin
+         return This.My_Members'Unchecked_Access;
+      end Members;
+
+      procedure Set_Op (This : in out T;
+                        Op   : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Op := (Exists => True,
+                        Value  => Op);
+      end Set_Op;
+
+      procedure Append_Member (This   : in out T;
+                               Member : Fs.Member_Ptr) is
+      begin
+         Fs.Member_Vectors.Append (Container => This.My_Members,
+                                   New_Item  => Member);
+      end Append_Member;
+
+   end Operation;
+
 end X_Proto;

@@ -1,6 +1,5 @@
 with Ada.Containers.Vectors;
 with Aida.Strings;
-with Ada.Unchecked_Deallocation;
 
 package X_Proto is
 
@@ -19,27 +18,6 @@ package X_Proto is
    end record;
 
    type Type_Definition_New_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type List_Kind_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type List_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Operation_Op_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
          when False => null;
@@ -405,61 +383,135 @@ package X_Proto is
 
    type Value_Access_Type is access all Value_Type;
 
-   type Operation_Type;
+   type Operation_T is tagged limited private;
 
-   type Operation_Access_Type is access all Operation_Type;
+   package Operation is
 
-   type Operation_Member_Kind_Id_Type is (
-                                          Operation_Member_Kind_Field_Reference,
-                                          Operation_Member_Kind_Value,
-                                          Operation_Member_Operation
-                                          );
+      package Fs is
 
-   type Operation_Member_Type (Kind_Id : Operation_Member_Kind_Id_Type) is record
-      case Kind_Id is
-         when Operation_Member_Kind_Field_Reference => Field_Reference : aliased Field_Reference_Type;
-         when Operation_Member_Kind_Value           => Value           : aliased Value_Type;
-         when Operation_Member_Operation            => Operation       : aliased Operation_Access_Type;
-      end case;
-   end record;
+         type Op_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   type Operation_Member_Access_Type is access all Operation_Member_Type;
+         type Op_Const_Ptr is access constant Op_Type;
 
-   package Operation_Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                   Element_Type => Operation_Member_Access_Type);
+         type Operation_Ptr is access all Operation_T;
 
-   type Operation_Type is tagged limited private;
-
-   function Op (This : Operation_Type) return Operation_Op_Type;
-
-   function Members (This : Operation_Type) return Operation_Member_Vectors.Vector;
-
-   type List_Member_Kind_Id_Type is (
-                                     List_Member_Kind_Field_Reference,
-                                     List_Member_Kind_Value,
-                                     List_Member_Kind_Operation
+         type Member_Kind_Id_Type is (
+                                      Member_Kind_Field_Reference,
+                                      Member_Kind_Value,
+                                      Member_Operation
                                      );
 
-   type List_Member_Type (Kind_Id : List_Member_Kind_Id_Type) is record
-      case Kind_Id is
-         when List_Member_Kind_Field_Reference => Field_Reference : Aida.Strings.Unbounded_String_Type;
-         when List_Member_Kind_Value           => Value           : aliased Value_Type;
-         when List_Member_Kind_Operation       => Operation       : aliased Operation_Type;
-      end case;
-   end record;
+         type Member_Type (Kind_Id : Member_Kind_Id_Type) is record
+            case Kind_Id is
+               when Member_Kind_Field_Reference => Field_Reference : aliased Field_Reference_Type;
+               when Member_Kind_Value           => Value           : aliased Value_Type;
+               when Member_Operation            => Operation       : aliased Operation_Ptr;
+            end case;
+         end record;
 
-   type List_Member_Access_Type is access all List_Member_Type;
+         type Member_Ptr is access Member_Type;
 
-   package List_Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => List_Member_Access_Type);
+         package Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                               Element_Type => Member_Ptr);
 
-   type List_Type is tagged limited private;
+         type Members_Const_Ptr is access constant Member_Vectors.Vector;
 
-   function Kind (This : List_Type) return List_Kind_Type;
+      end Fs;
 
-   function Name (This : List_Type) return List_Name_Type;
+      subtype T is Operation_T;
 
-   function Members (This : List_Type) return List_Member_Vectors.Vector;
+      function Op (This : T) return Fs.Op_Const_Ptr;
+
+      function Members (This : T) return Fs.Members_Const_Ptr;
+
+      procedure Set_Op (This : in out T;
+                        Op   : Aida.Strings.Unbounded_String_Type);
+
+      procedure Append_Member (This   : in out T;
+                               Member : Fs.Member_Ptr);
+
+      subtype Ptr is Fs.Operation_Ptr;
+
+   end Operation;
+
+   package List is
+
+      package Fs is
+
+         type Kind_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
+
+         type Kind_Const_Ptr is access constant Kind_Type;
+
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
+
+         type Name_Const_Ptr is access constant Name_Type;
+
+         type Member_Kind_Id_Type is (
+                                      List_Member_Kind_Field_Reference,
+                                      List_Member_Kind_Value,
+                                      List_Member_Kind_Operation
+                                     );
+
+         type Member_Type (Kind_Id : Member_Kind_Id_Type) is record
+            case Kind_Id is
+            when List_Member_Kind_Field_Reference => Field_Reference : Aida.Strings.Unbounded_String_Type;
+            when List_Member_Kind_Value           => Value           : aliased Value_Type;
+            when List_Member_Kind_Operation       => Operation       : aliased Operation_T;
+            end case;
+         end record;
+
+         type Member_Ptr is access all Member_Type;
+
+         package Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                               Element_Type => Member_Ptr);
+
+         type Members_Const_Ptr is access constant Member_Vectors.Vector;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Kind (This : T) return Fs.Kind_Const_Ptr;
+
+      function Name (This : T) return Fs.Name_Const_Ptr;
+
+      function Members (This : T) return Fs.Members_Const_Ptr;
+
+      procedure Set_Kind (This : in out T;
+                          Kind : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      procedure Append_Member (This   : in out T;
+                               Member : Fs.Member_Ptr);
+
+      type Ptr is access all T;
+
+   private
+      type T is tagged limited
+         record
+            My_Kind    : aliased Fs.Kind_Type;
+            My_Name    : aliased Fs.Name_Type;
+            My_Members : aliased Fs.Member_Vectors.Vector;
+         end record;
+
+   end List;
 
    package Item is
 
@@ -521,17 +573,13 @@ package X_Proto is
 
    end Item;
 
-
---     procedure Free is new Ada.Unchecked_Deallocation (Object => Item_Type,
---                                                       Name   => Item_Access_Type);
-
    type Expression_Field_Child_Kind_Id_Type is (
                                      Expression_Field_Child_Operation
                                      );
 
    type Expression_Field_Child_Type (Kind_Id : Expression_Field_Child_Kind_Id_Type) is record
       case Kind_Id is
-         when Expression_Field_Child_Operation  => Op : aliased Operation_Type;
+         when Expression_Field_Child_Operation  => Op : aliased Operation.T;
       end case;
    end record;
 
@@ -654,7 +702,7 @@ package X_Proto is
          when Event_Member_Field => F : aliased Field.T;
          when Event_Member_Pad   => P : aliased Pad.T;
          when Event_Member_Doc   => D : aliased Documentation_Type;
-         when Event_Member_List  => L : aliased List_Type;
+         when Event_Member_List  => L : aliased List.T;
       end case;
    end record;
 
@@ -871,7 +919,7 @@ package X_Proto is
 
    type Union_Child_Type (Kind_Id : Union_Child_Kind_Id_Type) is record
       case Kind_Id is
-         when Union_Child_List  => L : aliased List_Type;
+         when Union_Child_List  => L : aliased List.T;
       end case;
    end record;
 
@@ -918,7 +966,7 @@ package X_Proto is
             case Kind_Id is
                when Field_Member => F : aliased Field.T;
                when Pad_Member   => P : aliased Pad.T;
-               when List_Member  => L : aliased List_Type;
+               when List_Member  => L : aliased List.T;
             end case;
          end record;
 
@@ -996,7 +1044,7 @@ package X_Proto is
          when Reply_Child_Field         => F : aliased Field.T;
          when Reply_Child_Pad           => P : aliased Pad.T;
          when Reply_Child_Documentation => D : aliased Documentation_Type;
-         when Reply_Child_List          => L : aliased List_Type;
+         when Reply_Child_List          => L : aliased List.T;
       end case;
    end record;
 
@@ -1028,7 +1076,7 @@ package X_Proto is
          when Request_Child_Value_Param      => V  : aliased Value_Param_Type;
          when Request_Child_Documentation    => D  : aliased Documentation_Type;
          when Request_Child_Reply            => R  : aliased Reply_Type;
-         when Request_Child_List             => L  : aliased List_Type;
+         when Request_Child_List             => L  : aliased List.T;
          when Request_Child_Expression_Field => EF : aliased Expression_Field_Type;
       end case;
    end record;
@@ -1239,31 +1287,6 @@ private
 
    function Members (This : Event_Type) return Event_Member_Vectors.Vector is (This.Members);
 
-   type Operation_Type is tagged limited
-      record
-         Op      : Operation_Op_Type;
-         Members : Operation_Member_Vectors.Vector;
-      end record;
-
-   function Op (This : Operation_Type) return Operation_Op_Type is (This.Op);
-
-   function Members (This : Operation_Type) return Operation_Member_Vectors.Vector is (This.Members);
-
-   type List_Type is tagged limited
-      record
-         Kind    : List_Kind_Type;
-         Name    : List_Name_Type;
-         Members : List_Member_Vectors.Vector;
-      end record;
-
-   function Kind (This : List_Type) return List_Kind_Type is (This.Kind);
-
-   function Name (This : List_Type) return List_Name_Type is (This.Name);
-
-   function Members (This : List_Type) return List_Member_Vectors.Vector is (This.Members);
-
-   type List_Access_Type is access all List_Type;
-
    type Type_Definition_Type is tagged limited
       record
          Old_Name : Type_Definition_Old_Name_Type;
@@ -1273,6 +1296,12 @@ private
    function Old_Name (This : Type_Definition_Type) return Type_Definition_Old_Name_Type is (This.Old_Name);
 
    function New_Name (This : Type_Definition_Type) return Type_Definition_New_Name_Type is (This.New_Name);
+
+   type Operation_T is tagged limited
+      record
+         My_Op      : aliased Operation.Fs.Op_Type;
+         My_Members : aliased Operation.Fs.Member_Vectors.Vector;
+      end record;
 
    type Xcb_Type is tagged limited
       record

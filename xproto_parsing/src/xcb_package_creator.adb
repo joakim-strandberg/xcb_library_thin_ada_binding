@@ -1478,9 +1478,9 @@ package body XCB_Package_Creator is
                                                              New_Name    => New_Variable_Type_Name);
 
                            case Union.Children.Element (I).L.Members.Element (1).Kind_Id is
-                              when X_Proto.List_Member_Kind_Field_Reference =>
+                              when X_Proto.List.Fs.List_Member_Kind_Field_Reference =>
                                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & Union.Name.Value.To_String & " with list field child is unimplemented.");
-                              when X_Proto.List_Member_Kind_Value =>
+                              when X_Proto.List.Fs.List_Member_Kind_Value =>
                                  declare
                                     Is_Success : Boolean;
                                     N : Aida.Strings.Unbounded_String_Type;
@@ -1497,7 +1497,7 @@ package body XCB_Package_Creator is
                                                                Union.Children.Element (I).L.Kind.Value.To_String);
                                     end if;
                                  end;
-                              when X_Proto.List_Member_Kind_Operation =>
+                              when X_Proto.List.Fs.List_Member_Kind_Operation =>
                                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & Union.Name.Value.To_String & " with list kind child is unimplemented.");
                            end case;
 
@@ -1615,9 +1615,9 @@ package body XCB_Package_Creator is
                                                                   New_Name  => New_Variable_Type_Name);
 
                            case Event.Members.Element (I).L.Members.Element (1).Kind_Id is
-                              when X_Proto.List_Member_Kind_Field_Reference =>
+                              when X_Proto.List.Fs.List_Member_Kind_Field_Reference =>
                                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & Event.Name.Value.To_String & " with list field child is unimplemented.");
-                              when X_Proto.List_Member_Kind_Value =>
+                              when X_Proto.List.Fs.List_Member_Kind_Value =>
                                  declare
                                     Is_Success : Boolean;
                                     N : Aida.Strings.Unbounded_String_Type;
@@ -1634,7 +1634,7 @@ package body XCB_Package_Creator is
                                                                Event.Members.Element (I).L.Kind.Value.To_String);
                                     end if;
                                  end;
-                              when X_Proto.List_Member_Kind_Operation =>
+                              when X_Proto.List.Fs.List_Member_Kind_Operation =>
                                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & Event.Name.Value.To_String & " with list kind child is unimplemented.");
                            end case;
 
@@ -1732,11 +1732,11 @@ package body XCB_Package_Creator is
                               Generate_Struct_Name (Old_Name => Event.Members.Element (I).L.Name.Value.To_String,
                                                     New_Name => Variable_Name);
                               case Event.Members.Element (I).L.Members.Element (1).Kind_Id is
-                              when X_Proto.List_Member_Kind_Field_Reference =>
+                              when X_Proto.List.Fs.List_Member_Kind_Field_Reference =>
                                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & Event.Name.Value.To_String & " with list field child is unimplemented.");
-                              when X_Proto.List_Member_Kind_Value =>
+                              when X_Proto.List.Fs.List_Member_Kind_Value =>
                                  Put_Tabs (2); Put_Line (Variable_Name.To_String & " : aliased " & New_Variable_Type_Name.To_String & ";");
-                              when X_Proto.List_Member_Kind_Operation =>
+                              when X_Proto.List.Fs.List_Member_Kind_Operation =>
                                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & Event.Name.Value.To_String & " with list kind child is unimplemented.");
                               end case;
                            end;
