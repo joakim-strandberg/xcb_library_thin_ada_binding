@@ -3,20 +3,6 @@ with Aida.Strings;
 
 package X_Proto is
 
-   type Event_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Event_Number_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Natural;
-         when False => null;
-      end case;
-   end record;
-
    type Documentation_Brief_Description_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
@@ -59,13 +45,6 @@ package X_Proto is
       end case;
    end record;
 
-   type Event_No_Sequence_Number_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Boolean;
-         when False => null;
-      end case;
-   end record;
-
    type Union_Name_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
@@ -76,13 +55,6 @@ package X_Proto is
    type Documentation_Description_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Event_XGE_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Boolean;
          when False => null;
       end case;
    end record;
@@ -663,27 +635,6 @@ package X_Proto is
 
    type Documentation_Access_Type is access all Documentation_Type;
 
-   type Event_Member_Kind_Id_Type is (
-                                      Event_Member_Field,
-                                      Event_Member_Pad,
-                                      Event_Member_Doc,
-                                      Event_Member_List
-                                     );
-
-   type Event_Member_Type (Kind_Id : Event_Member_Kind_Id_Type) is record
-      case Kind_Id is
-         when Event_Member_Field => F : aliased Field.T;
-         when Event_Member_Pad   => P : aliased Pad.T;
-         when Event_Member_Doc   => D : aliased Documentation_Type;
-         when Event_Member_List  => L : aliased List.T;
-      end case;
-   end record;
-
-   type Event_Member_Access_Type is access all Event_Member_Type;
-
-   package Event_Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                               Element_Type => Event_Member_Access_Type);
-
    type Event_Copy_Type is tagged limited private;
 
    function Name (This : Event_Copy_Type) return Event_Copy_Name_Type;
@@ -993,19 +944,112 @@ package X_Proto is
 
    end Struct;
 
-   type Event_Type is tagged limited private;
+   package Event is
 
-   function Name (This : Event_Type) return Event_Name_Type;
+      package Fs is
 
-   function Number (This : Event_Type) return Event_Number_Type;
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   function No_Sequence_Number (This : Event_Type) return Event_No_Sequence_Number_Type;
+         type Name_Const_Ptr is access constant Name_Type;
 
-   function XGE (This : Event_Type) return Event_XGE_Type;
+         type Number_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Natural;
+               when False => null;
+            end case;
+         end record;
 
-   function Members (This : Event_Type) return Event_Member_Vectors.Vector;
+         type Number_Const_Ptr is access constant Number_Type;
 
-   type Event_Access_Type is access all Event_Type;
+         type No_Sequence_Number_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Boolean;
+               when False => null;
+            end case;
+         end record;
+
+         type No_Sequence_Number_Const_Ptr is access constant No_Sequence_Number_Type;
+
+         type XGE_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Boolean;
+               when False => null;
+            end case;
+         end record;
+
+         type XGE_Const_Ptr is access constant XGE_Type;
+
+         type Member_Kind_Id_Type is (
+                                      Event_Member_Field,
+                                      Event_Member_Pad,
+                                      Event_Member_Doc,
+                                      Event_Member_List
+                                     );
+
+         type Member_Type (Kind_Id : Member_Kind_Id_Type) is record
+            case Kind_Id is
+               when Event_Member_Field => F : aliased Field.T;
+               when Event_Member_Pad   => P : aliased Pad.T;
+               when Event_Member_Doc   => D : aliased Documentation_Type;
+               when Event_Member_List  => L : aliased List.T;
+            end case;
+         end record;
+
+         type Member_Ptr is access all Member_Type;
+
+         package Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                               Element_Type => Member_Ptr);
+
+         type Members_Const_Ptr is access constant Member_Vectors.Vector;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Name (This : T) return Fs.Name_Const_Ptr;
+
+      function Number (This : T) return Fs.Number_Const_Ptr;
+
+      function No_Sequence_Number (This : T) return Fs.No_Sequence_Number_Const_Ptr;
+
+      function XGE (This : T) return Fs.XGE_Const_Ptr;
+
+      function Members (This : T) return Fs.Members_Const_Ptr;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Number (This : in out T;
+                            Value : Natural);
+
+      procedure Set_No_Sequence_Number (This  : in out T;
+                                        Value : Boolean);
+
+      procedure Set_XGE (This  : in out T;
+                         Value : Boolean);
+
+      procedure Append_Member (This   : in out T;
+                               Member : Fs.Member_Ptr);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Name               : aliased Fs.Name_Type;
+            My_Number             : aliased Fs.Number_Type;
+            My_No_Sequence_Number : aliased Fs.No_Sequence_Number_Type;
+            My_Members            : aliased Fs.Member_Vectors.Vector;
+            My_XGE                : aliased Fs.XGE_Type;
+         end record;
+
+   end Event;
 
    type Value_Param_Type is tagged limited private;
 
@@ -1126,7 +1170,8 @@ package X_Proto is
          type Enums_Const_Ptr is access constant Enum_Vectors.Vector;
 
          package Event_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => Event_Access_Type);
+                                                              Element_Type => Event.Ptr,
+                                                              "="          => Event."=");
 
          type Events_Const_Ptr is access constant Event_Vectors.Vector;
 
@@ -1202,7 +1247,7 @@ package X_Proto is
                              Item : Enum.Ptr);
 
       procedure Append_Event (This : in out T;
-                              Item : Event_Access_Type);
+                              Item : Event.Ptr);
 
       procedure Append_Event_Copy (This : in out T;
                                    Item : Event_Copy_Access_Type);
@@ -1376,25 +1421,6 @@ private
    function Description (This : Documentation_Type) return Documentation_Description_Type is (This.Description);
 
    function Members (This : Documentation_Type) return Documentation_Member_Vectors.Vector is (This.Members);
-
-   type Event_Type is tagged limited
-      record
-         Name               : Event_Name_Type;
-         Number             : Event_Number_Type;
-         No_Sequence_Number : Event_No_Sequence_Number_Type;
-         Members            : Event_Member_Vectors.Vector;
-         XGE                : Event_XGE_Type;
-      end record;
-
-   function Name (This : Event_Type) return Event_Name_Type is (This.Name);
-
-   function Number (This : Event_Type) return Event_Number_Type is (This.Number);
-
-   function No_Sequence_Number (This : Event_Type) return Event_No_Sequence_Number_Type is (This.No_Sequence_Number);
-
-   function XGE (This : Event_Type) return Event_XGE_Type is (This.XGE);
-
-   function Members (This : Event_Type) return Event_Member_Vectors.Vector is (This.Members);
 
    type Operation_T is tagged limited
       record

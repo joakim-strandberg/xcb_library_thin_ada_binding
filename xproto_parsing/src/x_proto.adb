@@ -471,7 +471,7 @@ package body X_Proto is
       end Append_Enum;
 
       procedure Append_Event (This : in out T;
-                              Item : Event_Access_Type) is
+                              Item : Event.Ptr) is
       begin
          Fs.Event_Vectors.Append (Container => This.My_Events,
                                   New_Item  => Item);
@@ -513,5 +513,69 @@ package body X_Proto is
       end Append_Request;
 
    end Xcb;
+
+   package body Event is
+
+      function Name (This : T) return Fs.Name_Const_Ptr is
+      begin
+         return This.My_Name'Unchecked_Access;
+      end Name;
+
+      function Number (This : T) return Fs.Number_Const_Ptr is
+      begin
+         return This.My_Number'Unchecked_Access;
+      end Number;
+
+      function No_Sequence_Number (This : T) return Fs.No_Sequence_Number_Const_Ptr is
+      begin
+         return This.My_No_Sequence_Number'Unchecked_Access;
+      end No_Sequence_Number;
+
+      function XGE (This : T) return Fs.XGE_Const_Ptr is
+      begin
+         return This.My_XGE'Unchecked_Access;
+      end XGE;
+
+      function Members (This : T) return Fs.Members_Const_Ptr is
+      begin
+         return This.My_Members'Unchecked_Access;
+      end Members;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Name := (Exists => True,
+                          Value  => Name);
+      end Set_Name;
+
+      procedure Set_Number (This : in out T;
+                            Value : Natural) is
+      begin
+         This.My_Number := (Exists => True,
+                            Value  => Value);
+      end Set_Number;
+
+      procedure Set_No_Sequence_Number (This  : in out T;
+                                        Value : Boolean) is
+      begin
+         This.My_No_Sequence_Number := (Exists => True,
+                                        Value  => Value);
+      end Set_No_Sequence_Number;
+
+      procedure Set_XGE (This  : in out T;
+                         Value : Boolean) is
+      begin
+         This.My_XGE := (Exists => True,
+                         Value  => Value);
+      end Set_XGE;
+
+      procedure Append_Member (This   : in out T;
+                               Member : Fs.Member_Ptr) is
+      begin
+         Fs.Member_Vectors.Append (Container => This.My_Members,
+                                   New_Item  => Member);
+      end Append_Member;
+
+   end Event;
 
 end X_Proto;

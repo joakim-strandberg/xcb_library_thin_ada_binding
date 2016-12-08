@@ -103,7 +103,7 @@ package body X_Proto.XML is
                                 List_Type_Id,
                                 Field_Reference,
                                 Op_Type_Id,
-                                Event,
+                                Event_Type_Id,
                                 Documentation,
                                 See,
                                 Event_Copy,
@@ -143,7 +143,7 @@ package body X_Proto.XML is
          when List_Type_Id            => List_V            : List.Ptr;
          when Field_Reference         => Field_Reference   : Field_Reference_Access_Type;
          when Op_Type_Id              => Op_V              : Operation.Ptr;
-         when Event                   => Event             : Event_Access_Type;
+         when Event_Type_Id           => Event_V           : Event.Ptr;
          when Documentation           => Documentation     : Documentation_Access_Type;
          when See                     => See               : See_Access_Type;
          when Event_Copy              => Event_Copy        : Event_Copy_Access_Type;
@@ -327,14 +327,14 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = XML_Tag_Event then
                   declare
-                     Event : Event_Access_Type := new Event_Type;
+                     E : Event.Ptr := new Event.T;
                   begin
-                     Prev_Tag.Xcb_V.Append_Event (Event);
+                     Prev_Tag.Xcb_V.Append_Event (E);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Event,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Event                => Event));
+                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Event_Type_Id,
+                                                                                                Find_Tag => Prev_Tag,
+                                                                                                Event_V  => E));
                   end;
                elsif Tag_Name = XML_Tag_Event_Copy then
                   declare
@@ -553,12 +553,12 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Event =>
+            when Tag_Id.Event_Type_Id =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : Event_Member_Access_Type := new Event_Member_Type (Event_Member_Field);
+                     F : Event.Fs.Member_Ptr := new Event.Fs.Member_Type (Event.Fs.Event_Member_Field);
                   begin
-                     Prev_Tag.Event.Members.Append (F);
+                     Prev_Tag.Event_V.Append_Member (F);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Enum_Field,
@@ -567,9 +567,9 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : Event_Member_Access_Type := new Event_Member_Type (Event_Member_Pad);
+                     P : Event.Fs.Member_Ptr := new Event.Fs.Member_Type (Event.Fs.Event_Member_Pad);
                   begin
-                     Prev_Tag.Event.Members.Append (P);
+                     Prev_Tag.Event_V.Append_Member (P);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
@@ -578,9 +578,9 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
-                     D : Event_Member_Access_Type := new Event_Member_Type (Event_Member_Doc);
+                     D : Event.Fs.Member_Ptr := new Event.Fs.Member_Type (Event.Fs.Event_Member_Doc);
                   begin
-                     Prev_Tag.Event.Members.Append (D);
+                     Prev_Tag.Event_V.Append_Member (D);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation,
@@ -589,9 +589,9 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     L : Event_Member_Access_Type := new Event_Member_Type (Event_Member_List);
+                     L : Event.Fs.Member_Ptr := new Event.Fs.Member_Type (Event.Fs.Event_Member_List);
                   begin
-                     Prev_Tag.Event.Members.Append (L);
+                     Prev_Tag.Event_V.Append_Member (L);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id              => Tag_Id.List_Type_Id,
@@ -1064,14 +1064,13 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Event =>
+            when Tag_Id.Event_Type_Id =>
                if Attribute_Name = XML_Tag_Event_Attribute_Name then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Event.Name := (Exists => True,
-                                                Value  => V);
+                     Current_Tag.Event_V.Set_Name (V);
                   end;
                elsif Attribute_Name = XML_Tag_Event_Attribute_Number then
                   declare
@@ -1086,28 +1085,23 @@ package body X_Proto.XML is
                         Is_Success := False;
                         Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Current_Tag.Event.Number := (Exists => True,
-                                                     Value  => V);
+                        Current_Tag.Event_V.Set_Number (V);
                      end if;
                   end;
                elsif Attribute_Name = XML_Tag_Event_Attribute_No_Sequence_Number then
                   if Attribute_Value = "true" then
-                     Current_Tag.Event.No_Sequence_Number := (Exists => True,
-                                                              Value  => True);
+                     Current_Tag.Event_V.Set_No_Sequence_Number (True);
                   elsif Attribute_Value = "false" then
-                     Current_Tag.Event.No_Sequence_Number := (Exists => True,
-                                                              Value  => False);
+                     Current_Tag.Event_V.Set_No_Sequence_Number (False);
                   else
                      Is_Success := False;
                      Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                   end if;
                elsif Attribute_Name = XML_Tag_Event_Attribute_XGE then
                   if Attribute_Value = "true" then
-                     Current_Tag.Event.XGE := (Exists => True,
-                                               Value  => True);
+                     Current_Tag.Event_V.Set_XGE (True);
                   elsif Attribute_Value = "false" then
-                     Current_Tag.Event.XGE := (Exists => True,
-                                               Value  => False);
+                     Current_Tag.Event_V.Set_XGE (False);
                   else
                      Is_Success := False;
                      Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
@@ -1592,7 +1586,7 @@ package body X_Proto.XML is
                     Tag_Id.Enum_Enum |
                     Tag_Id.Item_Type_Id |
                     Tag_Id.List_Type_Id |
-                    Tag_Id.Event |
+                    Tag_Id.Event_Type_Id |
                     Tag_id.Documentation |
                     Tag_Id.See |
                     Tag_Id.Event_Copy |

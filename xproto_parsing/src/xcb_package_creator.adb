@@ -1589,10 +1589,10 @@ package body XCB_Package_Creator is
                Padding_Number : Integer := 0;
             begin
                for I in Positive range Event.Members.First_Index..Event.Members.Last_Index loop
-                  case Event.Members.Element (I).Kind_Id is
-                     when X_Proto.Event_Member_Field =>
+                  case Event.Members.all.Element (I).Kind_Id is
+                     when X_Proto.Event.Fs.Event_Member_Field =>
                         null;
-                     when X_Proto.Event_Member_Pad =>
+                     when X_Proto.Event.Fs.Event_Member_Pad =>
                         if Event.Members.Element (I).P.Bytes.Value > 1 then
                            declare
                               Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
@@ -1606,9 +1606,9 @@ package body XCB_Package_Creator is
                            end;
                         end if;
                         Padding_Number := Padding_Number  + 1;
-                     when X_Proto.Event_Member_Doc =>
+                     when X_Proto.Event.Fs.Event_Member_Doc =>
                         null;
-                     when X_Proto.Event_Member_List =>
+                     when X_Proto.Event.Fs.Event_Member_List =>
                         if Event.Members.Element (I).L.Members.Length = 1 then
                            Generate_Classic_Event_List_Type_Name (Enum_Name => Event.Name.Value.To_String,
                                                                   List_Name => Event.Members.Element (I).L.Name.Value.To_String,
@@ -1654,8 +1654,8 @@ package body XCB_Package_Creator is
                Put_Tabs (2); Put_Line ("Response_Kind : aliased Interfaces.Unsigned_8;");
 
                for I in Positive range Event.Members.First_Index..Event.Members.Last_Index loop
-                  case Event.Members.Element (I).Kind_Id is
-                     when X_Proto.Event_Member_Field =>
+                  case Event.Members.all.Element (I).Kind_Id is
+                     when X_Proto.Event.Fs.Event_Member_Field =>
                         declare
                            Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
                            Is_Success : Boolean;
@@ -1708,7 +1708,7 @@ package body XCB_Package_Creator is
                               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & Event.Members.Element (I).F.Kind.Value.To_String);
                            end if;
                         end;
-                     when X_Proto.Event_Member_Pad =>
+                     when X_Proto.Event.Fs.Event_Member_Pad =>
                         if Event.Members.Element (I).P.Bytes.Value = 1 then
                            Put_Tabs (2); Put_Line (   "Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
                         else
@@ -1718,9 +1718,9 @@ package body XCB_Package_Creator is
                            Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
                         end if;
                         Padding_Number := Padding_Number + 1;
-                     when X_Proto.Event_Member_Doc =>
+                     when X_Proto.Event.Fs.Event_Member_Doc =>
                         null;
-                     when X_Proto.Event_Member_List =>
+                     when X_Proto.Event.Fs.Event_Member_List =>
                         if Event.Members.Element (I).L.Members.Length = 1 then
                            Generate_Classic_Event_List_Type_Name (Enum_Name => Event.Name.Value.To_String,
                                                                   List_Name => Event.Members.Element (I).L.Name.Value.To_String,
