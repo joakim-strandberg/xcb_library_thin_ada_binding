@@ -106,8 +106,8 @@ package body X_Proto.XML is
                                 Event_Type_Id,
                                 Documentation,
                                 See,
-                                Event_Copy,
-                                Union,
+                                Event_Copy_Type_Id,
+                                Union_Type_Id,
                                 Error,
                                 Error_Copy,
                                 Request,
@@ -146,8 +146,8 @@ package body X_Proto.XML is
          when Event_Type_Id           => Event_V           : Event.Ptr;
          when Documentation           => Documentation     : Documentation_Access_Type;
          when See                     => See               : See_Access_Type;
-         when Event_Copy              => Event_Copy        : Event_Copy_Access_Type;
-         when Union                   => Union             : Union_Access_Type;
+         when Event_Copy_Type_Id      => Event_Copy_V      : Event_Copy.Ptr;
+         when Union_Type_Id           => Union_V           : Union.Ptr;
          when Error                   => Error             : Error_Access_Type;
          when Error_Copy              => Error_Copy        : Error_Copy_Access_Type;
          when Request                 => Request           : Request_Access_Type;
@@ -338,25 +338,25 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = XML_Tag_Event_Copy then
                   declare
-                     EC : Event_Copy_Access_Type := new Event_Copy_Type;
+                     EC : Event_Copy.Ptr := new Event_Copy.T;
                   begin
                      Prev_Tag.Xcb_V.Append_Event_Copy (EC);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Event_Copy,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Event_Copy           => EC));
+                                                                     I => new Current_Tag_Type'(Kind_Id      => Tag_Id.Event_Copy_Type_Id,
+                                                                                                Find_Tag     => Prev_Tag,
+                                                                                                Event_Copy_V => EC));
                   end;
                elsif Tag_Name = XML_Tag_Union then
                   declare
-                     U : Union_Access_Type := new Union_Type;
+                     U : Union.Ptr := new Union.T;
                   begin
                      Prev_Tag.Xcb_V.Append_Union (U);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Union,
+                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Union_Type_Id,
                                                                                                 Find_Tag             => Prev_Tag,
-                                                                                                Union                => U));
+                                                                                                Union_V              => U));
                   end;
                elsif Tag_Name = XML_Tag_Error then
                   declare
@@ -655,12 +655,12 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Union =>
+            when Tag_Id.Union_Type_Id =>
                if Tag_Name = Tag_List then
                   declare
-                     L : Union_Child_Access_Type := new Union_Child_Type (Union_Child_List);
+                     L : Union.Fs.Child_Ptr := new Union.Fs.Child_Type (Union.Fs.Child_List);
                   begin
-                     Prev_Tag.Union.Children.Append (L);
+                     Prev_Tag.Union_V.Append_Child (L);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id  => Tag_Id.List_Type_Id,
@@ -854,7 +854,7 @@ package body X_Proto.XML is
                  Tag_Id.Bit_Type_Id |
                  Tag_Id.Field_Reference |
                  Tag_Id.See |
-                 Tag_Id.Event_Copy |
+                 Tag_Id.Event_Copy_Type_Id |
                  Tag_Id.Error_Copy |
                  Tag_Id.Value_Param |
                  Tag_Id.Example =>
@@ -1131,22 +1131,20 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Event_Copy =>
+            when Tag_Id.Event_Copy_Type_Id =>
                if Attribute_Name = XML_Tag_Event_Copy_Attribute_Name then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Event_Copy.Name := (Exists => True,
-                                                     Value  => V);
+                     Current_Tag.Event_Copy_V.Set_Name (V);
                   end;
                elsif Attribute_Name = XML_Tag_Event_Copy_Attribute_Ref then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Event_Copy.Ref := (Exists => True,
-                                                    Value  => V);
+                     Current_Tag.Event_Copy_V.Set_Ref (V);
                   end;
                elsif Attribute_Name = XML_Tag_Event_Copy_Attribute_Number then
                   declare
@@ -1161,22 +1159,20 @@ package body X_Proto.XML is
                         Is_Success := False;
                         Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Current_Tag.Event_Copy.Number := (Exists => True,
-                                                          Value  => V);
+                        Current_Tag.Event_Copy_V.Set_Number (V);
                      end if;
                   end;
                else
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Union =>
+            when Tag_Id.Union_Type_Id =>
                if Attribute_Name = XML_Tag_Union_Attribute_Name then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Union.Name := (Exists => True,
-                                                Value  => V);
+                     Current_Tag.Union_V.Set_Name (V);
                   end;
                else
                   Is_Success := False;
@@ -1589,8 +1585,8 @@ package body X_Proto.XML is
                     Tag_Id.Event_Type_Id |
                     Tag_id.Documentation |
                     Tag_Id.See |
-                    Tag_Id.Event_Copy |
-                    Tag_Id.Union |
+                    Tag_Id.Event_Copy_Type_Id |
+                    Tag_Id.Union_Type_Id |
                     Tag_Id.Error_Copy |
                     Tag_Id.Request |
                     Tag_Id.Value_Param |

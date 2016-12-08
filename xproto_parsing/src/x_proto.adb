@@ -478,14 +478,14 @@ package body X_Proto is
       end Append_Event;
 
       procedure Append_Event_Copy (This : in out T;
-                                   Item : Event_Copy_Access_Type) is
+                                   Item : Event_Copy.Ptr) is
       begin
          Fs.Event_Copy_Vectors.Append (Container => This.My_Event_Copies,
                                        New_Item  => Item);
       end Append_Event_Copy;
 
       procedure Append_Union (This : in out T;
-                              Item : Union_Access_Type) is
+                              Item : Union.Ptr) is
       begin
          Fs.Union_Vectors.Append (Container => This.My_Unions,
                                   New_Item  => Item);
@@ -577,5 +577,73 @@ package body X_Proto is
       end Append_Member;
 
    end Event;
+
+   package body Event_Copy is
+
+      function Name (This : T) return Fs.Name_Const_Ptr is
+      begin
+         return This.My_Name'Unchecked_Access;
+      end Name;
+
+      function Number (This : T) return Fs.Number_Const_Ptr is
+      begin
+         return This.My_Number'Unchecked_Access;
+      end Number;
+
+      function Ref (This : T) return Fs.Ref_Const_Ptr is
+      begin
+         return This.My_Ref'Unchecked_Access;
+      end Ref;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Name := (Exists => True,
+                          Value  => Name);
+      end Set_Name;
+
+      procedure Set_Number (This  : in out T;
+                            Value : Natural) is
+      begin
+         This.My_Number := (Exists => True,
+                            Value  => Value);
+      end Set_Number;
+
+      procedure Set_Ref (This : in out T;
+                         Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Ref := (Exists => True,
+                         Value  => Name);
+      end Set_Ref;
+
+   end Event_Copy;
+
+   package body Union is
+
+      function Name (This : T) return Fs.Name_Const_Ptr is
+      begin
+         return This.My_Name'Unchecked_Access;
+      end Name;
+
+      function Children (This : T) return Fs.Children_Const_Ptr is
+      begin
+         return This.My_Children'Unchecked_Access;
+      end Children;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Name := (Exists => True,
+                          Value  => Name);
+      end Set_Name;
+
+      procedure Append_Child (This  : in out T;
+                              Child : Fs.Child_Ptr) is
+      begin
+         Fs.Child_Vectors.Append (Container => This.My_Children,
+                                  New_Item  => Child);
+      end Append_Child;
+
+   end Union;
 
 end X_Proto;

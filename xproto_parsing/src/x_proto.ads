@@ -24,34 +24,6 @@ package X_Proto is
       end case;
    end record;
 
-   type Event_Copy_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Event_Copy_Number_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Natural;
-         when False => null;
-      end case;
-   end record;
-
-   type Event_Copy_Ref_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Union_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
    type Documentation_Description_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
@@ -635,15 +607,68 @@ package X_Proto is
 
    type Documentation_Access_Type is access all Documentation_Type;
 
-   type Event_Copy_Type is tagged limited private;
+   package Event_Copy is
 
-   function Name (This : Event_Copy_Type) return Event_Copy_Name_Type;
+      package Fs is
 
-   function Number (This : Event_Copy_Type) return Event_Copy_Number_Type;
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   function Ref (This : Event_Copy_Type) return Event_Copy_Ref_Type;
+         type Name_Const_Ptr is access constant Name_Type;
 
-   type Event_Copy_Access_Type is access all Event_Copy_Type;
+         type Number_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Natural;
+               when False => null;
+            end case;
+         end record;
+
+         type Number_Const_Ptr is access constant Number_Type;
+
+         type Ref_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
+
+         type Ref_Const_Ptr is access constant Ref_Type;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Name (This : T) return Fs.Name_Const_Ptr;
+
+      function Number (This : T) return Fs.Number_Const_Ptr;
+
+      function Ref (This : T) return Fs.Ref_Const_Ptr;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Number (This  : in out T;
+                            Value : Natural);
+
+      procedure Set_Ref (This : in out T;
+                         Name : Aida.Strings.Unbounded_String_Type);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Name   : aliased Fs.Name_Type;
+            My_Number : aliased Fs.Number_Type;
+            My_Ref    : aliased Fs.Ref_Type;
+         end record;
+
+   end Event_Copy;
 
    package X_Id is
 
@@ -859,28 +884,61 @@ package X_Proto is
 
    end Enum;
 
-   type Union_Child_Kind_Id_Type is (
-                                      Union_Child_List
-                                     );
+   package Union is
 
-   type Union_Child_Type (Kind_Id : Union_Child_Kind_Id_Type) is record
-      case Kind_Id is
-         when Union_Child_List  => L : aliased List.T;
-      end case;
-   end record;
+      package Fs is
 
-   type Union_Child_Access_Type is access all Union_Child_Type;
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   package Union_Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => Union_Child_Access_Type);
+         type Name_Const_Ptr is access constant Name_Type;
 
-   type Union_Type is tagged limited private;
+         type Child_Kind_Id_Type is (
+                                     Child_List
+                                    );
 
-   function Name (This : Union_Type) return Union_Name_Type;
+         type Child_Type (Kind_Id : Child_Kind_Id_Type) is record
+            case Kind_Id is
+              when Child_List  => L : aliased List.T;
+            end case;
+         end record;
 
-   function Children (This : Union_Type) return Union_Child_Vectors.Vector;
+         type Child_Ptr is access all Child_Type;
 
-   type Union_Access_Type is access all Union_Type;
+         package Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                              Element_Type => Child_Ptr);
+
+         type Children_Const_Ptr is access constant Child_Vectors.Vector;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Name (This : T) return Fs.Name_Const_Ptr;
+
+      function Children (This : T) return Fs.Children_Const_Ptr;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      procedure Append_Child (This  : in out T;
+                              Child : Fs.Child_Ptr);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Name     : aliased Fs.Name_Type;
+            My_Children : aliased Fs.Child_Vectors.Vector;
+         end record;
+
+   end Union;
 
    package Struct is
 
@@ -1176,12 +1234,14 @@ package X_Proto is
          type Events_Const_Ptr is access constant Event_Vectors.Vector;
 
          package Event_Copy_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                   Element_Type => Event_Copy_Access_Type);
+                                                                   Element_Type => Event_Copy.Ptr,
+                                                                   "="          => Event_Copy."=");
 
          type Event_Copies_Const_Ptr is access constant Event_Copy_Vectors.Vector;
 
          package Union_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => Union_Access_Type);
+                                                              Element_Type => Union.Ptr,
+                                                              "="          => Union."=");
 
          type Unions_Const_Ptr is access constant Union_Vectors.Vector;
 
@@ -1250,10 +1310,10 @@ package X_Proto is
                               Item : Event.Ptr);
 
       procedure Append_Event_Copy (This : in out T;
-                                   Item : Event_Copy_Access_Type);
+                                   Item : Event_Copy.Ptr);
 
       procedure Append_Union (This : in out T;
-                              Item : Union_Access_Type);
+                              Item : Union.Ptr);
 
       procedure Append_Error (This : in out T;
                               Item : Error_Access_Type);
@@ -1375,29 +1435,6 @@ private
    function Value (This : Error_Type) return Error_Value_Type is (This.Value);
 
    function Children (This : Error_Type) return Error_Child_Vectors.Vector is (This.Children);
-
-   type Union_Type is tagged limited
-      record
-         Name : Union_Name_Type;
-         Children : Union_Child_Vectors.Vector;
-      end record;
-
-   function Children (This : Union_Type) return Union_Child_Vectors.Vector is (This.Children);
-
-   function Name (This : Union_Type) return Union_Name_Type is (This.Name);
-
-   type Event_Copy_Type is tagged limited
-      record
-         Name   : Event_Copy_Name_Type;
-         Number : Event_Copy_Number_Type;
-         Ref    : Event_Copy_Ref_Type;
-      end record;
-
-   function Name (This : Event_Copy_Type) return Event_Copy_Name_Type is (This.Name);
-
-   function Number (This : Event_Copy_Type) return Event_Copy_Number_Type is (This.Number);
-
-   function Ref (This : Event_Copy_Type) return Event_Copy_Ref_Type is (This.Ref);
 
    type See_Type is tagged limited
       record

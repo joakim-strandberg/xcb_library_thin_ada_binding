@@ -1470,8 +1470,8 @@ package body XCB_Package_Creator is
                Discriminant_Number : Integer := 0; -- is increased for each field in the union
             begin
                for I in Positive range Union.Children.First_Index..Union.Children.Last_Index loop
-                  case Union.Children.Element (I).Kind_Id is
-                     when X_Proto.Union_Child_List =>
+                  case Union.Children.all.Element (I).Kind_Id is
+                     when X_Proto.Union.Fs.Child_List =>
                         if Union.Children.Element (I).L.Members.Length = 1 then
                            Generate_Classic_Array_Type_Name (Prefix_Name => Union.Name.Value.To_String,
                                                              Field_Name  => Union.Children.Element (I).L.Name.Value.To_String,
@@ -1524,8 +1524,8 @@ package body XCB_Package_Creator is
                Put_Tabs (2); Put_Line ("case Discriminant is");
 
                for I in Positive range Union.Children.First_Index..Union.Children.Last_Index loop
-                  case Union.Children.Element (I).Kind_Id is
-                     when X_Proto.Union_Child_List =>
+                  case Union.Children.all.Element (I).Kind_Id is
+                     when X_Proto.Union.Fs.Child_List =>
                         declare
                            Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
                         begin
