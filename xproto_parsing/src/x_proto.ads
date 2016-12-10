@@ -31,55 +31,6 @@ package X_Proto is
       end case;
    end record;
 
-   type Error_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Error_Number_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Natural;
-         when False => null;
-      end case;
-   end record;
-
-   type Error_Copy_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Error_Copy_Number_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Natural;
-         when False => null;
-      end case;
-   end record;
-
-   type Error_Copy_Ref_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Request_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Request_Op_Code_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Natural;
-         when False => null;
-      end case;
-   end record;
-
    type Value_Param_Mask_Kind_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
@@ -95,20 +46,6 @@ package X_Proto is
    end record;
 
    type Value_Param_List_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Error_Value_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Error_Kind_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
          when False => null;
@@ -146,13 +83,6 @@ package X_Proto is
    type Expression_Field_Name_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Request_Shall_Combine_Adjacent_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Boolean;
          when False => null;
       end case;
    end record;
@@ -521,46 +451,170 @@ package X_Proto is
 
    type Expression_Field_Access_Type is access all Expression_Field_Type;
 
-   type Error_Child_Kind_Id_Type is (
-                                     Error_Child_Field,
-                                     Error_Child_Pad
-                                     );
+   package Error is
 
-   type Error_Child_Type (Kind_Id : Error_Child_Kind_Id_Type) is record
-      case Kind_Id is
-         when Error_Child_Field  => F : aliased Field.T;
-         when Error_Child_Pad    => P : aliased Pad.T;
-      end case;
-   end record;
+      package Fs is
 
-   type Error_Child_Access_Type is access all Error_Child_Type;
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   package Error_Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => Error_Child_Access_Type);
+         type Name_Const_Ptr is access constant Name_Type;
 
-   type Error_Type is tagged limited private;
+         type Number_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Natural;
+               when False => null;
+            end case;
+         end record;
 
-   function Name (This : Error_Type) return Error_Name_Type;
+         type Number_Const_Ptr is access constant Number_Type;
 
-   function Number (This : Error_Type) return Error_Number_Type;
+         type Kind_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   function Kind (This : Error_Type) return Error_Kind_Type;
+         type Kind_Const_Ptr is access constant Kind_Type;
 
-   function Value (This : Error_Type) return Error_Value_Type;
+         type Value_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   function Children (This : Error_Type) return Error_Child_Vectors.Vector;
+         type Value_Const_Ptr is access constant Value_Type;
 
-   type Error_Access_Type is access all Error_Type;
+         type Child_Kind_Id_Type is (
+                                     Child_Field,
+                                     Child_Pad
+                                    );
 
-   type Error_Copy_Type is tagged limited private;
+         type Child_Type (Kind_Id : Child_Kind_Id_Type) is record
+            case Kind_Id is
+               when Child_Field  => F : aliased Field.T;
+               when Child_Pad    => P : aliased Pad.T;
+            end case;
+         end record;
 
-   function Name (This : Error_Copy_Type) return Error_Copy_Name_Type;
+         type Child_Ptr is access all Child_Type;
 
-   function Number (This : Error_Copy_Type) return Error_Copy_Number_Type;
+         package Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                              Element_Type => Child_Ptr);
 
-   function Ref (This : Error_Copy_Type) return Error_Copy_Ref_Type;
+         type Children_Const_Ptr is access constant Child_Vectors.Vector;
 
-   type Error_Copy_Access_Type is access all Error_Copy_Type;
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Name (This : T) return Fs.Name_Const_Ptr;
+
+      function Number (This : T) return Fs.Number_Const_Ptr;
+
+      function Kind (This : T) return Fs.Kind_Const_Ptr;
+
+      function Value (This : T) return Fs.Value_Const_Ptr;
+
+      function Children (This : T) return Fs.Children_Const_Ptr;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Number (This : in out T;
+                            Value : Natural);
+
+      procedure Set_Kind (This  : in out T;
+                          Value : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Value (This  : in out T;
+                           Value : Aida.Strings.Unbounded_String_Type);
+
+      procedure Append_Child (This  : in out T;
+                              Child : Fs.Child_Ptr);
+
+      type Ptr is access all T;
+
+   private
+      type T is tagged limited
+         record
+            My_Name     : aliased Fs.Name_Type;
+            My_Number   : aliased Fs.Number_Type;
+            My_Kind     : aliased Fs.Kind_Type;
+            My_Value    : aliased Fs.Value_Type;
+            My_Children : aliased Fs.Child_Vectors.Vector;
+         end record;
+
+   end Error;
+
+   package Error_Copy is
+
+      package Fs is
+
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
+
+         type Name_Const_Ptr is access constant Name_Type;
+
+         type Number_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Natural;
+               when False => null;
+            end case;
+         end record;
+
+         type Number_Const_Ptr is access constant Number_Type;
+
+         type Ref_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
+
+         type Ref_Const_Ptr is access constant Ref_Type;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Name (This : T) return Fs.Name_Const_Ptr;
+
+      function Number (This : T) return Fs.Number_Const_Ptr;
+
+      function Ref (This : T) return Fs.Ref_Const_Ptr;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Number (This : in out T;
+                            Value : Natural);
+
+      procedure Set_Ref (This  : in out T;
+                         Value : Aida.Strings.Unbounded_String_Type);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Name   : aliased Fs.Name_Type;
+            My_Number : aliased Fs.Number_Type;
+            My_Ref    : aliased Fs.Ref_Type;
+         end record;
+
+   end Error_Copy;
 
    type Example_Type is tagged limited private;
 
@@ -587,7 +641,7 @@ package X_Proto is
       case Kind_Id is
          when Documentation_Member_Field   => F : aliased Field.T;
          when Documentation_Member_See     => S : aliased See_Type;
-         when Documentation_Member_Error   => E : aliased Error_Type;
+         when Documentation_Member_Error   => E : aliased Error.T;
          when Documentation_Member_Example => Ex : aliased Example_Type;
       end case;
    end record;
@@ -1146,44 +1200,103 @@ package X_Proto is
 
    type Reply_Access_Type is access all Reply_Type;
 
-   type Request_Child_Kind_Id_Type is (
-                                       Request_Child_Field,
-                                       Request_Child_Pad,
-                                       Request_Child_Value_Param,
-                                       Request_Child_Documentation,
-                                       Request_Child_Reply,
-                                       Request_Child_List,
-                                       Request_Child_Expression_Field
-                                     );
+   package Request is
 
-   type Request_Child_Type (Kind_Id : Request_Child_Kind_Id_Type) is record
-      case Kind_Id is
-         when Request_Child_Field            => F  : aliased Field.T;
-         when Request_Child_Pad              => P  : aliased Pad.T;
-         when Request_Child_Value_Param      => V  : aliased Value_Param_Type;
-         when Request_Child_Documentation    => D  : aliased Documentation_Type;
-         when Request_Child_Reply            => R  : aliased Reply_Type;
-         when Request_Child_List             => L  : aliased List.T;
-         when Request_Child_Expression_Field => EF : aliased Expression_Field_Type;
-      end case;
-   end record;
+      package Fs is
 
-   type Request_Child_Access_Type is access all Request_Child_Type;
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   package Request_Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                Element_Type => Request_Child_Access_Type);
+         type Name_Const_Ptr is access constant Name_Type;
 
-   type Request_Type is tagged limited private;
+         type Op_Code_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Natural;
+               when False => null;
+            end case;
+         end record;
 
-   function Name (This : Request_Type) return Request_Name_Type;
+         type Op_Code_Const_Ptr is access constant Op_Code_Type;
 
-   function Op_Code (This : Request_Type) return Request_Op_Code_Type;
+         type Shall_Combine_Adjacent_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Boolean;
+               when False => null;
+            end case;
+         end record;
 
-   function Shall_Combine_Adjacent (This : Request_Type) return Request_Shall_Combine_Adjacent_Type;
+         type Shall_Combine_Adjacent_Const_Ptr is access constant Shall_Combine_Adjacent_Type;
 
-   function Children (This : Request_Type) return Request_Child_Vectors.Vector;
+         type Child_Kind_Id_Type is (
+                                     Child_Field,
+                                     Child_Pad,
+                                     Child_Value_Param,
+                                     Child_Documentation,
+                                     Child_Reply,
+                                     Child_List,
+                                     Child_Expression_Field
+                                    );
 
-   type Request_Access_Type is access all Request_Type;
+         type Child_Type (Kind_Id : Child_Kind_Id_Type) is record
+            case Kind_Id is
+              when Child_Field            => F  : aliased Field.T;
+              when Child_Pad              => P  : aliased Pad.T;
+              when Child_Value_Param      => V  : aliased Value_Param_Type;
+              when Child_Documentation    => D  : aliased Documentation_Type;
+              when Child_Reply            => R  : aliased Reply_Type;
+              when Child_List             => L  : aliased List.T;
+              when Child_Expression_Field => EF : aliased Expression_Field_Type;
+            end case;
+         end record;
+
+         type Child_Ptr is access all Child_Type;
+
+         package Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                              Element_Type => Child_Ptr);
+
+         type Children_Const_Ptr is access constant Child_Vectors.Vector;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Name (This : T) return Fs.Name_Const_Ptr;
+
+      function Op_Code (This : T) return Fs.Op_Code_Const_Ptr;
+
+      function Shall_Combine_Adjacent (This : T) return Fs.Shall_Combine_Adjacent_Const_Ptr;
+
+      function Children (This : T) return Fs.Children_Const_Ptr;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Op_Code (This  : in out T;
+                             Value : Natural);
+
+      procedure Set_Shall_Combine_Adjacent (This  : in out T;
+                                            Value : Boolean);
+
+      procedure Append_Child (This  : in out T;
+                              Child : Fs.Child_Ptr);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Name                   : aliased Fs.Name_Type;
+            My_Op_Code                : aliased Fs.Op_Code_Type;
+            My_Shall_Combine_Adjacent : aliased Fs.Shall_Combine_Adjacent_Type;
+            My_Children               : aliased Fs.Child_Vectors.Vector;
+         end record;
+
+   end Request;
 
    package Xcb is
 
@@ -1246,17 +1359,20 @@ package X_Proto is
          type Unions_Const_Ptr is access constant Union_Vectors.Vector;
 
          package Error_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => Error_Access_Type);
+                                                              Element_Type => Error.Ptr,
+                                                              "="          => Error."=");
 
          type Errors_Const_Ptr is access constant Error_Vectors.Vector;
 
          package Error_Copy_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                   Element_Type => Error_Copy_Access_Type);
+                                                                   Element_Type => Error_Copy.Ptr,
+                                                                   "="          => Error_Copy."=");
 
          type Error_Copies_Const_Ptr is access constant Error_Copy_Vectors.Vector;
 
          package Request_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                Element_Type => Request_Access_Type);
+                                                                Element_Type => Request.Ptr,
+                                                                "="          => Request."=");
 
          type Requests_Const_Ptr is access constant Request_Vectors.Vector;
 
@@ -1316,13 +1432,13 @@ package X_Proto is
                               Item : Union.Ptr);
 
       procedure Append_Error (This : in out T;
-                              Item : Error_Access_Type);
+                              Item : Error.Ptr);
 
       procedure Append_Error_Copy (This : in out T;
-                                   Item : Error_Copy_Access_Type);
+                                   Item : Error_Copy.Ptr);
 
       procedure Append_Request (This : in out T;
-                                Item : Request_Access_Type);
+                                Item : Request.Ptr);
 
       type Ptr is access all T;
 
@@ -1387,54 +1503,6 @@ private
    function Mask_Name (This : Value_Param_Type) return Value_Param_Mask_Name_Type is (This.Mask_Name);
 
    function List_Name (This : Value_Param_Type) return Value_Param_List_Name_Type is (This.List_Name);
-
-   type Request_Type is tagged limited
-      record
-         Name                   : Request_Name_Type;
-         Op_Code                : Request_Op_Code_Type;
-         Shall_Combine_Adjacent : Request_Shall_Combine_Adjacent_Type;
-         Children               : Request_Child_Vectors.Vector;
-      end record;
-
-   function Name (This : Request_Type) return Request_Name_Type is (This.Name);
-
-   function Op_Code (This : Request_Type) return Request_Op_Code_Type is (This.Op_Code);
-
-   function Shall_Combine_Adjacent (This : Request_Type) return Request_Shall_Combine_Adjacent_Type is (This.Shall_Combine_Adjacent);
-
-   function Children (This : Request_Type) return Request_Child_Vectors.Vector is (This.Children);
-
-   type Error_Copy_Type is tagged limited
-      record
-         Name   : Error_Copy_Name_Type;
-         Number : Error_Copy_Number_Type;
-         Ref    : Error_Copy_Ref_Type;
-      end record;
-
-   function Name (This : Error_Copy_Type) return Error_Copy_Name_Type is (This.Name);
-
-   function Number (This : Error_Copy_Type) return Error_Copy_Number_Type is (This.Number);
-
-   function Ref (This : Error_Copy_Type) return Error_Copy_Ref_Type is (This.Ref);
-
-   type Error_Type is tagged limited
-      record
-         Name     : Error_Name_Type;
-         Number   : Error_Number_Type;
-         Kind     : Error_Kind_Type;
-         Value    : Error_Value_Type;
-         Children : Error_Child_Vectors.Vector;
-      end record;
-
-   function Name (This : Error_Type) return Error_Name_Type is (This.Name);
-
-   function Number (This : Error_Type) return Error_Number_Type is (This.Number);
-
-   function Kind (This : Error_Type) return Error_Kind_Type is (This.Kind);
-
-   function Value (This : Error_Type) return Error_Value_Type is (This.Value);
-
-   function Children (This : Error_Type) return Error_Child_Vectors.Vector is (This.Children);
 
    type See_Type is tagged limited
       record

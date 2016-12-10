@@ -492,21 +492,21 @@ package body X_Proto is
       end Append_Union;
 
       procedure Append_Error (This : in out T;
-                              Item : Error_Access_Type) is
+                              Item : Error.Ptr) is
       begin
          Fs.Error_Vectors.Append (Container => This.My_Errors,
                                   New_Item  => Item);
       end Append_Error;
 
       procedure Append_Error_Copy (This : in out T;
-                                   Item : Error_Copy_Access_Type) is
+                                   Item : Error_Copy.Ptr) is
       begin
          Fs.Error_Copy_Vectors.Append (Container => This.My_Error_Copies,
                                        New_Item  => Item);
       end Append_Error_Copy;
 
       procedure Append_Request (This : in out T;
-                                Item : Request_Access_Type) is
+                                Item : Request.Ptr) is
       begin
          Fs.Request_Vectors.Append (Container => This.My_Requests,
                                     New_Item  => Item);
@@ -645,5 +645,161 @@ package body X_Proto is
       end Append_Child;
 
    end Union;
+
+   package body Error is
+
+      function Name (This : T) return Fs.Name_Const_Ptr is
+      begin
+         return This.My_Name'Unchecked_Access;
+      end Name;
+
+      function Number (This : T) return Fs.Number_Const_Ptr is
+      begin
+         return This.My_Number'Unchecked_Access;
+      end Number;
+
+      function Kind (This : T) return Fs.Kind_Const_Ptr is
+      begin
+         return This.My_Kind'Unchecked_Access;
+      end Kind;
+
+      function Value (This : T) return Fs.Value_Const_Ptr is
+      begin
+         return This.My_Value'Unchecked_Access;
+      end Value;
+
+      function Children (This : T) return Fs.Children_Const_Ptr is
+      begin
+         return This.My_Children'Unchecked_Access;
+      end Children;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Name := (Exists => True,
+                          Value  => Name);
+      end Set_Name;
+
+      procedure Set_Number (This : in out T;
+                            Value : Natural) is
+      begin
+         This.My_Number := (Exists => True,
+                            Value  => Value);
+      end Set_Number;
+
+      procedure Set_Kind (This  : in out T;
+                          Value : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Kind := (Exists => True,
+                          Value  => Value);
+      end Set_Kind;
+
+      procedure Set_Value (This  : in out T;
+                           Value : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Value := (Exists => True,
+                          Value  => Value);
+      end Set_Value;
+
+      procedure Append_Child (This  : in out T;
+                              Child : Fs.Child_Ptr) is
+      begin
+         Fs.Child_Vectors.Append (Container => This.My_Children,
+                                  New_Item  => Child);
+      end Append_Child;
+
+   end Error;
+
+   package body Error_Copy is
+
+      function Name (This : T) return Fs.Name_Const_Ptr is
+      begin
+         return This.My_Name'Unchecked_Access;
+      end Name;
+
+      function Number (This : T) return Fs.Number_Const_Ptr is
+      begin
+         return This.My_Number'Unchecked_Access;
+      end Number;
+
+      function Ref (This : T) return Fs.Ref_Const_Ptr is
+      begin
+         return This.My_Ref'Unchecked_Access;
+      end Ref;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Name := (Exists => True,
+                          Value  => Name);
+      end Set_Name;
+
+      procedure Set_Number (This : in out T;
+                            Value : Natural) is
+      begin
+         This.My_Number := (Exists => True,
+                            Value  => Value);
+      end Set_Number;
+
+      procedure Set_Ref (This  : in out T;
+                         Value : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Ref := (Exists => True,
+                         Value  => Value);
+      end Set_Ref;
+
+   end Error_Copy;
+
+   package body Request is
+
+      function Name (This : T) return Fs.Name_Const_Ptr is
+      begin
+         return This.My_Name'Unchecked_Access;
+      end Name;
+
+      function Op_Code (This : T) return Fs.Op_Code_Const_Ptr is
+      begin
+         return This.My_Op_Code'Unchecked_Access;
+      end Op_Code;
+
+      function Shall_Combine_Adjacent (This : T) return Fs.Shall_Combine_Adjacent_Const_Ptr is
+      begin
+         return This.My_Shall_Combine_Adjacent'Unchecked_Access;
+      end Shall_Combine_Adjacent;
+
+      function Children (This : T) return Fs.Children_Const_Ptr is
+      begin
+         return This.My_Children'Unchecked_Access;
+      end Children;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Name := (Exists => True,
+                          Value  => Name);
+      end Set_Name;
+
+      procedure Set_Op_Code (This  : in out T;
+                             Value : Natural) is
+      begin
+         This.My_Op_Code := (Exists => True,
+                             Value  => Value);
+      end Set_Op_Code;
+
+      procedure Set_Shall_Combine_Adjacent (This  : in out T;
+                                            Value : Boolean) is
+      begin
+         This.My_Shall_Combine_Adjacent := (Exists => True,
+                                            Value  => Value);
+      end Set_Shall_Combine_Adjacent;
+
+      procedure Append_Child (This  : in out T;
+                              Child : Fs.Child_Ptr) is
+      begin
+         Fs.Child_Vectors.Append (Container => This.My_Children,
+                                  New_Item  => Child);
+      end Append_Child;
+
+   end Request;
 
 end X_Proto;

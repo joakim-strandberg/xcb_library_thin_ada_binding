@@ -21,7 +21,7 @@ package body XCB_Package_Creator is
 
    use type Ada.Containers.Count_Type;
    use type X_Proto.Value_Type;
-   use type X_Proto.Request_Child_Kind_Id_Type;
+   use type X_Proto.Request.Fs.Child_Kind_Id_Type;
 
    use X_Proto.Struct.Fs.Member_Kind_Id;
 
@@ -621,10 +621,10 @@ package body XCB_Package_Creator is
 
       function There_Is_No_Value_Param_With_Same_Name_And_Type (Variable_Name      : String;
                                                                 Variable_Type_Name : String;
-                                                                Children           : X_Proto.Request_Child_Vectors.Vector) return Boolean is
+                                                                Children           : X_Proto.Request.Fs.Child_Vectors.Vector) return Boolean is
       begin
          for J in Positive range Children.First_Index..Children.Last_Index loop
-            if Children.Element (J).Kind_Id = X_Proto.Request_Child_Value_Param then
+            if Children.Element (J).Kind_Id = X_Proto.Request.Fs.Child_Value_Param then
                if
                  Children.Element (J).V.Mask_Kind.Value.To_String = Variable_Type_Name and
                  Children.Element (J).V.Mask_Name.Value.To_String = Variable_Name
@@ -639,7 +639,7 @@ package body XCB_Package_Creator is
 
       procedure Generate_Request_With_Reply_Code (Function_Name   : Aida.Strings.Unbounded_String_Type;
                                                   C_Function_Name : Aida.Strings.Unbounded_String_Type;
-                                                  Children        : X_Proto.Request_Child_Vectors.Vector;
+                                                  Children        : X_Proto.Request.Fs.Child_Vectors.Vector;
                                                   Request_Name    : String;
                                                   Reply_Type_Name : Aida.Strings.Unbounded_String_Type)
       is
@@ -651,7 +651,7 @@ package body XCB_Package_Creator is
 
          for I in Positive range Children.First_Index..Children.Last_Index loop
             case Children.Element (I).Kind_Id is
-               when X_Proto.Request_Child_Field =>
+               when X_Proto.Request.Fs.Child_Field =>
                   if Children.Element (I).F.Kind.Exists then
                      if not There_Is_No_Value_Param_With_Same_Name_And_Type (Variable_Name      => Children.Element (I).F.Name.Value.To_String,
                                                                              Variable_Type_Name => Children.Element (I).F.Kind.Value.To_String,
@@ -699,7 +699,7 @@ package body XCB_Package_Creator is
                   else
                      Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Request has field withot type!?");
                   end if;
-               when X_Proto.Request_Child_Pad =>
+               when X_Proto.Request.Fs.Child_Pad =>
                   --                          if Event.Members.Element (I).P.Bytes.Value > 1 then
                   --                             declare
                   --                                Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
@@ -714,7 +714,7 @@ package body XCB_Package_Creator is
                   --                          end if;
                   --                          Padding_Number := Padding_Number  + 1;
                   null;
-               when X_Proto.Request_Child_Value_Param =>
+               when X_Proto.Request.Fs.Child_Value_Param =>
                   if
                     Children.Element (I).V.Mask_Kind.Exists and
                     Children.Element (I).V.Mask_Name.Exists and
@@ -758,11 +758,11 @@ package body XCB_Package_Creator is
                   else
                      Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Request has value param that misses either mask type, mask name or list name!?");
                   end if;
-               when X_Proto.Request_Child_Documentation =>
+               when X_Proto.Request.Fs.Child_Documentation =>
                   null;
-               when X_Proto.Request_Child_Reply =>
+               when X_Proto.Request.Fs.Child_Reply =>
                   null;
-               when X_Proto.Request_Child_List =>
+               when X_Proto.Request.Fs.Child_List =>
                   if
                     Children.Element (I).L.Name.Exists and
                     Children.Element (I).L.Kind.Exists
@@ -801,7 +801,7 @@ package body XCB_Package_Creator is
                         end if;
                      end;
                   end if;
-               when X_Proto.Request_Child_Expression_Field =>
+               when X_Proto.Request.Fs.Child_Expression_Field =>
                   null;
             end case;
          end loop;
@@ -867,20 +867,20 @@ package body XCB_Package_Creator is
                      end if;
                   end Handle_Request_Field;
 
-                  procedure Process_Request_Child (Request_Child : X_Proto.Request_Child_Access_Type) is
+                  procedure Process_Request_Child (Request_Child : X_Proto.Request.Fs.Child_Ptr) is
                   begin
                      case Request_Child.Kind_Id is
-                        when X_Proto.Request_Child_Field            =>
+                        when X_Proto.Request.Fs.Child_Field            =>
                            Handle_Request_Field (Request_Child.F);
-                        when X_Proto.Request_Child_Pad              =>
+                        when X_Proto.Request.Fs.Child_Pad              =>
                            null;
-                        when X_Proto.Request_Child_Value_Param      =>
+                        when X_Proto.Request.Fs.Child_Value_Param      =>
                            null;
-                        when X_Proto.Request_Child_Documentation    =>
+                        when X_Proto.Request.Fs.Child_Documentation    =>
                            null;
-                        when X_Proto.Request_Child_Reply            =>
+                        when X_Proto.Request.Fs.Child_Reply            =>
                            null;
-                        when X_Proto.Request_Child_List             =>
+                        when X_Proto.Request.Fs.Child_List             =>
                            if
                              Request_Child.L.Members.Is_Empty and
                              Request_Child.L.Name.Exists and
@@ -890,7 +890,7 @@ package body XCB_Package_Creator is
                                  Names_Of_Types_To_Make_Array_Types.Append (Request_Child.L.Kind.Value);
                               end if;
                            end if;
-                        when X_Proto.Request_Child_Expression_Field =>
+                        when X_Proto.Request.Fs.Child_Expression_Field =>
                            null;
                      end case;
                   end Process_Request_Child;
@@ -1804,11 +1804,11 @@ package body XCB_Package_Creator is
             declare
                Padding_Number : Integer := 0;
             begin
-               for Child of Error.Children loop
+               for Child of Error.Children.all loop
                   case Child.Kind_Id is
-                     when X_Proto.Error_Child_Field =>
+                     when X_Proto.Error.Fs.Child_Field =>
                         null;
-                     when X_Proto.Error_Child_Pad =>
+                     when X_Proto.Error.Fs.Child_Pad =>
                         if Child.P.Bytes.Value > 1 then
                            declare
                               Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
@@ -1838,9 +1838,9 @@ package body XCB_Package_Creator is
                Put_Tabs (2); Put_Line ("Error_Code : aliased Interfaces.Unsigned_8;");
                Put_Tabs (2); Put_Line ("Sequence : aliased Interfaces.Unsigned_16;");
 
-               for Child of Error.Children loop
+               for Child of Error.Children.all loop
                   case Child.Kind_Id is
-                     when X_Proto.Error_Child_Field =>
+                     when X_Proto.Error.Fs.Child_Field =>
                         if Child.F.Kind.Exists then
                            declare
                               Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
@@ -1869,7 +1869,7 @@ package body XCB_Package_Creator is
                         else
                            Number_Of_Fields_Without_Kind := Number_Of_Fields_Without_Kind + 1;
                         end if;
-                     when X_Proto.Error_Child_Pad =>
+                     when X_Proto.Error.Fs.Child_Pad =>
                         if Child.P.Bytes.Value = 1 then
                            Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
                         else
@@ -2184,18 +2184,18 @@ package body XCB_Package_Creator is
 
                Shall_Generate_Size_Of_Function : Boolean := False;
 
-               procedure Process (Request_Child : X_Proto.Request_Child_Access_Type) is
+               procedure Process (Request_Child : X_Proto.Request.Fs.Child_Ptr) is
                begin
                   case Request_Child.Kind_Id is
-                     when X_Proto.Request_Child_Field =>
+                     when X_Proto.Request.Fs.Child_Field =>
                         null;
-                     when X_Proto.Request_Child_Pad =>
+                     when X_Proto.Request.Fs.Child_Pad =>
                         null;
-                     when X_Proto.Request_Child_Value_Param =>
+                     when X_Proto.Request.Fs.Child_Value_Param =>
                         Shall_Generate_Size_Of_Function := True;
-                     when X_Proto.Request_Child_Documentation =>
+                     when X_Proto.Request.Fs.Child_Documentation =>
                         null;
-                     when X_Proto.Request_Child_Reply =>
+                     when X_Proto.Request.Fs.Child_Reply =>
                         Does_Specified_Reply_Exist := True;
 
                         declare
@@ -2350,9 +2350,9 @@ package body XCB_Package_Creator is
                            Put_Tabs (1); Put_Line ("pragma Convention (C, " & Request_Reply_Access_Type_Name.To_String & ");");
                            Put_Line ("");
                         end;
-                     when X_Proto.Request_Child_List =>
+                     when X_Proto.Request.Fs.Child_List =>
                         Shall_Generate_Size_Of_Function := True;
-                     when X_Proto.Request_Child_Expression_Field =>
+                     when X_Proto.Request.Fs.Child_Expression_Field =>
                         null;
                   end case;
                end Process;
@@ -2373,7 +2373,7 @@ package body XCB_Package_Creator is
 
                   Generate_Request_With_Reply_Code (Function_Name,
                                                     C_Function_Name,
-                                                    Request.Children,
+                                                    Request.Children.all,
                                                     Request.Name.Value.To_String,
                                                     Reply_Type_Name);
                end Generate_Checked_Or_Unchecked_Function;
@@ -2463,7 +2463,7 @@ package body XCB_Package_Creator is
 
                   Generate_Request_With_Reply_Code (Function_Name,
                                                     C_Function_Name,
-                                                    Request.Children,
+                                                    Request.Children.all,
                                                     Request.Name.Value.To_String,
                                                     Reply_Type_Name);
                end;

@@ -108,9 +108,9 @@ package body X_Proto.XML is
                                 See,
                                 Event_Copy_Type_Id,
                                 Union_Type_Id,
-                                Error,
-                                Error_Copy,
-                                Request,
+                                Error_Type_Id,
+                                Error_Copy_Type_Id,
+                                Request_Type_Id,
                                 Value_Param,
                                 Reply,
                                 Example,
@@ -148,9 +148,9 @@ package body X_Proto.XML is
          when See                     => See               : See_Access_Type;
          when Event_Copy_Type_Id      => Event_Copy_V      : Event_Copy.Ptr;
          when Union_Type_Id           => Union_V           : Union.Ptr;
-         when Error                   => Error             : Error_Access_Type;
-         when Error_Copy              => Error_Copy        : Error_Copy_Access_Type;
-         when Request                 => Request           : Request_Access_Type;
+         when Error_Type_Id           => Error_V           : Error.Ptr;
+         when Error_Copy_Type_Id      => Error_Copy_V      : Error_Copy.Ptr;
+         when Request_Type_Id         => Request_V         : Request.Ptr;
          when Value_Param             => Value_Param       : Value_Param_Access_Type;
          when Reply                   => Reply             : Reply_Access_Type;
          when Example                 => Example           : Example_Access_Type;
@@ -360,36 +360,36 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = XML_Tag_Error then
                   declare
-                     E : Error_Access_Type := new Error_Type;
+                     E : Error.Ptr := new Error.T;
                   begin
                      Prev_Tag.Xcb_V.Append_Error (E);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Error,
+                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Type_Id,
                                                                                                 Find_Tag             => Prev_Tag,
-                                                                                                Error                => E));
+                                                                                                Error_V              => E));
                   end;
                elsif Tag_Name = XML_Tag_Error_Copy then
                   declare
-                     E : Error_Copy_Access_Type := new Error_Copy_Type;
+                     E : Error_Copy.Ptr := new Error_Copy.T;
                   begin
                      Prev_Tag.Xcb_V.Append_Error_Copy (E);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Copy,
+                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Copy_Type_Id,
                                                                                                 Find_Tag             => Prev_Tag,
-                                                                                                Error_Copy           => E));
+                                                                                                Error_Copy_V         => E));
                   end;
                elsif Tag_Name = XML_Tag_Request then
                   declare
-                     R : Request_Access_Type := new Request_Type;
+                     R : Request.Ptr := new Request.T;
                   begin
                      Prev_Tag.Xcb_V.Append_Request (R);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Request,
+                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Request_Type_Id,
                                                                                                 Find_Tag             => Prev_Tag,
-                                                                                                Request              => R));
+                                                                                                Request_V            => R));
                   end;
                else
                   Is_Success := False;
@@ -632,9 +632,9 @@ package body X_Proto.XML is
                      Prev_Tag.Documentation.Members.Append (D);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Error,
+                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Type_Id,
                                                                                                 Find_Tag             => Prev_Tag,
-                                                                                                Error                => D.E'Access));
+                                                                                                Error_V              => D.E'Access));
                   end;
                elsif Tag_Name = XML_Tag_Example then
                   declare
@@ -671,12 +671,12 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Error =>
+            when Tag_Id.Error_Type_Id =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : Error_Child_Access_Type := new Error_Child_Type (Error_Child_Field);
+                     F : Error.Fs.Child_Ptr := new Error.Fs.Child_Type (Error.Fs.Child_Field);
                   begin
-                     Prev_Tag.Error.Children.Append (F);
+                     Prev_Tag.Error_V.Append_Child (F);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
@@ -685,9 +685,9 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : Error_Child_Access_Type := new Error_Child_Type (Error_Child_Pad);
+                     P : Error.Fs.Child_Ptr := new Error.Fs.Child_Type (Error.Fs.Child_Pad);
                   begin
-                     Prev_Tag.Error.Children.Append (P);
+                     Prev_Tag.Error_V.Append_Child (P);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
@@ -698,12 +698,12 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Request =>
+            when Tag_Id.Request_Type_Id =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : Request_Child_Access_Type := new Request_Child_Type (Request_Child_Field);
+                     F : Request.Fs.Child_Ptr := new Request.Fs.Child_Type (Request.Fs.Child_Field);
                   begin
-                     Prev_Tag.Request.Children.Append (F);
+                     Prev_Tag.Request_V.Append_Child (F);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
@@ -712,9 +712,9 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : Request_Child_Access_Type := new Request_Child_Type (Request_Child_Pad);
+                     P : Request.Fs.Child_Ptr := new Request.Fs.Child_Type (Request.Fs.Child_Pad);
                   begin
-                     Prev_Tag.Request.Children.Append (P);
+                     Prev_Tag.Request_V.Append_Child (P);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
@@ -723,9 +723,9 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = XML_Tag_Value_Param then
                   declare
-                     V : Request_Child_Access_Type := new Request_Child_Type (Request_Child_Value_Param);
+                     V : Request.Fs.Child_Ptr := new Request.Fs.Child_Type (Request.Fs.Child_Value_Param);
                   begin
-                     Prev_Tag.Request.Children.Append (V);
+                     Prev_Tag.Request_V.Append_Child (V);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Value_Param,
@@ -734,9 +734,9 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
-                     V : Request_Child_Access_Type := new Request_Child_Type (Request_Child_Documentation);
+                     V : Request.Fs.Child_Ptr := new Request.Fs.Child_Type (Request.Fs.Child_Documentation);
                   begin
-                     Prev_Tag.Request.Children.Append (V);
+                     Prev_Tag.Request_V.Append_Child (V);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation,
@@ -745,9 +745,9 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = XML_Tag_Reply then
                   declare
-                     R : Request_Child_Access_Type := new Request_Child_Type (Request_Child_Reply);
+                     R : Request.Fs.Child_Ptr := new Request.Fs.Child_Type (Request.Fs.Child_Reply);
                   begin
-                     Prev_Tag.Request.Children.Append (R);
+                     Prev_Tag.Request_V.Append_Child (R);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Reply,
@@ -756,9 +756,9 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     R : Request_Child_Access_Type := new Request_Child_Type (Request_Child_List);
+                     R : Request.Fs.Child_Ptr := new Request.Fs.Child_Type (Request.Fs.Child_List);
                   begin
-                     Prev_Tag.Request.Children.Append (R);
+                     Prev_Tag.Request_V.Append_Child (R);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id              => Tag_Id.List_Type_Id,
@@ -767,9 +767,9 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = XML_Tag_Expression_Field then
                   declare
-                     R : Request_Child_Access_Type := new Request_Child_Type (Request_Child_Expression_Field);
+                     R : Request.Fs.Child_Ptr := new Request.Fs.Child_Type (Request.Fs.Child_Expression_Field);
                   begin
-                     Prev_Tag.Request.Children.Append (R);
+                     Prev_Tag.Request_V.Append_Child (R);
                      Is_Success := True;
                      Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
                                                                      I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Expression_Field,
@@ -855,7 +855,7 @@ package body X_Proto.XML is
                  Tag_Id.Field_Reference |
                  Tag_Id.See |
                  Tag_Id.Event_Copy_Type_Id |
-                 Tag_Id.Error_Copy |
+                 Tag_Id.Error_Copy_Type_Id |
                  Tag_Id.Value_Param |
                  Tag_Id.Example =>
                  Is_Success := False;
@@ -1178,14 +1178,13 @@ package body X_Proto.XML is
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Error =>
+            when Tag_Id.Error_Type_Id =>
                if Attribute_Name = XML_Tag_Error_Attribute_Name then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Error.Name := (Exists => True,
-                                                Value  => V);
+                     Current_Tag.Error_V.Set_Name (V);
                   end;
                elsif Attribute_Name = XML_Tag_Error_Attribute_Number then
                   declare
@@ -1200,8 +1199,7 @@ package body X_Proto.XML is
                         Is_Success := False;
                         Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Current_Tag.Error.Number := (Exists => True,
-                                                     Value  => V);
+                        Current_Tag.Error_V.Set_Number (V);
                      end if;
                   end;
                elsif Attribute_Name = XML_Tag_Error_Attribute_Kind then
@@ -1209,21 +1207,19 @@ package body X_Proto.XML is
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                        Current_Tag.Error.Kind := (Exists => True,
-                                                   Value  => V);
+                        Current_Tag.Error_V.Set_Kind (V);
                   end;
                else
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Error_Copy =>
+            when Tag_Id.Error_Copy_Type_Id =>
                if Attribute_Name = XML_Tag_Error_Copy_Attribute_Name then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Error_Copy.Name := (Exists => True,
-                                                     Value  => V);
+                     Current_Tag.Error_Copy_V.Set_Name (V);
                   end;
                elsif Attribute_Name = XML_Tag_Error_Copy_Attribute_Number then
                   declare
@@ -1238,8 +1234,7 @@ package body X_Proto.XML is
                         Is_Success := False;
                         Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Current_Tag.Error_Copy.Number := (Exists => True,
-                                                          Value  => V);
+                        Current_Tag.Error_Copy_V.Set_Number (V);
                      end if;
                   end;
                elsif Attribute_Name = XML_Tag_Error_Copy_Attribute_Ref then
@@ -1247,21 +1242,19 @@ package body X_Proto.XML is
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Error_Copy.Ref := (Exists => True,
-                                                    Value  => V);
+                     Current_Tag.Error_Copy_V.Set_Ref (V);
                   end;
                else
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Request =>
+            when Tag_Id.Request_Type_Id =>
                if Attribute_Name = XML_Tag_Request_Attribute_Name then
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Attribute_Value);
-                     Current_Tag.Request.Name := (Exists => True,
-                                                  Value  => V);
+                     Current_Tag.Request_V.Set_Name (V);
                   end;
                elsif Attribute_Name = XML_Tag_Request_Attribute_Op_Code then
                   declare
@@ -1276,17 +1269,14 @@ package body X_Proto.XML is
                         Is_Success := False;
                         Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Current_Tag.Request.Op_Code := (Exists => True,
-                                                        Value  => V);
+                        Current_Tag.Request_V.Set_Op_Code (V);
                      end if;
                   end;
                elsif Attribute_Name = XML_Tag_Request_Attribute_Combine_Adjacent then
                   if Attribute_Value = "true" then
-                     Current_Tag.Request.Shall_Combine_Adjacent := (Exists => True,
-                                                                    Value  => True);
+                     Current_Tag.Request_V.Set_Shall_Combine_Adjacent (True);
                   elsif Attribute_Value = "false" then
-                     Current_Tag.Request.Shall_Combine_Adjacent := (Exists => True,
-                                                                    Value  => False);
+                     Current_Tag.Request_V.Set_Shall_Combine_Adjacent (False);
                   else
                      Is_Success := False;
                      Error_Message.Initialize (GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
@@ -1519,13 +1509,12 @@ package body X_Proto.XML is
                         Current_Tag.Value_V.all := V;
                      end if;
                   end;
-               when Tag_Id.Error =>
+               when Tag_Id.Error_Type_Id =>
                   declare
                      V : Aida.Strings.Unbounded_String_Type;
                   begin
                      V.Initialize (Tag_Value);
-                     Current_Tag.Error.Value := (Exists => True,
-                                                 Value  => V);
+                     Current_Tag.Error_V.Set_Value (V);
                   end;
                when Tag_Id.Example =>
                   declare
@@ -1587,8 +1576,8 @@ package body X_Proto.XML is
                     Tag_Id.See |
                     Tag_Id.Event_Copy_Type_Id |
                     Tag_Id.Union_Type_Id |
-                    Tag_Id.Error_Copy |
-                    Tag_Id.Request |
+                    Tag_Id.Error_Copy_Type_Id |
+                    Tag_Id.Request_Type_Id |
                     Tag_Id.Value_Param |
                     Tag_Id.Reply |
                     Tag_Id.Expression_Field =>
