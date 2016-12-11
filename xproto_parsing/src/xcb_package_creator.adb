@@ -23,6 +23,8 @@ package body XCB_Package_Creator is
    use type X_Proto.Value_Type;
    use type X_Proto.Request.Fs.Child_Kind_Id_Type;
 
+   use X_Proto.Xcb.Fs.Struct_Vector;
+
    use X_Proto.Struct.Fs.Member_Kind_Id;
 
    package Unbounded_String_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
@@ -903,6 +905,154 @@ package body XCB_Package_Creator is
          end loop;
       end Pre_Process_Requests;
 
+      procedure Generate_Ada_Code_For_Structs (Structs : X_Proto.Xcb.Fs.Struct_Vector.Elements_Array_T) is
+
+         procedure Handle_Struct (Struct : X_Proto.Struct.T) is
+         begin
+            if Struct.Name.Exists then
+               declare
+                  Padding_Number : Integer := 0;
+               begin
+                  for Child of Struct.Members loop
+                     case Child.Kind_Id is
+                     when Field_Member =>
+                        null;
+                     when Pad_Member =>
+                        if Child.P.Bytes.Value > 1 then
+                           declare
+                              Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                           begin
+                              Generate_Classic_Array_Type_Name (Prefix_Name => Struct.Name.Value.To_String,
+                                                                Field_Name  => "Padding" & Aida.Strings.To_String (Padding_Number),
+                                                                New_Name    => Variable_Type_Name);
+
+                              Put_Tabs (1); Put_Line ("type " & Variable_Type_Name.To_String & " is array (0.." &
+                                                        Aida.Strings.To_String (Integer (Child.P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
+                           end;
+                        end if;
+                        Padding_Number := Padding_Number  + 1;
+                     when List_Member =>
+                        null; -- This information does not have any impact on resulting Ada code. Why?
+                     end case;
+                  end loop;
+               end;
+
+               declare
+                  New_Variable_Name                      : Aida.Strings.Unbounded_String_Type;
+                  New_Variable_Type_Name                 : Aida.Strings.Unbounded_String_Type;
+                  New_Variable_Access_Type_Name          : Aida.Strings.Unbounded_String_Type;
+                  New_Variable_Iterator_Type_Name        : Aida.Strings.Unbounded_String_Type;
+                  New_Variable_Iterator_Access_Type_Name : Aida.Strings.Unbounded_String_Type;
+
+                  Padding_Number : Integer := 0;
+               begin
+                  Generate_Struct_Name (Old_Name => Struct.Name.Value.To_String,
+                                        New_Name => New_Variable_Name);
+
+                  Generate_Classic_Type_Name (Old_Name => Struct.Name.Value.To_String,
+                                              New_Name => New_Variable_Type_Name);
+                  Generate_Classic_Access_Type_Name (Old_Name => Struct.Name.Value.To_String,
+                                                     New_Name => New_Variable_Access_Type_Name);
+
+                  Generate_Classic_Iterator_Type_Name (Old_Name => Struct.Name.Value.To_String,
+                                                       New_Name => New_Variable_Iterator_Type_Name);
+
+                  Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is record");
+
+                  for Child of Struct.Members loop
+                     case Child.Kind_Id is
+                     when Field_Member =>
+                        if Child.F.Kind.Exists then
+                           declare
+                              Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                              Is_Success : Boolean;
+                           begin
+                              Translate_Variable_Type_Name (Variable_Type_Name => Child.F.Kind.Value.To_String,
+                                                            Is_Success         => Is_Success,
+                                                            Translated_Name    => Variable_Type_Name);
+
+                              if Is_Success then
+                                 declare
+                                    Field_Name : Aida.Strings.Unbounded_String_Type;
+                                 begin
+                                    Generate_Struct_Name (Old_Name => Child.F.Name.Value.To_String,
+                                                          New_Name => Field_Name);
+                                    Put_Tabs (2); Put_Line (Field_Name.To_String & " : aliased " & Variable_Type_Name.To_String & ";");
+
+                                    if Child.F.Enum.Exists then
+                                       Number_Of_Struct_Fields_With_Enum := Number_Of_Struct_Fields_With_Enum + 1;
+                                    end if;
+                                 end;
+                              else
+                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & Child.F.Kind.Value.To_String);
+                              end if;
+                           end;
+                        else
+                           Number_Of_Fields_Without_Kind := Number_Of_Fields_Without_Kind + 1;
+                        end if;
+                     when Pad_Member =>
+                        if Child.P.Bytes.Value = 1 then
+                           Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
+                        else
+                           declare
+                              New_Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                           begin
+                              Generate_Classic_Array_Type_Name (Prefix_Name => Struct.Name.Value.To_String,
+                                                                Field_Name  => "Padding" & Aida.Strings.To_String (Padding_Number),
+                                                                New_Name    => New_Variable_Type_Name);
+
+                              Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
+                           end;
+                        end if;
+                        Padding_Number := Padding_Number + 1;
+                     when List_Member =>
+                        null; -- This information does not have any impact on resulting Ada code. Why?
+                     end case;
+                  end loop;
+
+                  Put_Tabs (1); Put_Line ("end record;");
+                  Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & New_Variable_Type_Name.To_String & ");");
+                  Put_Line ("");
+                  Put_Tabs (1); Put_Line ("type " & New_Variable_Access_Type_Name.To_String & " is access all " & New_Variable_Type_Name.To_String & ";");
+                  Put_Line ("");
+                  Put_Tabs (1); Put_Line ("type " & New_Variable_Iterator_Type_Name.To_String & " is record");
+                  Put_Tabs (2); Put_Line ("Data  : " & New_Variable_Access_Type_Name.To_String & ";");
+                  Put_Tabs (2); Put_Line ("C_Rem : aliased Interfaces.C.int;");
+                  Put_Tabs (2); Put_Line ("Index : aliased Interfaces.C.int;");
+                  Put_Tabs (1); Put_Line ("end record;");
+                  Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & New_Variable_Iterator_Type_Name.To_String & ");");
+                  Put_Line ("");
+
+                  Generate_Classic_Iterator_Access_Type_Name (Old_Name => Struct.Name.Value.To_String,
+                                                              New_Name => New_Variable_Iterator_Access_Type_Name);
+                  Put_Tabs (1); Put_Line ("type " & New_Variable_Iterator_Access_Type_Name.To_String & " is access all " &
+                                            New_Variable_Iterator_Type_Name.To_String & ";");
+                  Put_Line ("");
+
+                  Original_Variable_Name_To_Adaified_Name.Insert (Key      => Struct.Name.Value,
+                                                                  New_Item => New_Variable_Name);
+
+                  Original_Name_To_Adaified_Name.Insert (Key      => Struct.Name.Value,
+                                                         New_Item => New_Variable_Type_Name);
+
+                  Original_Name_To_Adaified_Iterator_Type_Name.Insert (Key      => Struct.Name.Value,
+                                                                       New_Item => New_Variable_Iterator_Type_Name);
+
+                  Original_Name_To_Adaified_Iterator_Access_Type_Name.Insert (Key      => Struct.Name.Value,
+                                                                              New_Item => New_Variable_Iterator_Access_Type_Name);
+               end;
+            else
+               Ada.Text_IO.Put_Line ("A struct exists without name attribute");
+            end if;
+         end Handle_Struct;
+      begin
+         for I in Structs'Range loop
+            Handle_Struct (Structs (I).all);
+         end loop;
+      end Generate_Ada_Code_For_Structs;
+
+      procedure Generate_Ada_Code_For_Structs is new X_Proto.Xcb.Fs.Struct_Vector.Act_On_Immutable_Elements (Generate_Ada_Code_For_Structs);
+
    begin
       declare
          Ada_Name : Aida.Strings.Unbounded_String_Type;
@@ -1296,144 +1446,7 @@ package body XCB_Package_Creator is
          end if;
       end loop;
 
-      for Struct of XCB.Structs.all loop
-         if Struct.Name.Exists then
-            declare
-               Padding_Number : Integer := 0;
-            begin
-               for Child of Struct.Members loop
-                  case Child.Kind_Id is
-                     when Field_Member =>
-                        null;
-                     when Pad_Member =>
-                        if Child.P.Bytes.Value > 1 then
-                           declare
-                              Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
-                           begin
-                              Generate_Classic_Array_Type_Name (Prefix_Name => Struct.Name.Value.To_String,
-                                                                Field_Name  => "Padding" & Aida.Strings.To_String (Padding_Number),
-                                                                New_Name    => Variable_Type_Name);
-
-                              Put_Tabs (1); Put_Line ("type " & Variable_Type_Name.To_String & " is array (0.." &
-                                                        Aida.Strings.To_String (Integer (Child.P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
-                           end;
-                        end if;
-                        Padding_Number := Padding_Number  + 1;
-                     when List_Member =>
-                        null; -- This information does not have any impact on resulting Ada code. Why?
-                  end case;
-               end loop;
-            end;
-
-            declare
-               New_Variable_Name                      : Aida.Strings.Unbounded_String_Type;
-               New_Variable_Type_Name                 : Aida.Strings.Unbounded_String_Type;
-               New_Variable_Access_Type_Name          : Aida.Strings.Unbounded_String_Type;
-               New_Variable_Iterator_Type_Name        : Aida.Strings.Unbounded_String_Type;
-               New_Variable_Iterator_Access_Type_Name : Aida.Strings.Unbounded_String_Type;
-
-               Padding_Number : Integer := 0;
-            begin
-               Generate_Struct_Name (Old_Name => Struct.Name.Value.To_String,
-                                     New_Name => New_Variable_Name);
-
-               Generate_Classic_Type_Name (Old_Name => Struct.Name.Value.To_String,
-                                           New_Name => New_Variable_Type_Name);
-               Generate_Classic_Access_Type_Name (Old_Name => Struct.Name.Value.To_String,
-                                                  New_Name => New_Variable_Access_Type_Name);
-
-               Generate_Classic_Iterator_Type_Name (Old_Name => Struct.Name.Value.To_String,
-                                                    New_Name => New_Variable_Iterator_Type_Name);
-
-               Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is record");
-
-               for Child of Struct.Members loop
-                  case Child.Kind_Id is
-                     when Field_Member =>
-                        if Child.F.Kind.Exists then
-                           declare
-                              Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
-                              Is_Success : Boolean;
-                           begin
-                              Translate_Variable_Type_Name (Variable_Type_Name => Child.F.Kind.Value.To_String,
-                                                            Is_Success         => Is_Success,
-                                                            Translated_Name    => Variable_Type_Name);
-
-                              if Is_Success then
-                                 declare
-                                    Field_Name : Aida.Strings.Unbounded_String_Type;
-                                 begin
-                                    Generate_Struct_Name (Old_Name => Child.F.Name.Value.To_String,
-                                                          New_Name => Field_Name);
-                                    Put_Tabs (2); Put_Line (Field_Name.To_String & " : aliased " & Variable_Type_Name.To_String & ";");
-
-                                    if Child.F.Enum.Exists then
-                                       Number_Of_Struct_Fields_With_Enum := Number_Of_Struct_Fields_With_Enum + 1;
-                                    end if;
-                                 end;
-                              else
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & Child.F.Kind.Value.To_String);
-                              end if;
-                           end;
-                        else
-                           Number_Of_Fields_Without_Kind := Number_Of_Fields_Without_Kind + 1;
-                        end if;
-                     when Pad_Member =>
-                        if Child.P.Bytes.Value = 1 then
-                           Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
-                        else
-                           declare
-                              New_Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
-                           begin
-                              Generate_Classic_Array_Type_Name (Prefix_Name => Struct.Name.Value.To_String,
-                                                                Field_Name  => "Padding" & Aida.Strings.To_String (Padding_Number),
-                                                                New_Name    => New_Variable_Type_Name);
-
-                              Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
-                           end;
-                        end if;
-                        Padding_Number := Padding_Number + 1;
-                     when List_Member =>
-                        null; -- This information does not have any impact on resulting Ada code. Why?
-                  end case;
-               end loop;
-
-               Put_Tabs (1); Put_Line ("end record;");
-               Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & New_Variable_Type_Name.To_String & ");");
-               Put_Line ("");
-               Put_Tabs (1); Put_Line ("type " & New_Variable_Access_Type_Name.To_String & " is access all " & New_Variable_Type_Name.To_String & ";");
-               Put_Line ("");
-               Put_Tabs (1); Put_Line ("type " & New_Variable_Iterator_Type_Name.To_String & " is record");
-               Put_Tabs (2); Put_Line ("Data  : " & New_Variable_Access_Type_Name.To_String & ";");
-               Put_Tabs (2); Put_Line ("C_Rem : aliased Interfaces.C.int;");
-               Put_Tabs (2); Put_Line ("Index : aliased Interfaces.C.int;");
-               Put_Tabs (1); Put_Line ("end record;");
-               Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & New_Variable_Iterator_Type_Name.To_String & ");");
-               Put_Line ("");
-
-               Generate_Classic_Iterator_Access_Type_Name (Old_Name => Struct.Name.Value.To_String,
-                                                           New_Name => New_Variable_Iterator_Access_Type_Name);
-               Put_Tabs (1); Put_Line ("type " & New_Variable_Iterator_Access_Type_Name.To_String & " is access all " &
-                                         New_Variable_Iterator_Type_Name.To_String & ";");
-               Put_Line ("");
-
-               Original_Variable_Name_To_Adaified_Name.Insert (Key      => Struct.Name.Value,
-                                                               New_Item => New_Variable_Name);
-
-               Original_Name_To_Adaified_Name.Insert (Key      => Struct.Name.Value,
-                                                      New_Item => New_Variable_Type_Name);
-
-               Original_Name_To_Adaified_Iterator_Type_Name.Insert (Key      => Struct.Name.Value,
-                                                                    New_Item => New_Variable_Iterator_Type_Name);
-
-               Original_Name_To_Adaified_Iterator_Access_Type_Name.Insert (Key      => Struct.Name.Value,
-                                                                           New_Item => New_Variable_Iterator_Access_Type_Name);
-            end;
-         else
-            Number_Of_Structs_Without_Name := Number_Of_Structs_Without_Name + 1;
-         end if;
-         Total_Number_Of_Structs := Total_Number_Of_Structs + 1;
-      end loop;
+      Generate_Ada_Code_For_Structs (XCB.Structs.all);
 
       for Text of Names_Of_Types_To_Make_Array_Types loop
          declare
@@ -2148,10 +2161,10 @@ package body XCB_Package_Creator is
       Put_Tabs (1); Put_Line ("pragma Import (C, Discard_Reply, ""xcb_discard_reply"");");
       Put_Line ("");
 
-      for Struct of XCB.Structs.all loop
-         if Struct.Name.Exists then
-            Generate_Code_For_Next_Procedure (Struct.Name.Value.To_String);
-            Generate_Code_For_End_Function (Struct.Name.Value.To_String);
+      for I in 1..Last_Index (XCB.Structs.all) loop
+         if Element (XCB.Structs.all, I).Name.Exists then
+            Generate_Code_For_Next_Procedure (Element (XCB.Structs.all, I).Name.Value.To_String);
+            Generate_Code_For_End_Function (Element (XCB.Structs.all, I).Name.Value.To_String);
          else
             Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Struct exists without a name!?");
          end if;

@@ -1,21 +1,8 @@
 with Ada.Containers.Vectors;
 with Aida.Strings;
+with Aida.Containers.Bounded_Vector;
 
 package X_Proto is
-
-   type Reply_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Reply_Op_Code_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Natural;
-         when False => null;
-      end case;
-   end record;
 
    package Field is
 
@@ -1474,11 +1461,11 @@ package X_Proto is
 
          type Header_Const_Ptr is access constant Header_Type;
 
-         package Struct_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                               Element_Type => Struct.Ptr,
-                                                               "="          => Struct."=");
+         package Struct_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Struct.Ptr,
+                                                                      "="        => Struct."=",
+                                                                      MAX_LENGTH => 400);
 
-         type Structs_Const_Ptr is access constant Struct_Vectors.Vector;
+         type Structs_Const_Ptr is access constant Struct_Vector.T;
 
          package X_Id_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
                                                              Element_Type => X_Id.Ptr,
@@ -1610,7 +1597,7 @@ package X_Proto is
       type T is tagged limited
          record
             My_Header           : aliased Fs.Header_Type;
-            My_Structs          : aliased Fs.Struct_Vectors.Vector;
+            My_Structs          : aliased Fs.Struct_Vector.T;
             My_X_Ids            : aliased Fs.X_Id_Vectors.Vector;
             My_X_Id_Unions      : aliased Fs.X_Id_Union_Vectors.Vector;
             My_Type_Definitions : aliased Fs.Type_Definition_Vectors.Vector;

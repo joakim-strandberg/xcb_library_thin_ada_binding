@@ -438,8 +438,8 @@ package body X_Proto is
       procedure Append_Struct (This : in out T;
                                Item : Struct.Ptr) is
       begin
-         Fs.Struct_Vectors.Append (Container => This.My_Structs,
-                                   New_Item  => Item);
+         Fs.Struct_Vector.Append (This      => This.My_Structs,
+                                  New_Item  => Item);
       end Append_Struct;
 
       procedure Append_X_Id (This : in out T;
