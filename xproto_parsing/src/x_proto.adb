@@ -445,15 +445,15 @@ package body X_Proto is
       procedure Append_X_Id (This : in out T;
                              Item : X_Id.Ptr) is
       begin
-         Fs.X_Id_Vectors.Append (Container => This.My_X_Ids,
-                                 New_Item  => Item);
+         Fs.X_Id_Vector.Append (This      => This.My_X_Ids,
+                                New_Item  => Item);
       end Append_X_Id;
 
       procedure Append_X_Id_Union (This : in out T;
                                    Item : X_Id_Union.Ptr) is
       begin
-         Fs.X_Id_Union_Vectors.Append (Container => This.My_X_Id_Unions,
-                                       New_Item  => Item);
+         Fs.X_Id_Union_Vector.Append (This => This.My_X_Id_Unions,
+                                      New_Item  => Item);
       end Append_X_Id_Union;
 
       procedure Append_Type_Definition (This : in out T;

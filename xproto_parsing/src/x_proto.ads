@@ -1467,17 +1467,17 @@ package X_Proto is
 
          type Structs_Const_Ptr is access constant Struct_Vector.T;
 
-         package X_Id_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                             Element_Type => X_Id.Ptr,
-                                                             "="          => X_Id."=");
+         package X_Id_Vector is new Aida.Containers.Bounded_Vector (Element_T  => X_Id.Ptr,
+                                                                    "="        => X_Id."=",
+                                                                    MAX_LENGTH => 100);
 
-         type X_Ids_Const_Ptr is access constant X_Id_Vectors.Vector;
+         type X_Ids_Const_Ptr is access constant X_Id_Vector.T;
 
-         package X_Id_Union_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                   Element_Type => X_Id_Union.Ptr,
-                                                                   "="          => X_Id_Union."=");
+         package X_Id_Union_Vector is new Aida.Containers.Bounded_Vector (Element_T  => X_Id_Union.Ptr,
+                                                                          "="        => X_Id_Union."=",
+                                                                          MAX_LENGTH => 100);
 
-         type X_Id_Unions_Const_Ptr is access constant X_Id_Union_Vectors.Vector;
+         type X_Id_Unions_Const_Ptr is access constant X_Id_Union_Vector.T;
 
          package Type_Definition_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
                                                                         Element_Type => Type_Definition.Ptr,
@@ -1598,8 +1598,8 @@ package X_Proto is
          record
             My_Header           : aliased Fs.Header_Type;
             My_Structs          : aliased Fs.Struct_Vector.T;
-            My_X_Ids            : aliased Fs.X_Id_Vectors.Vector;
-            My_X_Id_Unions      : aliased Fs.X_Id_Union_Vectors.Vector;
+            My_X_Ids            : aliased Fs.X_Id_Vector.T;
+            My_X_Id_Unions      : aliased Fs.X_Id_Union_Vector.T;
             My_Type_Definitions : aliased Fs.Type_Definition_Vectors.Vector;
             My_Enums            : aliased Fs.Enum_Vectors.Vector;
             My_Events           : aliased Fs.Event_Vectors.Vector;

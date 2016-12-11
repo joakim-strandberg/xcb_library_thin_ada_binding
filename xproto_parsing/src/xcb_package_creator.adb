@@ -24,6 +24,8 @@ package body XCB_Package_Creator is
    use type X_Proto.Request.Fs.Child_Kind_Id_Type;
 
    use X_Proto.Xcb.Fs.Struct_Vector;
+   use X_Proto.Xcb.Fs.X_Id_Vector;
+   use X_Proto.Xcb.Fs.X_Id_Union_Vector;
 
    use X_Proto.Struct.Fs.Member_Kind_Id;
 
@@ -1194,62 +1196,74 @@ package body XCB_Package_Creator is
       Put_Tabs (1); Put_Line ("type X_Id_Type is new Interfaces.Unsigned_32;");
       Put_Line ("");
 
-      for X_Id_Union of Xcb.X_Id_Unions.all loop
-         if X_Id_Union.Name.Exists then
-            Generate_Code_For_X_Id (X_Id_Union.Name.Value,
-                                    "X_Id_Type",
-                                    How => Use_The_New_Keyword);
-
-            declare
-               Searched_For : Aida.Strings.Unbounded_String_Type;
-               C : Original_Name_To_Adaified_Name_Type_Owner.Cursor;
-               X_Id_Union_Type_Name : Aida.Strings.Unbounded_String_Type;
-            begin
-               Searched_For.Initialize (X_Id_Union.Name.Value.To_String);
-               C := Original_Name_To_Adaified_Name.Find (Key => Searched_For);
-               if Original_Name_To_Adaified_Name_Type_Owner.Has_Element (C) then
-                  X_Id_Union_Type_Name := Original_Name_To_Adaified_Name_Type_Owner.Element (C);
-
-                  for Kind of X_Id_Union.Kinds.all loop
-                     if Kind.Value.Exists then
-                        for X_Id of Xcb.X_Ids.all loop
-                           if X_Id.Name.Exists then
-                              if Kind.Value.Value.To_String = X_Id.Name.Value.To_String then
-                                 Generate_Code_For_X_Id (X_Id.Name.Value,
-                                                         X_Id_Union_Type_Name.To_String,
-                                                         How => Use_The_Subtype_Keyword);
-
-                                 Processed_X_Ids.Append (X_Id.Name.Value);
-
-                                 exit;
-                              end if;
-                           else
-                              Number_Of_X_Ids_Without_Name := Number_Of_X_Ids_Without_Name + 1;
-                           end if;
-                        end loop;
-                     else
-                        Ada.Text_IO.Put_Line ("xidunion " & X_Id_Union.Name.Value.To_String & " has errors");
-                     end if;
-                  end loop;
-               else
-                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Failed to translate: " & Searched_For.To_String);
-               end if;
-            end;
-         else
-            Number_Of_X_Unions_Without_Name := Number_Of_X_Unions_Without_Name + 1;
-         end if;
-      end loop;
-
-      for X_Id of Xcb.X_Ids.all loop
-         if X_Id.Name.Exists then
-            if not Processed_X_Ids.Contains (X_Id.Name.Value) then
-               Generate_Code_For_X_Id (X_Id.Name.Value,
+      for X_Id_Union_Index in 1..Last_Index (Xcb.X_Id_Unions.all) loop
+         declare
+            X_Id_Union : X_Proto.X_Id_Union.Ptr renames Element (Xcb.X_Id_Unions.all, X_Id_Union_Index);
+         begin
+            if X_Id_Union.Name.Exists then
+               Generate_Code_For_X_Id (X_Id_Union.Name.Value,
                                        "X_Id_Type",
                                        How => Use_The_New_Keyword);
+
+               declare
+                  Searched_For : Aida.Strings.Unbounded_String_Type;
+                  C : Original_Name_To_Adaified_Name_Type_Owner.Cursor;
+                  X_Id_Union_Type_Name : Aida.Strings.Unbounded_String_Type;
+               begin
+                  Searched_For.Initialize (X_Id_Union.Name.Value.To_String);
+                  C := Original_Name_To_Adaified_Name.Find (Key => Searched_For);
+                  if Original_Name_To_Adaified_Name_Type_Owner.Has_Element (C) then
+                     X_Id_Union_Type_Name := Original_Name_To_Adaified_Name_Type_Owner.Element (C);
+
+                     for Kind of X_Id_Union.Kinds.all loop
+                        if Kind.Value.Exists then
+                           for X_Id_Index in 1..Last_Index (Xcb.X_Ids.all) loop
+                              declare
+                                 X_Id : X_Proto.X_Id.Ptr renames Element (Xcb.X_Ids.all, X_Id_Index);
+                              begin
+                                 if X_Id.Name.Exists then
+                                    if Kind.Value.Value.To_String = X_Id.Name.Value.To_String then
+                                       Generate_Code_For_X_Id (X_Id.Name.Value,
+                                                               X_Id_Union_Type_Name.To_String,
+                                                               How => Use_The_Subtype_Keyword);
+
+                                       Processed_X_Ids.Append (X_Id.Name.Value);
+
+                                       exit;
+                                    end if;
+                                 else
+                                    Number_Of_X_Ids_Without_Name := Number_Of_X_Ids_Without_Name + 1;
+                                 end if;
+                              end;
+                           end loop;
+                        else
+                           Ada.Text_IO.Put_Line ("xidunion " & X_Id_Union.Name.Value.To_String & " has errors");
+                        end if;
+                     end loop;
+                  else
+                     Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Failed to translate: " & Searched_For.To_String);
+                  end if;
+               end;
+            else
+               Number_Of_X_Unions_Without_Name := Number_Of_X_Unions_Without_Name + 1;
             end if;
-         else
-            Number_Of_X_Ids_Without_Name := Number_Of_X_Ids_Without_Name + 1;
-         end if;
+         end;
+      end loop;
+
+      for X_Id_Index in 1..Last_Index (Xcb.X_Ids.all) loop
+         declare
+            X_Id : X_Proto.X_Id.Ptr renames Element (Xcb.X_Ids.all, X_Id_Index);
+         begin
+            if X_Id.Name.Exists then
+               if not Processed_X_Ids.Contains (X_Id.Name.Value) then
+                  Generate_Code_For_X_Id (X_Id.Name.Value,
+                                          "X_Id_Type",
+                                          How => Use_The_New_Keyword);
+               end if;
+            else
+               Number_Of_X_Ids_Without_Name := Number_Of_X_Ids_Without_Name + 1;
+            end if;
+         end;
       end loop;
 
       Put_Line ("");
@@ -2170,13 +2184,17 @@ package body XCB_Package_Creator is
          end if;
       end loop;
 
-      for X_Id of XCB.X_Ids.all loop
-         if X_Id.Name.Exists then
-            Generate_Code_For_Next_Procedure (X_Id.Name.Value.To_String);
-            Generate_Code_For_End_Function (X_Id.Name.Value.To_String);
-         else
-            Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "X_Id exists without a name!?");
-         end if;
+      for X_Id_Index in 1..Last_Index (Xcb.X_Ids.all) loop
+         declare
+            X_Id : X_Proto.X_Id.Ptr renames Element (Xcb.X_Ids.all, X_Id_Index);
+         begin
+            if X_Id.Name.Exists then
+               Generate_Code_For_Next_Procedure (X_Id.Name.Value.To_String);
+               Generate_Code_For_End_Function (X_Id.Name.Value.To_String);
+            else
+               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "X_Id exists without a name!?");
+            end if;
+         end;
       end loop;
 
       for Type_Def of XCB.Type_Definitions.all loop
