@@ -2204,11 +2204,11 @@ package body XCB_Package_Creator is
                         begin
                            Reply_Name.Initialize (Request.Name.Value.To_String & "Reply");
 
-                           for Child of Request_Child.R.Children loop
+                           for Child of Request_Child.R.Children.all loop
                               case Child.Kind_Id is
-                                 when X_Proto.Reply_Child_Field =>
+                                 when X_Proto.Reply.Fs.Child_Field =>
                                     null;
-                                 when X_Proto.Reply_Child_Pad =>
+                                 when X_Proto.Reply.Fs.Child_Pad =>
                                     if Child.P.Bytes.Value > 1 then
                                        declare
                                           Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
@@ -2222,9 +2222,9 @@ package body XCB_Package_Creator is
                                        end;
                                     end if;
                                     Padding_Number := Padding_Number  + 1;
-                                 when X_Proto.Reply_Child_Documentation =>
+                                 when X_Proto.Reply.Fs.Child_Documentation =>
                                     null;
-                                 when X_Proto.Reply_Child_List =>
+                                 when X_Proto.Reply.Fs.Child_List =>
                                     Shall_Generate_Size_Of_Function := True;
                               end case;
                            end loop;
@@ -2238,11 +2238,11 @@ package body XCB_Package_Creator is
 
                            Reply_Name : Aida.Strings.Unbounded_String_Type;
 
-                           procedure Process_Reply_Child (Reply_Child : X_Proto.Reply_Child_Access_Type;
+                           procedure Process_Reply_Child (Reply_Child : X_Proto.Reply.Fs.Child_Ptr;
                                                           Is_First    : Boolean) is
                            begin
                               case Reply_Child.Kind_Id is
-                                 when X_Proto.Reply_Child_Field =>
+                                 when X_Proto.Reply.Fs.Child_Field =>
                                     if Reply_Child.F.Kind.Exists then
                                        declare
                                           Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
@@ -2294,7 +2294,7 @@ package body XCB_Package_Creator is
                                     else
                                        Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", kind does not exist!?");
                                     end if;
-                                 when X_Proto.Reply_Child_Pad =>
+                                 when X_Proto.Reply.Fs.Child_Pad =>
                                     if Reply_Child.P.Bytes.Value = 1 then
                                        if Is_First then
                                           Put_Tabs (2); Put_Line ("Response_Kind : aliased Interfaces.Unsigned_8;");
@@ -2316,9 +2316,9 @@ package body XCB_Package_Creator is
                                        end;
                                     end if;
                                     Padding_Number := Padding_Number + 1;
-                                 when X_Proto.Reply_Child_Documentation =>
+                                 when X_Proto.Reply.Fs.Child_Documentation =>
                                     null;
-                                 when X_Proto.Reply_Child_List =>
+                                 when X_Proto.Reply.Fs.Child_List =>
                                     null; -- This information does not have any impact on resulting Ada code. Why?
                               end case;
                            end Process_Reply_Child;

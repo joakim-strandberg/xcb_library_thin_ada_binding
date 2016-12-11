@@ -3,41 +3,6 @@ with Aida.Strings;
 
 package X_Proto is
 
-   type See_Kind_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type See_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Value_Param_Mask_Kind_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Value_Param_Mask_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Value_Param_List_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
    type Reply_Name_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
@@ -660,13 +625,53 @@ package X_Proto is
 
    end Example;
 
-   type See_Type is tagged limited private;
+   package See is
 
-   function Kind (This : See_Type) return See_Kind_Type;
+      package Fs is
 
-   function Name (This : See_Type) return See_Name_Type;
+         type Kind_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   type See_Access_Type is access all See_Type;
+         type Kind_Const_Ptr is access constant Kind_Type;
+
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
+
+         type Name_Const_Ptr is access constant Name_Type;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Kind (This : T) return Fs.Kind_Const_Ptr;
+
+      function Name (This : T) return Fs.Name_Const_Ptr;
+
+      procedure Set_Kind (This  : in out T;
+                          Value : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Kind : aliased Fs.Kind_Type;
+            My_Name : aliased Fs.Name_Type;
+         end record;
+
+   end See;
 
    package Documentation is
 
@@ -700,7 +705,7 @@ package X_Proto is
          type Member_Type (Kind_Id : Member_Kind_Id_Type) is record
             case Kind_Id is
                when Member_Field   => F  : aliased Field.T;
-               when Member_See     => S  : aliased See_Type;
+               when Member_See     => S  : aliased See.T;
                when Member_Error   => E  : aliased Error.T;
                when Member_Example => Ex : aliased Example.T;
             end case;
@@ -1248,42 +1253,115 @@ package X_Proto is
 
    end Event;
 
-   type Value_Param_Type is tagged limited private;
+   package Value_Param is
 
-   function Mask_Kind (This : Value_Param_Type) return Value_Param_Mask_Kind_Type;
+      package Fs is
 
-   function Mask_Name (This : Value_Param_Type) return Value_Param_Mask_Name_Type;
+         type Mask_Kind_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   function List_Name (This : Value_Param_Type) return Value_Param_List_Name_Type;
+         type Mask_Kind_Const_Ptr is access constant Mask_Kind_Type;
 
-   type Value_Param_Access_Type is access all Value_Param_Type;
+         type Mask_Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   type Reply_Child_Kind_Id_Type is (
-                                     Reply_Child_Field,
-                                     Reply_Child_Pad,
-                                     Reply_Child_Documentation,
-                                     Reply_Child_List
+         type Mask_Name_Const_Ptr is access constant Mask_Name_Type;
+
+         type List_Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
+
+         type List_Name_Const_Ptr is access constant List_Name_Type;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Mask_Kind (This : T) return Fs.Mask_Kind_Const_Ptr;
+
+      function Mask_Name (This : T) return Fs.Mask_Name_Const_Ptr;
+
+      function List_Name (This : T) return Fs.List_Name_Const_Ptr;
+
+      procedure Set_Mask_Kind (This : in out T;
+                               Value : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Mask_Name (This : in out T;
+                               Value : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_List_Name (This : in out T;
+                               Value : Aida.Strings.Unbounded_String_Type);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Mask_Kind : aliased Fs.Mask_Kind_Type;
+            My_Mask_Name : aliased Fs.Mask_Name_Type;
+            My_List_Name : aliased Fs.List_Name_Type;
+         end record;
+
+   end Value_Param;
+
+   package Reply is
+
+      package Fs is
+
+         type Child_Kind_Id_Type is (
+                                     Child_Field,
+                                     Child_Pad,
+                                     Child_Documentation,
+                                     Child_List
                                     );
 
-   type Reply_Child_Type (Kind_Id : Reply_Child_Kind_Id_Type) is record
-      case Kind_Id is
-         when Reply_Child_Field         => F : aliased Field.T;
-         when Reply_Child_Pad           => P : aliased Pad.T;
-         when Reply_Child_Documentation => D : aliased Documentation.T;
-         when Reply_Child_List          => L : aliased List.T;
-      end case;
-   end record;
+         type Child_Type (Kind_Id : Child_Kind_Id_Type) is record
+            case Kind_Id is
+               when Child_Field         => F : aliased Field.T;
+               when Child_Pad           => P : aliased Pad.T;
+               when Child_Documentation => D : aliased Documentation.T;
+               when Child_List          => L : aliased List.T;
+            end case;
+         end record;
 
-   type Reply_Child_Access_Type is access all Reply_Child_Type;
+         type Child_Ptr is access all Child_Type;
 
-   package Reply_Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => Reply_Child_Access_Type);
+         package Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                              Element_Type => Child_Ptr);
 
-   type Reply_Type is tagged limited private;
+         type Children_Const_Ptr is access constant Child_Vectors.Vector;
 
-   function Children (This : Reply_Type) return Reply_Child_Vectors.Vector;
+      end Fs;
 
-   type Reply_Access_Type is access all Reply_Type;
+      type T is tagged limited private;
+
+      function Children (This : T) return Fs.Children_Const_Ptr;
+
+      procedure Append_Child (This  : in out T;
+                              Child : Fs.Child_Ptr);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Children : aliased Fs.Child_Vectors.Vector;
+         end record;
+
+   end Reply;
 
    package Request is
 
@@ -1330,9 +1408,9 @@ package X_Proto is
             case Kind_Id is
               when Child_Field            => F  : aliased Field.T;
               when Child_Pad              => P  : aliased Pad.T;
-              when Child_Value_Param      => V  : aliased Value_Param_Type;
+              when Child_Value_Param      => V  : aliased Value_Param.T;
               when Child_Documentation    => D  : aliased Documentation.T;
-              when Child_Reply            => R  : aliased Reply_Type;
+              when Child_Reply            => R  : aliased Reply.T;
               when Child_List             => L  : aliased List.T;
               when Child_Expression_Field => EF : aliased Expression_Field.T;
             end case;
@@ -1548,36 +1626,6 @@ package X_Proto is
    end Xcb;
 
 private
-
-   type Reply_Type is tagged limited
-      record
-         Children : Reply_Child_Vectors.Vector;
-      end record;
-
-   function Children (This : Reply_Type) return Reply_Child_Vectors.Vector is (This.Children);
-
-   type Value_Param_Type is tagged limited
-      record
-         Mask_Kind : Value_Param_Mask_Kind_Type;
-         Mask_Name : Value_Param_Mask_Name_Type;
-         List_Name : Value_Param_List_Name_Type;
-      end record;
-
-   function Mask_Kind (This : Value_Param_Type) return Value_Param_Mask_Kind_Type is (This.Mask_Kind);
-
-   function Mask_Name (This : Value_Param_Type) return Value_Param_Mask_Name_Type is (This.Mask_Name);
-
-   function List_Name (This : Value_Param_Type) return Value_Param_List_Name_Type is (This.List_Name);
-
-   type See_Type is tagged limited
-      record
-         Kind : See_Kind_Type;
-         Name : See_Name_Type;
-      end record;
-
-   function Kind (This : See_Type) return See_Kind_Type is (This.Kind);
-
-   function Name (This : See_Type) return See_Name_Type is (This.Name);
 
    type Operation_T is tagged limited
       record

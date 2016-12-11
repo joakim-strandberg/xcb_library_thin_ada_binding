@@ -898,4 +898,88 @@ package body X_Proto is
 
    end Example;
 
+   package body See is
+
+      function Kind (This : T) return Fs.Kind_Const_Ptr is
+      begin
+         return This.My_Kind'Unchecked_Access;
+      end Kind;
+
+      function Name (This : T) return Fs.Name_Const_Ptr is
+      begin
+         return This.My_Name'Unchecked_Access;
+      end Name;
+
+      procedure Set_Kind (This  : in out T;
+                          Value : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Kind := (Exists => True,
+                          Value  => Value);
+      end Set_Kind;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Name := (Exists => True,
+                          Value  => Name);
+      end Set_Name;
+
+   end See;
+
+   package body Value_Param is
+
+      function Mask_Kind (This : T) return Fs.Mask_Kind_Const_Ptr is
+      begin
+         return This.My_Mask_Kind'Unchecked_Access;
+      end Mask_Kind;
+
+      function Mask_Name (This : T) return Fs.Mask_Name_Const_Ptr is
+      begin
+         return This.My_Mask_Name'Unchecked_Access;
+      end Mask_Name;
+
+      function List_Name (This : T) return Fs.List_Name_Const_Ptr is
+      begin
+         return This.My_List_Name'Unchecked_Access;
+      end List_Name;
+
+      procedure Set_Mask_Kind (This  : in out T;
+                               Value : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Mask_Kind := (Exists => True,
+                               Value  => Value);
+      end Set_Mask_Kind;
+
+      procedure Set_Mask_Name (This  : in out T;
+                               Value : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Mask_Name := (Exists => True,
+                               Value  => Value);
+      end Set_Mask_Name;
+
+      procedure Set_List_Name (This : in out T;
+                               Value : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_List_Name := (Exists => True,
+                               Value  => Value);
+      end Set_List_Name;
+
+   end Value_Param;
+
+   package body Reply is
+
+      function Children (This : T) return Fs.Children_Const_Ptr is
+      begin
+         return This.My_Children'Unchecked_Access;
+      end Children;
+
+      procedure Append_Child (This  : in out T;
+                              Child : Fs.Child_Ptr) is
+      begin
+         Fs.Child_Vectors.Append (Container => This.My_Children,
+                                  New_Item  => Child);
+      end Append_Child;
+
+   end Reply;
+
 end X_Proto;
