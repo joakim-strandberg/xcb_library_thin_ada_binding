@@ -3,13 +3,6 @@ with Aida.Strings;
 
 package X_Proto is
 
-   type Documentation_Brief_Description_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
    type See_Kind_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
@@ -18,13 +11,6 @@ package X_Proto is
    end record;
 
    type See_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Documentation_Description_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Aida.Strings.Unbounded_String_Type;
          when False => null;
@@ -62,27 +48,6 @@ package X_Proto is
    type Reply_Op_Code_Type (Exists : Boolean := False) is record
       case Exists is
          when True  => Value : Natural;
-         when False => null;
-      end case;
-   end record;
-
-   type Example_Value_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Expression_Field_Kind_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
-         when False => null;
-      end case;
-   end record;
-
-   type Expression_Field_Name_Type (Exists : Boolean := False) is record
-      case Exists is
-         when True  => Value : Aida.Strings.Unbounded_String_Type;
          when False => null;
       end case;
    end record;
@@ -426,30 +391,76 @@ package X_Proto is
 
    end Item;
 
-   type Expression_Field_Child_Kind_Id_Type is (
-                                     Expression_Field_Child_Operation
-                                     );
+   package Expression_Field is
 
-   type Expression_Field_Child_Type (Kind_Id : Expression_Field_Child_Kind_Id_Type) is record
-      case Kind_Id is
-         when Expression_Field_Child_Operation  => Op : aliased Operation.T;
-      end case;
-   end record;
+      package Fs is
 
-   type Expression_Field_Child_Access_Type is access all Expression_Field_Child_Type;
+         type Kind_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   package Expression_Field_Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                         Element_Type => Expression_Field_Child_Access_Type);
+         type Kind_Const_Ptr is access constant Kind_Type;
 
-   type Expression_Field_Type is tagged limited private;
+         type Name_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   function Kind (This : Expression_Field_Type) return Expression_Field_Kind_Type;
+         type Name_Const_Ptr is access constant Name_Type;
 
-   function Name (This : Expression_Field_Type) return Expression_Field_Name_Type;
+         type Child_Kind_Id_Type is (
+                                     Child_Operation
+                                    );
 
-   function Children (This : Expression_Field_Type) return Expression_Field_Child_Vectors.Vector;
+         type Child_Type (Kind_Id : Child_Kind_Id_Type) is record
+            case Kind_Id is
+               when Child_Operation  => Op : aliased Operation.T;
+            end case;
+         end record;
 
-   type Expression_Field_Access_Type is access all Expression_Field_Type;
+         type Child_Ptr is access all Child_Type;
+
+         package Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                              Element_Type => Child_Ptr);
+
+         type Children_Const_Ptr is access constant Child_Vectors.Vector;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Kind (This : T) return Fs.Kind_Const_Ptr;
+
+      function Name (This : T) return Fs.Name_Const_Ptr;
+
+      function Children (This : T) return Fs.Children_Const_Ptr;
+
+      procedure Set_Kind (This  : in out T;
+                          Value : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type);
+
+      procedure Append_Child (This  : in out T;
+                              Child : Fs.Child_Ptr);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Kind     : aliased Fs.Kind_Type;
+            My_Name     : aliased Fs.Name_Type;
+            My_Children : aliased Fs.Child_Vectors.Vector;
+         end record;
+
+   end Expression_Field;
 
    package Error is
 
@@ -616,11 +627,38 @@ package X_Proto is
 
    end Error_Copy;
 
-   type Example_Type is tagged limited private;
+   package Example is
 
-   function Value (This : Example_Type) return Example_Value_Type;
+      package Fs is
 
-   type Example_Access_Type is access all Example_Type;
+         type Value_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
+
+         type Value_Const_Ptr is access constant Value_Type;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Value (This : T) return Fs.Value_Const_Ptr;
+
+      procedure Set_Value (This  : in out T;
+                           Value : Aida.Strings.Unbounded_String_Type);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Value : aliased Fs.Value_Type;
+         end record;
+
+   end Example;
 
    type See_Type is tagged limited private;
 
@@ -630,36 +668,82 @@ package X_Proto is
 
    type See_Access_Type is access all See_Type;
 
-   type Documentation_Member_Kind_Id_Type is (
-                                              Documentation_Member_Field,
-                                              Documentation_Member_See,
-                                              Documentation_Member_Error,
-                                              Documentation_Member_Example
-                                             );
+   package Documentation is
 
-   type Documentation_Member_Type (Kind_Id : Documentation_Member_Kind_Id_Type) is record
-      case Kind_Id is
-         when Documentation_Member_Field   => F : aliased Field.T;
-         when Documentation_Member_See     => S : aliased See_Type;
-         when Documentation_Member_Error   => E : aliased Error.T;
-         when Documentation_Member_Example => Ex : aliased Example_Type;
-      end case;
-   end record;
+      package Fs is
 
-   type Documentation_Member_Access_Type is access all Documentation_Member_Type;
+         type Brief_Description_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   package Documentation_Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                       Element_Type => Documentation_Member_Access_Type);
+         type Brief_Description_Const_Ptr is access constant Brief_Description_Type;
 
-   type Documentation_Type is tagged limited private;
+         type Description_Type (Exists : Boolean := False) is record
+            case Exists is
+               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when False => null;
+            end case;
+         end record;
 
-   function Brief_Description (This : Documentation_Type) return Documentation_Brief_Description_Type;
+         type Description_Const_Ptr is access constant Description_Type;
 
-   function Description (This : Documentation_Type) return Documentation_Description_Type;
+         type Member_Kind_Id_Type is (
+                                      Member_Field,
+                                      Member_See,
+                                      Member_Error,
+                                      Member_Example
+                                     );
 
-   function Members (This : Documentation_Type) return Documentation_Member_Vectors.Vector;
+         type Member_Type (Kind_Id : Member_Kind_Id_Type) is record
+            case Kind_Id is
+               when Member_Field   => F  : aliased Field.T;
+               when Member_See     => S  : aliased See_Type;
+               when Member_Error   => E  : aliased Error.T;
+               when Member_Example => Ex : aliased Example.T;
+            end case;
+         end record;
 
-   type Documentation_Access_Type is access all Documentation_Type;
+         type Member_Ptr is access all Member_Type;
+
+         package Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
+                                                               Element_Type => Member_Ptr);
+
+         type Members_Const_Ptr is access constant Member_Vectors.Vector;
+
+      end Fs;
+
+      type T is tagged limited private;
+
+      function Brief_Description (This : T) return Fs.Brief_Description_Const_Ptr;
+
+      function Description (This : T) return Fs.Description_Const_Ptr;
+
+      function Members (This : T) return Fs.Members_Const_Ptr;
+
+      procedure Set_Brief_Description (This  : in out T;
+                                       Value : Aida.Strings.Unbounded_String_Type);
+
+      procedure Set_Description (This  : in out T;
+                                 Value : Aida.Strings.Unbounded_String_Type);
+
+      procedure Append_Member (This   : in out T;
+                               Member : Fs.Member_Ptr);
+
+      type Ptr is access all T;
+
+   private
+
+      type T is tagged limited
+         record
+            My_Brief_Description : aliased Fs.Brief_Description_Type;
+            My_Description       : aliased Fs.Description_Type;
+            My_Members           : aliased Fs.Member_Vectors.Vector;
+         end record;
+
+   end Documentation;
 
    package Event_Copy is
 
@@ -902,7 +986,8 @@ package X_Proto is
          type Items_Const_Ptr is access constant Item_Vectors.Vector;
 
          package Documentation_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                      Element_Type => Documentation_Access_Type);
+                                                                      Element_Type => Documentation.Ptr,
+                                                                      "="          => Documentation."=");
 
          type Documentations_Const_Ptr is access constant Documentation_Vectors.Vector;
 
@@ -922,8 +1007,8 @@ package X_Proto is
       procedure Append_Item (This   : in out T;
                              Item_V : Item.Ptr);
 
-      procedure Append_Documentation (This          : in out T;
-                                      Documentation : Documentation_Access_Type);
+      procedure Append_Documentation (This            : in out T;
+                                      Documentation_V : Documentation.Ptr);
 
       type Ptr is access all T;
 
@@ -1107,7 +1192,7 @@ package X_Proto is
             case Kind_Id is
                when Event_Member_Field => F : aliased Field.T;
                when Event_Member_Pad   => P : aliased Pad.T;
-               when Event_Member_Doc   => D : aliased Documentation_Type;
+               when Event_Member_Doc   => D : aliased Documentation.T;
                when Event_Member_List  => L : aliased List.T;
             end case;
          end record;
@@ -1184,7 +1269,7 @@ package X_Proto is
       case Kind_Id is
          when Reply_Child_Field         => F : aliased Field.T;
          when Reply_Child_Pad           => P : aliased Pad.T;
-         when Reply_Child_Documentation => D : aliased Documentation_Type;
+         when Reply_Child_Documentation => D : aliased Documentation.T;
          when Reply_Child_List          => L : aliased List.T;
       end case;
    end record;
@@ -1246,10 +1331,10 @@ package X_Proto is
               when Child_Field            => F  : aliased Field.T;
               when Child_Pad              => P  : aliased Pad.T;
               when Child_Value_Param      => V  : aliased Value_Param_Type;
-              when Child_Documentation    => D  : aliased Documentation_Type;
+              when Child_Documentation    => D  : aliased Documentation.T;
               when Child_Reply            => R  : aliased Reply_Type;
               when Child_List             => L  : aliased List.T;
-              when Child_Expression_Field => EF : aliased Expression_Field_Type;
+              when Child_Expression_Field => EF : aliased Expression_Field.T;
             end case;
          end record;
 
@@ -1464,26 +1549,6 @@ package X_Proto is
 
 private
 
-   type Expression_Field_Type is tagged limited
-      record
-         Kind : Expression_Field_Kind_Type;
-         Name : Expression_Field_Name_Type;
-         Children : Expression_Field_Child_Vectors.Vector;
-      end record;
-
-   function Kind (This : Expression_Field_Type) return Expression_Field_Kind_Type is (This.Kind);
-
-   function Name (This : Expression_Field_Type) return Expression_Field_Name_Type is (This.Name);
-
-   function Children (This : Expression_Field_Type) return Expression_Field_Child_Vectors.Vector is (This.Children);
-
-   type Example_Type is tagged limited
-      record
-         Value : Example_Value_Type;
-      end record;
-
-   function Value (This : Example_Type) return Example_Value_Type is (This.Value);
-
    type Reply_Type is tagged limited
       record
          Children : Reply_Child_Vectors.Vector;
@@ -1513,19 +1578,6 @@ private
    function Kind (This : See_Type) return See_Kind_Type is (This.Kind);
 
    function Name (This : See_Type) return See_Name_Type is (This.Name);
-
-   type Documentation_Type is tagged limited
-      record
-         Brief_Description : Documentation_Brief_Description_Type;
-         Description       : Documentation_Description_Type;
-         Members           : Documentation_Member_Vectors.Vector;
-      end record;
-
-   function Brief_Description (This : Documentation_Type) return Documentation_Brief_Description_Type is (This.Brief_Description);
-
-   function Description (This : Documentation_Type) return Documentation_Description_Type is (This.Description);
-
-   function Members (This : Documentation_Type) return Documentation_Member_Vectors.Vector is (This.Members);
 
    type Operation_T is tagged limited
       record

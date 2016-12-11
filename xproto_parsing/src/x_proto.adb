@@ -211,11 +211,11 @@ package body X_Proto is
                                  New_Item  => Item_V);
       end Append_Item;
 
-      procedure Append_Documentation (This          : in out T;
-                                      Documentation : Documentation_Access_Type) is
+      procedure Append_Documentation (This            : in out T;
+                                      Documentation_V : Documentation.Ptr) is
       begin
          Fs.Documentation_Vectors.Append (Container => This.My_Documentations,
-                                          New_Item  => Documentation);
+                                          New_Item  => Documentation_V);
       end Append_Documentation;
 
    end Enum;
@@ -801,5 +801,101 @@ package body X_Proto is
       end Append_Child;
 
    end Request;
+
+   package body Expression_Field is
+
+      function Kind (This : T) return Fs.Kind_Const_Ptr is
+      begin
+         return This.My_Kind'Unchecked_Access;
+      end Kind;
+
+      function Name (This : T) return Fs.Name_Const_Ptr is
+      begin
+         return This.My_Name'Unchecked_Access;
+      end Name;
+
+      function Children (This : T) return Fs.Children_Const_Ptr is
+      begin
+         return This.My_Children'Unchecked_Access;
+      end Children;
+
+      procedure Set_Kind (This  : in out T;
+                          Value : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Kind := (Exists => True,
+                          Value  => Value);
+      end Set_Kind;
+
+      procedure Set_Name (This : in out T;
+                          Name : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Name := (Exists => True,
+                          Value  => Name);
+      end Set_Name;
+
+      procedure Append_Child (This  : in out T;
+                              Child : Fs.Child_Ptr) is
+      begin
+         Fs.Child_Vectors.Append (Container => This.My_Children,
+                                  New_Item  => Child);
+      end Append_Child;
+
+   end Expression_Field;
+
+   package body Documentation is
+
+      function Brief_Description (This : T) return Fs.Brief_Description_Const_Ptr is
+      begin
+         return This.My_Brief_Description'Unchecked_Access;
+      end Brief_Description;
+
+      function Description (This : T) return Fs.Description_Const_Ptr is
+      begin
+         return This.My_Description'Unchecked_Access;
+      end Description;
+
+      function Members (This : T) return Fs.Members_Const_Ptr is
+      begin
+         return This.My_Members'Unchecked_Access;
+      end Members;
+
+      procedure Set_Brief_Description (This  : in out T;
+                                       Value : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Brief_Description := (Exists => True,
+                                       Value  => Value);
+      end Set_Brief_Description;
+
+      procedure Set_Description (This  : in out T;
+                                 Value : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Description := (Exists => True,
+                                 Value  => Value);
+      end Set_Description;
+
+      procedure Append_Member (This   : in out T;
+                               Member : Fs.Member_Ptr) is
+      begin
+         Fs.Member_Vectors.Append (Container => This.My_Members,
+                                   New_Item  => Member);
+      end Append_Member;
+
+   end Documentation;
+
+   package body Example is
+
+      function Value (This : T) return Fs.Value_Const_Ptr is
+      begin
+         return This.My_Value'Unchecked_Access;
+      end Value;
+
+      procedure Set_Value (This  : in out T;
+                           Value : Aida.Strings.Unbounded_String_Type) is
+      begin
+         This.My_Value := (Exists => True,
+                           Value  => Value);
+      end Set_Value;
+
+   end Example;
 
 end X_Proto;
