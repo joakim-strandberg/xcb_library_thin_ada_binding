@@ -25,7 +25,7 @@ procedure Main is
 
       Is_Success : Boolean;
 
-      Error_Message : SXML.Error_Message_Type;
+      Error_Message : SXML.Error_Message_P.T;
 
       Xcb : X_Proto.Xcb.Ptr := null;
    begin

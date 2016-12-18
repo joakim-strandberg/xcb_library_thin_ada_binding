@@ -15,7 +15,7 @@ package body X_Proto is
       end Members;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.Name := (Exists => True,
                        Value  => Name);
@@ -37,7 +37,7 @@ package body X_Proto is
       end Name;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.My_Name := (Exists => True,
                           Value  => Name);
@@ -53,7 +53,7 @@ package body X_Proto is
       end Value;
 
       procedure Set_Value (This : in out T;
-                           Name : Aida.Strings.Unbounded_String_Type) is
+                           Name : Large_Bounded_String.T) is
       begin
          This.My_Value := (Exists => True,
                            Value  => Name);
@@ -74,7 +74,7 @@ package body X_Proto is
       end Kinds;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.My_Name := (Exists => True,
                           Value  => Name);
@@ -121,42 +121,42 @@ package body X_Proto is
       end Value;
 
       procedure Set_Kind (This : in out T;
-                          Kind : Aida.Strings.Unbounded_String_Type) is
+                          Kind : Large_Bounded_String.T) is
       begin
          This.My_Kind := (Exists => True,
                           Value  => Kind);
       end Set_Kind;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.My_Name := (Exists => True,
                           Value  => Name);
       end Set_Name;
 
       procedure Set_Enum (This : in out T;
-                          Enum : Aida.Strings.Unbounded_String_Type) is
+                          Enum : Large_Bounded_String.T) is
       begin
          This.My_Enum := (Exists => True,
                           Value  => Enum);
       end Set_Enum;
 
       procedure Set_Mask (This : in out T;
-                          Mask : Aida.Strings.Unbounded_String_Type) is
+                          Mask : Large_Bounded_String.T) is
       begin
          This.My_Mask := (Exists => True,
                           Value  => Mask);
       end Set_Mask;
 
       procedure Set_Value (This  : in out T;
-                           Value : Aida.Strings.Unbounded_String_Type) is
+                           Value : Large_Bounded_String.T) is
       begin
          This.My_Value := (Exists => True,
                            Value  => Value);
       end Set_Value;
 
       procedure Set_Alt_Enum (This     : in out T;
-                              Alt_Enum : Aida.Strings.Unbounded_String_Type) is
+                              Alt_Enum : Large_Bounded_String.T) is
       begin
          This.My_Alt_Enum := (Exists => True,
                               Value  => Alt_Enum);
@@ -198,7 +198,7 @@ package body X_Proto is
       end Documentations;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.My_Name := (Exists => True,
                           Value  => Name);
@@ -250,7 +250,7 @@ package body X_Proto is
 
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.My_Name := (Exists => True,
                           Value  => Name);
@@ -288,14 +288,14 @@ package body X_Proto is
       end Members;
 
       procedure Set_Kind (This : in out T;
-                          Kind : Aida.Strings.Unbounded_String_Type) is
+                          Kind : Large_Bounded_String.T) is
       begin
          This.My_Kind := (Exists => True,
                           Value  => Kind);
       end Set_Kind;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.My_Name := (Exists => True,
                           Value  => Name);
@@ -323,7 +323,7 @@ package body X_Proto is
       end Members;
 
       procedure Set_Op (This : in out T;
-                        Op   : Aida.Strings.Unbounded_String_Type) is
+                        Op   : Large_Bounded_String.T) is
       begin
          This.My_Op := (Exists => True,
                         Value  => Op);
@@ -351,14 +351,14 @@ package body X_Proto is
       end New_Name;
 
       procedure Set_Old_Name (This : in out T;
-                              Old_Name : Aida.Strings.Unbounded_String_Type) is
+                              Old_Name : Large_Bounded_String.T) is
       begin
          This.My_Old_Name := (Exists => True,
                               Value  => Old_Name);
       end Set_Old_Name;
 
       procedure Set_New_Name (This     : in out T;
-                              New_Name : Aida.Strings.Unbounded_String_Type) is
+                              New_Name : Large_Bounded_String.T) is
       begin
          This.My_New_Name := (Exists => True,
                               Value  => New_Name);
@@ -429,7 +429,7 @@ package body X_Proto is
       end Requests;
 
       procedure Set_Header (This : in out T;
-                            Text : Aida.Strings.Unbounded_String_Type) is
+                            Text : Large_Bounded_String.T) is
       begin
          This.My_Header := (Exists => True,
                             Value  => Text);
@@ -542,7 +542,7 @@ package body X_Proto is
       end Members;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.My_Name := (Exists => True,
                           Value  => Name);
@@ -596,7 +596,7 @@ package body X_Proto is
       end Ref;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.My_Name := (Exists => True,
                           Value  => Name);
@@ -610,7 +610,7 @@ package body X_Proto is
       end Set_Number;
 
       procedure Set_Ref (This : in out T;
-                         Name : Aida.Strings.Unbounded_String_Type) is
+                         Name : Large_Bounded_String.T) is
       begin
          This.My_Ref := (Exists => True,
                          Value  => Name);
@@ -631,7 +631,7 @@ package body X_Proto is
       end Children;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.My_Name := (Exists => True,
                           Value  => Name);
@@ -674,7 +674,7 @@ package body X_Proto is
       end Children;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.My_Name := (Exists => True,
                           Value  => Name);
@@ -688,14 +688,14 @@ package body X_Proto is
       end Set_Number;
 
       procedure Set_Kind (This  : in out T;
-                          Value : Aida.Strings.Unbounded_String_Type) is
+                          Value : Large_Bounded_String.T) is
       begin
          This.My_Kind := (Exists => True,
                           Value  => Value);
       end Set_Kind;
 
       procedure Set_Value (This  : in out T;
-                           Value : Aida.Strings.Unbounded_String_Type) is
+                           Value : Large_Bounded_String.T) is
       begin
          This.My_Value := (Exists => True,
                           Value  => Value);
@@ -728,7 +728,7 @@ package body X_Proto is
       end Ref;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.My_Name := (Exists => True,
                           Value  => Name);
@@ -742,7 +742,7 @@ package body X_Proto is
       end Set_Number;
 
       procedure Set_Ref (This  : in out T;
-                         Value : Aida.Strings.Unbounded_String_Type) is
+                         Value : Large_Bounded_String.T) is
       begin
          This.My_Ref := (Exists => True,
                          Value  => Value);
@@ -773,7 +773,7 @@ package body X_Proto is
       end Children;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.My_Name := (Exists => True,
                           Value  => Name);
@@ -820,14 +820,14 @@ package body X_Proto is
       end Children;
 
       procedure Set_Kind (This  : in out T;
-                          Value : Aida.Strings.Unbounded_String_Type) is
+                          Value : Large_Bounded_String.T) is
       begin
          This.My_Kind := (Exists => True,
                           Value  => Value);
       end Set_Kind;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.My_Name := (Exists => True,
                           Value  => Name);
@@ -860,14 +860,14 @@ package body X_Proto is
       end Members;
 
       procedure Set_Brief_Description (This  : in out T;
-                                       Value : Aida.Strings.Unbounded_String_Type) is
+                                       Value : Large_Bounded_String.T) is
       begin
          This.My_Brief_Description := (Exists => True,
                                        Value  => Value);
       end Set_Brief_Description;
 
       procedure Set_Description (This  : in out T;
-                                 Value : Aida.Strings.Unbounded_String_Type) is
+                                 Value : Large_Bounded_String.T) is
       begin
          This.My_Description := (Exists => True,
                                  Value  => Value);
@@ -890,7 +890,7 @@ package body X_Proto is
       end Value;
 
       procedure Set_Value (This  : in out T;
-                           Value : Aida.Strings.Unbounded_String_Type) is
+                           Value : Large_Bounded_String.T) is
       begin
          This.My_Value := (Exists => True,
                            Value  => Value);
@@ -911,14 +911,14 @@ package body X_Proto is
       end Name;
 
       procedure Set_Kind (This  : in out T;
-                          Value : Aida.Strings.Unbounded_String_Type) is
+                          Value : Large_Bounded_String.T) is
       begin
          This.My_Kind := (Exists => True,
                           Value  => Value);
       end Set_Kind;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type) is
+                          Name : Large_Bounded_String.T) is
       begin
          This.My_Name := (Exists => True,
                           Value  => Name);
@@ -944,21 +944,21 @@ package body X_Proto is
       end List_Name;
 
       procedure Set_Mask_Kind (This  : in out T;
-                               Value : Aida.Strings.Unbounded_String_Type) is
+                               Value : Large_Bounded_String.T) is
       begin
          This.My_Mask_Kind := (Exists => True,
                                Value  => Value);
       end Set_Mask_Kind;
 
       procedure Set_Mask_Name (This  : in out T;
-                               Value : Aida.Strings.Unbounded_String_Type) is
+                               Value : Large_Bounded_String.T) is
       begin
          This.My_Mask_Name := (Exists => True,
                                Value  => Value);
       end Set_Mask_Name;
 
       procedure Set_List_Name (This : in out T;
-                               Value : Aida.Strings.Unbounded_String_Type) is
+                               Value : Large_Bounded_String.T) is
       begin
          This.My_List_Name := (Exists => True,
                                Value  => Value);

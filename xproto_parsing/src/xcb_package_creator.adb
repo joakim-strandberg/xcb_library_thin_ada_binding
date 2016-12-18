@@ -1,6 +1,6 @@
+with Aida;
 with Ada.Exceptions;
 with Ada.Text_IO;
-with Aida.Strings;
 with Strings_Edit.UTF8.Mapping;
 with Strings_Edit.UTF8.Categorization;
 with GNAT.Source_Info;
@@ -22,6 +22,9 @@ package body XCB_Package_Creator is
    use type Ada.Containers.Count_Type;
    use type X_Proto.Value_Type;
    use type X_Proto.Request.Fs.Child_Kind_Id_Type;
+   use type Aida.Int32.T;
+
+   use Aida.Int32;
 
    use X_Proto.Xcb.Fs.Struct_Vector;
    use X_Proto.Xcb.Fs.X_Id_Vector;
@@ -30,8 +33,8 @@ package body XCB_Package_Creator is
    use X_Proto.Struct.Fs.Member_Kind_Id;
 
    package Unbounded_String_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                   Element_Type => Aida.Strings.Unbounded_String_Type,
-                                                                   "="          => Aida.Strings."=");
+                                                                   Element_Type => X_Proto.Large_Bounded_String.T,
+                                                                   "="          => X_Proto.Large_Bounded_String."=");
 
    Processed_X_Ids : Unbounded_String_Vectors.Vector;
 
@@ -45,7 +48,7 @@ package body XCB_Package_Creator is
    end Value_Of_Bit;
 
    procedure Generate_Struct_Name (Old_Name : String;
-                                   New_Name : in out Aida.Strings.Unbounded_String_Type)
+                                   New_Name : in out X_Proto.Large_Bounded_String.T)
    is
       P : Integer := Old_Name'First;
 
@@ -180,7 +183,7 @@ package body XCB_Package_Creator is
    end Generate_Struct_Name;
 
    procedure Generate_Classic_Type_Name (Old_Name : String;
-                                         New_Name : in out Aida.Strings.Unbounded_String_Type) is
+                                         New_Name : in out X_Proto.Large_Bounded_String.T) is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
@@ -188,7 +191,7 @@ package body XCB_Package_Creator is
    end Generate_Classic_Type_Name;
 
    procedure Generate_Classic_Access_Type_Name (Old_Name : String;
-                                                New_Name : in out Aida.Strings.Unbounded_String_Type) is
+                                                New_Name : in out X_Proto.Large_Bounded_String.T) is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
@@ -196,7 +199,7 @@ package body XCB_Package_Creator is
    end Generate_Classic_Access_Type_Name;
 
    procedure Generate_Classic_Iterator_Type_Name (Old_Name : String;
-                                                  New_Name : in out Aida.Strings.Unbounded_String_Type) is
+                                                  New_Name : in out X_Proto.Large_Bounded_String.T) is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
@@ -204,7 +207,7 @@ package body XCB_Package_Creator is
    end Generate_Classic_Iterator_Type_Name;
 
    procedure Generate_Classic_Iterator_Access_Type_Name (Old_Name : String;
-                                                         New_Name : in out Aida.Strings.Unbounded_String_Type) is
+                                                         New_Name : in out X_Proto.Large_Bounded_String.T) is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
@@ -212,7 +215,7 @@ package body XCB_Package_Creator is
    end Generate_Classic_Iterator_Access_Type_Name;
 
    procedure Generate_Classic_Variable_Id_Name (Old_Name : String;
-                                            New_Name : in out Aida.Strings.Unbounded_String_Type) is
+                                            New_Name : in out X_Proto.Large_Bounded_String.T) is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
@@ -220,7 +223,7 @@ package body XCB_Package_Creator is
    end Generate_Classic_Variable_Id_Name;
 
    procedure Generate_Classic_Type_Id_Name (Old_Name : String;
-                                            New_Name : in out Aida.Strings.Unbounded_String_Type) is
+                                            New_Name : in out X_Proto.Large_Bounded_String.T) is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
@@ -228,7 +231,7 @@ package body XCB_Package_Creator is
    end Generate_Classic_Type_Id_Name;
 
    procedure Generate_Classic_Access_Type_Id_Name (Old_Name : String;
-                                                   New_Name : in out Aida.Strings.Unbounded_String_Type) is
+                                                   New_Name : in out X_Proto.Large_Bounded_String.T) is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
@@ -236,7 +239,7 @@ package body XCB_Package_Creator is
    end Generate_Classic_Access_Type_Id_Name;
 
    procedure Generate_Classic_Iterator_Type_Id_Name (Old_Name : String;
-                                                     New_Name : in out Aida.Strings.Unbounded_String_Type) is
+                                                     New_Name : in out X_Proto.Large_Bounded_String.T) is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
@@ -244,7 +247,7 @@ package body XCB_Package_Creator is
    end Generate_Classic_Iterator_Type_Id_Name;
 
    procedure Generate_Classic_Iterator_Access_Type_Id_Name (Old_Name : String;
-                                                            New_Name : in out Aida.Strings.Unbounded_String_Type) is
+                                                            New_Name : in out X_Proto.Large_Bounded_String.T) is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
@@ -252,7 +255,7 @@ package body XCB_Package_Creator is
    end Generate_Classic_Iterator_Access_Type_Id_Name;
 
    procedure Generate_Classic_Event_Type_Name (Old_Name : String;
-                                               New_Name : in out Aida.Strings.Unbounded_String_Type) is
+                                               New_Name : in out X_Proto.Large_Bounded_String.T) is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
@@ -260,7 +263,7 @@ package body XCB_Package_Creator is
    end Generate_Classic_Event_Type_Name;
 
    procedure Generate_Classic_Event_Access_Type_Name (Old_Name : String;
-                                                      New_Name : in out Aida.Strings.Unbounded_String_Type) is
+                                                      New_Name : in out X_Proto.Large_Bounded_String.T) is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
@@ -268,7 +271,7 @@ package body XCB_Package_Creator is
    end Generate_Classic_Event_Access_Type_Name;
 
    procedure Generate_Classic_Error_Type_Name (Old_Name : String;
-                                               New_Name : in out Aida.Strings.Unbounded_String_Type) is
+                                               New_Name : in out X_Proto.Large_Bounded_String.T) is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
@@ -277,9 +280,9 @@ package body XCB_Package_Creator is
 
    procedure Generate_Classic_Event_List_Type_Name (Enum_Name : String;
                                                     List_Name : String;
-                                                    New_Name  : in out Aida.Strings.Unbounded_String_Type)
+                                                    New_Name  : in out X_Proto.Large_Bounded_String.T)
    is
-      Adafied_List_Name : Aida.Strings.Unbounded_String_Type;
+      Adafied_List_Name : X_Proto.Large_Bounded_String.T;
    begin
       Generate_Struct_Name (List_Name,
                             Adafied_List_Name);
@@ -291,7 +294,7 @@ package body XCB_Package_Creator is
 
    procedure Translate_Classic_Variable_Type_Name (Variable_Type_Name : String;
                                                    Is_Success         : out Boolean;
-                                                   Translated_Name    : out Aida.Strings.Unbounded_String_Type) is
+                                                   Translated_Name    : out X_Proto.Large_Bounded_String.T) is
    begin
       Is_Success := True;
       if Variable_Type_Name = "CARD8" then
@@ -319,9 +322,9 @@ package body XCB_Package_Creator is
 
    procedure Generate_Classic_Array_Type_Name (Prefix_Name : String;
                                                Field_Name  : String;
-                                               New_Name    : in out Aida.Strings.Unbounded_String_Type)
+                                               New_Name    : in out X_Proto.Large_Bounded_String.T)
    is
-      Adafied_List_Name : Aida.Strings.Unbounded_String_Type;
+      Adafied_List_Name : X_Proto.Large_Bounded_String.T;
    begin
       if Prefix_Name = "CARD32" then
          New_Name.Initialize ("Unsigned_32");
@@ -362,16 +365,16 @@ package body XCB_Package_Creator is
                           Item => Text);
       end Put;
 
-      function Hash (Key : Aida.Strings.Unbounded_String_Type) return Ada.Containers.Hash_Type is
+      function Hash (Key : X_Proto.Large_Bounded_String.T) return Ada.Containers.Hash_Type is
       begin
          return Ada.Strings.Hash (Key.To_String);
       end Hash;
 
-      package Original_Name_To_Adaified_Name_Type_Owner is new Ada.Containers.Hashed_Maps (Key_Type        => Aida.Strings.Unbounded_String_Type,
-                                                                                           Element_Type    => Aida.Strings.Unbounded_String_Type,
+      package Original_Name_To_Adaified_Name_Type_Owner is new Ada.Containers.Hashed_Maps (Key_Type        => X_Proto.Large_Bounded_String.T,
+                                                                                           Element_Type    => X_Proto.Large_Bounded_String.T,
                                                                                            Hash            => Hash,
-                                                                                           Equivalent_Keys => Aida.Strings."=",
-                                                                                           "="             => Aida.Strings."=");
+                                                                                           Equivalent_Keys => X_Proto.Large_Bounded_String."=",
+                                                                                           "="             => X_Proto.Large_Bounded_String."=");
 
       subtype Original_Name_To_Adaified_Name_Type is Original_Name_To_Adaified_Name_Type_Owner.Map;
 
@@ -385,7 +388,7 @@ package body XCB_Package_Creator is
 
       procedure Translate_Variable_Type_Name (Variable_Type_Name : String;
                                               Is_Success         : out Boolean;
-                                              Translated_Name    : out Aida.Strings.Unbounded_String_Type) is
+                                              Translated_Name    : out X_Proto.Large_Bounded_String.T) is
       begin
          Translate_Classic_Variable_Type_Name (Variable_Type_Name,
                                                Is_Success,
@@ -393,7 +396,7 @@ package body XCB_Package_Creator is
 
          if not Is_Success then
             declare
-               Searched_For : Aida.Strings.Unbounded_String_Type;
+               Searched_For : X_Proto.Large_Bounded_String.T;
                C : Original_Name_To_Adaified_Name_Type_Owner.Cursor;
             begin
                Searched_For.Initialize (Variable_Type_Name);
@@ -408,9 +411,9 @@ package body XCB_Package_Creator is
 
       procedure Translate_To_Variable_Name (Variable_Type_Name : String;
                                             Is_Success         : out Boolean;
-                                            Translated_Name    : out Aida.Strings.Unbounded_String_Type)
+                                            Translated_Name    : out X_Proto.Large_Bounded_String.T)
       is
-         Searched_For : Aida.Strings.Unbounded_String_Type;
+         Searched_For : X_Proto.Large_Bounded_String.T;
          C : Original_Name_To_Adaified_Name_Type_Owner.Cursor;
       begin
          Searched_For.Initialize (Variable_Type_Name);
@@ -425,9 +428,9 @@ package body XCB_Package_Creator is
 
       procedure Translate_To_Iterator_Type_Name (Variable_Type_Name : String;
                                                  Is_Success         : out Boolean;
-                                                 Translated_Name    : out Aida.Strings.Unbounded_String_Type)
+                                                 Translated_Name    : out X_Proto.Large_Bounded_String.T)
       is
-         Searched_For : Aida.Strings.Unbounded_String_Type;
+         Searched_For : X_Proto.Large_Bounded_String.T;
          C : Original_Name_To_Adaified_Name_Type_Owner.Cursor;
       begin
          Searched_For.Initialize (Variable_Type_Name);
@@ -442,9 +445,9 @@ package body XCB_Package_Creator is
 
       procedure Translate_To_Iterator_Access_Type_Name (Variable_Type_Name : String;
                                                         Is_Success         : out Boolean;
-                                                        Translated_Name    : out Aida.Strings.Unbounded_String_Type)
+                                                        Translated_Name    : out X_Proto.Large_Bounded_String.T)
       is
-         Searched_For : Aida.Strings.Unbounded_String_Type;
+         Searched_For : X_Proto.Large_Bounded_String.T;
          C : Original_Name_To_Adaified_Name_Type_Owner.Cursor;
       begin
          Searched_For.Initialize (Variable_Type_Name);
@@ -477,31 +480,13 @@ package body XCB_Package_Creator is
          return R;
       end Determine_Largest_Value;
 
-      Total_Number_Of_Structs : Integer := 0;
-
-      Number_Of_Structs_Without_Name : Integer := 0;
-
-      Number_Of_Fields_Without_Kind : Integer := 0;
-
-      Number_Of_Non_Valid_Type_Definitions : Integer := 0;
-
-      Number_Of_X_Ids_Without_Name : Integer := 0;
-
-      Number_Of_X_Unions_Without_Name : Integer := 0;
-
-      Number_Of_Struct_Fields_With_Enum : Integer := 0;
-
-      Number_Of_Enums_Without_Name : Integer := 0;
-
-      Number_Of_Events_With_Errors : Integer := 0;
-
       Generic_Iterator_Type_Name : constant String := "Generic_Iterator_Type";
 
       procedure Generate_Code_For_Next_Procedure (Name : String) is
-         N                         : Aida.Strings.Unbounded_String_Type;
-         Iterator_Access_Type_Name : Aida.Strings.Unbounded_String_Type;
-         Procedure_Name            : Aida.Strings.Unbounded_String_Type;
-         C_Function_Name           : Aida.Strings.Unbounded_String_Type;
+         N                         : X_Proto.Large_Bounded_String.T;
+         Iterator_Access_Type_Name : X_Proto.Large_Bounded_String.T;
+         Procedure_Name            : X_Proto.Large_Bounded_String.T;
+         C_Function_Name           : X_Proto.Large_Bounded_String.T;
          Is_Success : Boolean;
       begin
          C_Function_Name.Initialize ("xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (Name) & "_next");
@@ -530,10 +515,10 @@ package body XCB_Package_Creator is
       end Generate_Code_For_Next_Procedure;
 
       procedure Generate_Code_For_End_Function (Name : String) is
-         N                  : Aida.Strings.Unbounded_String_Type;
-         Iterator_Type_Name : Aida.Strings.Unbounded_String_Type;
-         Function_Name      : Aida.Strings.Unbounded_String_Type;
-         C_Function_Name    : Aida.Strings.Unbounded_String_Type;
+         N                  : X_Proto.Large_Bounded_String.T;
+         Iterator_Type_Name : X_Proto.Large_Bounded_String.T;
+         Function_Name      : X_Proto.Large_Bounded_String.T;
+         C_Function_Name    : X_Proto.Large_Bounded_String.T;
          Is_Success : Boolean;
       begin
          C_Function_Name.Initialize ("xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (Name) & "_end");
@@ -566,15 +551,15 @@ package body XCB_Package_Creator is
                                                      Use_The_Subtype_Keyword
                                                     );
 
-      procedure Generate_Code_For_X_Id (Name      : Aida.Strings.Unbounded_String_Type;
+      procedure Generate_Code_For_X_Id (Name      : X_Proto.Large_Bounded_String.T;
                                         Type_Name : String;
                                         How       : How_New_Type_Should_Be_Generated_Type)
       is
-         New_Variable_Name                      : Aida.Strings.Unbounded_String_Type;
-         New_Variable_Type_Name                 : Aida.Strings.Unbounded_String_Type;
-         New_Variable_Access_Type_Name          : Aida.Strings.Unbounded_String_Type;
-         New_Variable_Iterator_Type_Name        : Aida.Strings.Unbounded_String_Type;
-         New_Variable_Iterator_Access_Type_Name : Aida.Strings.Unbounded_String_Type;
+         New_Variable_Name                      : X_Proto.Large_Bounded_String.T;
+         New_Variable_Type_Name                 : X_Proto.Large_Bounded_String.T;
+         New_Variable_Access_Type_Name          : X_Proto.Large_Bounded_String.T;
+         New_Variable_Iterator_Type_Name        : X_Proto.Large_Bounded_String.T;
+         New_Variable_Iterator_Access_Type_Name : X_Proto.Large_Bounded_String.T;
       begin
          Generate_Classic_Variable_Id_Name (Old_Name => Name.To_String,
                                             New_Name => New_Variable_Name);
@@ -641,11 +626,11 @@ package body XCB_Package_Creator is
          return False;
       end There_Is_No_Value_Param_With_Same_Name_And_Type;
 
-      procedure Generate_Request_With_Reply_Code (Function_Name   : Aida.Strings.Unbounded_String_Type;
-                                                  C_Function_Name : Aida.Strings.Unbounded_String_Type;
+      procedure Generate_Request_With_Reply_Code (Function_Name   : X_Proto.Large_Bounded_String.T;
+                                                  C_Function_Name : X_Proto.Large_Bounded_String.T;
                                                   Children        : X_Proto.Request.Fs.Child_Vectors.Vector;
                                                   Request_Name    : String;
-                                                  Reply_Type_Name : Aida.Strings.Unbounded_String_Type)
+                                                  Reply_Type_Name : X_Proto.Large_Bounded_String.T)
       is
          Is_First_Parameter : Boolean := True;
       begin
@@ -662,7 +647,7 @@ package body XCB_Package_Creator is
                                                                              Children           => Children)
                      then
                         declare
-                           Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                           Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                            Is_Success : Boolean;
                         begin
                            Translate_Variable_Type_Name (Variable_Type_Name => Children.Element (I).F.Kind.Value.To_String,
@@ -671,7 +656,7 @@ package body XCB_Package_Creator is
 
                            if Is_Success then
                               declare
-                                 Field_Name : Aida.Strings.Unbounded_String_Type;
+                                 Field_Name : X_Proto.Large_Bounded_String.T;
                               begin
                                  Generate_Struct_Name (Old_Name => Children.Element (I).F.Name.Value.To_String,
                                                        New_Name => Field_Name);
@@ -706,7 +691,7 @@ package body XCB_Package_Creator is
                when X_Proto.Request.Fs.Child_Pad =>
                   --                          if Event.Members.Element (I).P.Bytes.Value > 1 then
                   --                             declare
-                  --                                Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                  --                                Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                   --                             begin
                   --                                Generate_Classic_Event_List_Type_Name (Enum_Name => Event.Name.Value.To_String,
                   --                                                                       List_Name => "Padding" & Aida.Strings.To_String (Padding_Number),
@@ -725,8 +710,7 @@ package body XCB_Package_Creator is
                     Children.Element (I).V.List_Name.Exists
                   then
                      declare
-                        Ada_List_Name      : Aida.Strings.Unbounded_String_Type;
-                        Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                        Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                         Is_Success : Boolean;
                      begin
                         Translate_Classic_Variable_Type_Name (Variable_Type_Name => Children.Element (I).V.Mask_Kind.Value.To_String,
@@ -735,7 +719,7 @@ package body XCB_Package_Creator is
 
                         if Is_Success then
                            declare
-                              Field_Name : Aida.Strings.Unbounded_String_Type;
+                              Field_Name : X_Proto.Large_Bounded_String.T;
                            begin
                               Generate_Struct_Name (Old_Name => Children.Element (I).V.Mask_Name.Value.To_String,
                                                     New_Name => Field_Name);
@@ -747,7 +731,7 @@ package body XCB_Package_Creator is
                            end;
 
                            declare
-                              Field_Name : Aida.Strings.Unbounded_String_Type;
+                              Field_Name : X_Proto.Large_Bounded_String.T;
                            begin
                               Generate_Struct_Name (Old_Name => Children.Element (I).V.List_Name.Value.To_String,
                                                     New_Name => Field_Name);
@@ -772,8 +756,8 @@ package body XCB_Package_Creator is
                     Children.Element (I).L.Kind.Exists
                   then
                      declare
-                        Field_Name               : Aida.Strings.Unbounded_String_Type;
-                        Variable_Array_Type_Name : Aida.Strings.Unbounded_String_Type;
+                        Field_Name               : X_Proto.Large_Bounded_String.T;
+                        Variable_Array_Type_Name : X_Proto.Large_Bounded_String.T;
                      begin
                         Generate_Classic_Array_Type_Name (Prefix_Name => Children.Element (I).L.Kind.Value.To_String,
                                                           Field_Name  => "",
@@ -817,21 +801,21 @@ package body XCB_Package_Creator is
       end Generate_Request_With_Reply_Code;
 
       package Unbounded_String_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                      Element_Type => Aida.Strings.Unbounded_String_Type,
-                                                                      "="          => Aida.Strings."=");
+                                                                      Element_Type => X_Proto.Large_Bounded_String.T,
+                                                                      "="          => X_Proto.Large_Bounded_String."=");
 
       Names_Of_Types_To_Make_Array_Types : Unbounded_String_Vectors.Vector;
 
-      function Hash_Of_Enum_Name (This : Aida.Strings.Unbounded_String_Type) return Ada.Containers.Hash_Type is (Ada.Strings.Fixed.Hash (This.To_String));
+      function Hash_Of_Enum_Name (This : X_Proto.Large_Bounded_String.T) return Ada.Containers.Hash_Type is (Ada.Strings.Fixed.Hash (This.To_String));
 
-      package Enum_Name_To_Size_Identifier_Map_Type_Owner is new Ada.Containers.Hashed_Maps (Key_Type        => Aida.Strings.Unbounded_String_Type,
-                                                                                             Element_Type    => Aida.Strings.Unbounded_String_Type,
+      package Enum_Name_To_Size_Identifier_Map_Type_Owner is new Ada.Containers.Hashed_Maps (Key_Type        => X_Proto.Large_Bounded_String.T,
+                                                                                             Element_Type    => X_Proto.Large_Bounded_String.T,
                                                                                              Hash            => Hash_Of_Enum_Name,
-                                                                                             Equivalent_Keys => Aida.Strings."=",
-                                                                                             "="             => Aida.Strings."=");
+                                                                                             Equivalent_Keys => X_Proto.Large_Bounded_String."=",
+                                                                                             "="             => X_Proto.Large_Bounded_String."=");
 
       use type Enum_Name_To_Size_Identifier_Map_Type_Owner.Cursor;
-      use type Aida.Strings.Unbounded_String_Type;
+      use type X_Proto.Large_Bounded_String.T;
 
       Enum_Name_To_Size_Identifier_Map : Enum_Name_To_Size_Identifier_Map_Type_Owner.Map;
 
@@ -844,7 +828,7 @@ package body XCB_Package_Creator is
                      C : Enum_Name_To_Size_Identifier_Map_Type_Owner.Cursor;
 
                      Is_Success : Boolean;
-                     Translated_Name : Aida.Strings.Unbounded_String_Type;
+                     Translated_Name : X_Proto.Large_Bounded_String.T;
                   begin
                      if F.Enum.Exists then
                         Translate_Classic_Variable_Type_Name (Variable_Type_Name => F.Kind.Value.To_String,
@@ -913,7 +897,7 @@ package body XCB_Package_Creator is
          begin
             if Struct.Name.Exists then
                declare
-                  Padding_Number : Integer := 0;
+                  Padding_Number : Aida.Int32.T := 0;
                begin
                   for Child of Struct.Members loop
                      case Child.Kind_Id is
@@ -922,14 +906,14 @@ package body XCB_Package_Creator is
                      when Pad_Member =>
                         if Child.P.Bytes.Value > 1 then
                            declare
-                              Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                              Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                            begin
                               Generate_Classic_Array_Type_Name (Prefix_Name => Struct.Name.Value.To_String,
-                                                                Field_Name  => "Padding" & Aida.Strings.To_String (Padding_Number),
+                                                                Field_Name  => "Padding" & To_String (Padding_Number),
                                                                 New_Name    => Variable_Type_Name);
 
                               Put_Tabs (1); Put_Line ("type " & Variable_Type_Name.To_String & " is array (0.." &
-                                                        Aida.Strings.To_String (Integer (Child.P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
+                                                        To_String (Aida.Int32.T (Child.P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
                            end;
                         end if;
                         Padding_Number := Padding_Number  + 1;
@@ -940,13 +924,13 @@ package body XCB_Package_Creator is
                end;
 
                declare
-                  New_Variable_Name                      : Aida.Strings.Unbounded_String_Type;
-                  New_Variable_Type_Name                 : Aida.Strings.Unbounded_String_Type;
-                  New_Variable_Access_Type_Name          : Aida.Strings.Unbounded_String_Type;
-                  New_Variable_Iterator_Type_Name        : Aida.Strings.Unbounded_String_Type;
-                  New_Variable_Iterator_Access_Type_Name : Aida.Strings.Unbounded_String_Type;
+                  New_Variable_Name                      : X_Proto.Large_Bounded_String.T;
+                  New_Variable_Type_Name                 : X_Proto.Large_Bounded_String.T;
+                  New_Variable_Access_Type_Name          : X_Proto.Large_Bounded_String.T;
+                  New_Variable_Iterator_Type_Name        : X_Proto.Large_Bounded_String.T;
+                  New_Variable_Iterator_Access_Type_Name : X_Proto.Large_Bounded_String.T;
 
-                  Padding_Number : Integer := 0;
+                  Padding_Number : Aida.Int32.T := 0;
                begin
                   Generate_Struct_Name (Old_Name => Struct.Name.Value.To_String,
                                         New_Name => New_Variable_Name);
@@ -966,7 +950,7 @@ package body XCB_Package_Creator is
                      when Field_Member =>
                         if Child.F.Kind.Exists then
                            declare
-                              Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                              Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                               Is_Success : Boolean;
                            begin
                               Translate_Variable_Type_Name (Variable_Type_Name => Child.F.Kind.Value.To_String,
@@ -975,35 +959,31 @@ package body XCB_Package_Creator is
 
                               if Is_Success then
                                  declare
-                                    Field_Name : Aida.Strings.Unbounded_String_Type;
+                                    Field_Name : X_Proto.Large_Bounded_String.T;
                                  begin
                                     Generate_Struct_Name (Old_Name => Child.F.Name.Value.To_String,
                                                           New_Name => Field_Name);
                                     Put_Tabs (2); Put_Line (Field_Name.To_String & " : aliased " & Variable_Type_Name.To_String & ";");
-
-                                    if Child.F.Enum.Exists then
-                                       Number_Of_Struct_Fields_With_Enum := Number_Of_Struct_Fields_With_Enum + 1;
-                                    end if;
                                  end;
                               else
                                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & Child.F.Kind.Value.To_String);
                               end if;
                            end;
                         else
-                           Number_Of_Fields_Without_Kind := Number_Of_Fields_Without_Kind + 1;
+                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
                         end if;
                      when Pad_Member =>
                         if Child.P.Bytes.Value = 1 then
-                           Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
+                           Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
                         else
                            declare
-                              New_Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                              New_Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                            begin
                               Generate_Classic_Array_Type_Name (Prefix_Name => Struct.Name.Value.To_String,
-                                                                Field_Name  => "Padding" & Aida.Strings.To_String (Padding_Number),
+                                                                Field_Name  => "Padding" & To_String (Padding_Number),
                                                                 New_Name    => New_Variable_Type_Name);
 
-                              Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
+                              Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
                            end;
                         end if;
                         Padding_Number := Padding_Number + 1;
@@ -1057,7 +1037,7 @@ package body XCB_Package_Creator is
 
    begin
       declare
-         Ada_Name : Aida.Strings.Unbounded_String_Type;
+         Ada_Name : X_Proto.Large_Bounded_String.T;
       begin
          Ada_Name.Initialize ("CARD8");
          Eight_Bit_Variable_Type_Names.Append (Ada_Name);
@@ -1101,7 +1081,7 @@ package body XCB_Package_Creator is
            Event.Name.Exists
          then
             declare
-               Constant_Name : Aida.Strings.Unbounded_String_Type;
+               Constant_Name : X_Proto.Large_Bounded_String.T;
             begin
                Generate_Struct_Name (Old_Name => Event.Name.Value.To_String,
                                      New_Name => Constant_Name);
@@ -1121,7 +1101,7 @@ package body XCB_Package_Creator is
            Event_Copy.Name.Exists
          then
             declare
-               Constant_Name : Aida.Strings.Unbounded_String_Type;
+               Constant_Name : X_Proto.Large_Bounded_String.T;
             begin
                Generate_Struct_Name (Old_Name => Event_Copy.Name.Value.To_String,
                                      New_Name => Constant_Name);
@@ -1139,7 +1119,7 @@ package body XCB_Package_Creator is
            Error.Name.Exists
          then
             declare
-               Constant_Name : Aida.Strings.Unbounded_String_Type;
+               Constant_Name : X_Proto.Large_Bounded_String.T;
             begin
                Generate_Struct_Name (Old_Name => Error.Name.Value.To_String,
                                      New_Name => Constant_Name);
@@ -1157,7 +1137,7 @@ package body XCB_Package_Creator is
            Error_Copy.Name.Exists
          then
             declare
-               Constant_Name : Aida.Strings.Unbounded_String_Type;
+               Constant_Name : X_Proto.Large_Bounded_String.T;
             begin
                Generate_Struct_Name (Old_Name => Error_Copy.Name.Value.To_String,
                                      New_Name => Constant_Name);
@@ -1177,7 +1157,7 @@ package body XCB_Package_Creator is
            Request.Name.Exists
          then
             declare
-               Constant_Name : Aida.Strings.Unbounded_String_Type;
+               Constant_Name : X_Proto.Large_Bounded_String.T;
             begin
                Generate_Struct_Name (Old_Name => Request.Name.Value.To_String,
                                      New_Name => Constant_Name);
@@ -1206,9 +1186,9 @@ package body XCB_Package_Creator is
                                        How => Use_The_New_Keyword);
 
                declare
-                  Searched_For : Aida.Strings.Unbounded_String_Type;
+                  Searched_For : X_Proto.Large_Bounded_String.T;
                   C : Original_Name_To_Adaified_Name_Type_Owner.Cursor;
-                  X_Id_Union_Type_Name : Aida.Strings.Unbounded_String_Type;
+                  X_Id_Union_Type_Name : X_Proto.Large_Bounded_String.T;
                begin
                   Searched_For.Initialize (X_Id_Union.Name.Value.To_String);
                   C := Original_Name_To_Adaified_Name.Find (Key => Searched_For);
@@ -1232,7 +1212,7 @@ package body XCB_Package_Creator is
                                        exit;
                                     end if;
                                  else
-                                    Number_Of_X_Ids_Without_Name := Number_Of_X_Ids_Without_Name + 1;
+                                    Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
                                  end if;
                               end;
                            end loop;
@@ -1245,7 +1225,7 @@ package body XCB_Package_Creator is
                   end if;
                end;
             else
-               Number_Of_X_Unions_Without_Name := Number_Of_X_Unions_Without_Name + 1;
+               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
             end if;
          end;
       end loop;
@@ -1261,7 +1241,7 @@ package body XCB_Package_Creator is
                                           How => Use_The_New_Keyword);
                end if;
             else
-               Number_Of_X_Ids_Without_Name := Number_Of_X_Ids_Without_Name + 1;
+               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
             end if;
          end;
       end loop;
@@ -1305,10 +1285,10 @@ package body XCB_Package_Creator is
                end loop;
 
                declare
-                  New_Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                  New_Variable_Type_Name : X_Proto.Large_Bounded_String.T;
 
-                  Enum_Prefix_Name       : Aida.Strings.Unbounded_String_Type;
-                  Enum_Value_Name        : Aida.Strings.Unbounded_String_Type;
+                  Enum_Prefix_Name       : X_Proto.Large_Bounded_String.T;
+                  Enum_Value_Name        : X_Proto.Large_Bounded_String.T;
                begin
                   Generate_Classic_Type_Name (Old_Name => Enum.Name.Value.To_String,
                                               New_Name => New_Variable_Type_Name);
@@ -1379,19 +1359,19 @@ package body XCB_Package_Creator is
                end;
             end;
          else
-            Number_Of_Enums_Without_Name := Number_Of_Enums_Without_Name + 1;
+            Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
          end if;
       end loop;
 
       for Type_Definition of Xcb.Type_Definitions.all loop
          if Type_Definition.Old_Name.Exists and Type_Definition.New_Name.Exists then
             declare
-               Old_Variable_Type_Name                 : Aida.Strings.Unbounded_String_Type;
-               New_Variable_Name                      : Aida.Strings.Unbounded_String_Type;
-               New_Variable_Type_Name                 : Aida.Strings.Unbounded_String_Type;
-               New_Variable_Access_Type_Name          : Aida.Strings.Unbounded_String_Type;
-               New_Variable_Iterator_Type_Name        : Aida.Strings.Unbounded_String_Type;
-               New_Variable_Iterator_Access_Type_Name : Aida.Strings.Unbounded_String_Type;
+               Old_Variable_Type_Name                 : X_Proto.Large_Bounded_String.T;
+               New_Variable_Name                      : X_Proto.Large_Bounded_String.T;
+               New_Variable_Type_Name                 : X_Proto.Large_Bounded_String.T;
+               New_Variable_Access_Type_Name          : X_Proto.Large_Bounded_String.T;
+               New_Variable_Iterator_Type_Name        : X_Proto.Large_Bounded_String.T;
+               New_Variable_Iterator_Access_Type_Name : X_Proto.Large_Bounded_String.T;
                Is_Success : Boolean;
             begin
                Translate_Classic_Variable_Type_Name (Variable_Type_Name => Type_Definition.Old_Name.Value.To_String,
@@ -1456,7 +1436,7 @@ package body XCB_Package_Creator is
                end if;
             end;
          else
-            Number_Of_Non_Valid_Type_Definitions := Number_Of_Non_Valid_Type_Definitions + 1;
+            Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
          end if;
       end loop;
 
@@ -1464,8 +1444,8 @@ package body XCB_Package_Creator is
 
       for Text of Names_Of_Types_To_Make_Array_Types loop
          declare
-            Variable_Type_Name       : Aida.Strings.Unbounded_String_Type;
-            Variable_Array_Type_Name : Aida.Strings.Unbounded_String_Type;
+            Variable_Type_Name       : X_Proto.Large_Bounded_String.T;
+            Variable_Array_Type_Name : X_Proto.Large_Bounded_String.T;
             Is_Success : Boolean;
          begin
             Translate_Variable_Type_Name (Variable_Type_Name => Text.To_String,
@@ -1488,11 +1468,10 @@ package body XCB_Package_Creator is
       for Union of Xcb.Unions.all loop
          if Union.Name.Exists then
             declare
-               New_Variable_Type_Name                 : Aida.Strings.Unbounded_String_Type;
-               New_Variable_Access_Type_Name          : Aida.Strings.Unbounded_String_Type;
-               New_Variable_Iterator_Type_Name        : Aida.Strings.Unbounded_String_Type;
-               New_Variable_Iterator_Access_Type_Name : Aida.Strings.Unbounded_String_Type;
-               Field_Name                             : Aida.Strings.Unbounded_String_Type;
+               New_Variable_Type_Name                 : X_Proto.Large_Bounded_String.T;
+               New_Variable_Access_Type_Name          : X_Proto.Large_Bounded_String.T;
+               New_Variable_Iterator_Type_Name        : X_Proto.Large_Bounded_String.T;
+               New_Variable_Iterator_Access_Type_Name : X_Proto.Large_Bounded_String.T;
 
                Discriminant_Number : Integer := 0; -- is increased for each field in the union
             begin
@@ -1510,7 +1489,7 @@ package body XCB_Package_Creator is
                               when X_Proto.List.Fs.List_Member_Kind_Value =>
                                  declare
                                     Is_Success : Boolean;
-                                    N : Aida.Strings.Unbounded_String_Type;
+                                    N : X_Proto.Large_Bounded_String.T;
                                  begin
                                     Translate_Classic_Variable_Type_Name (Variable_Type_Name => Union.Children.Element (I).L.Kind.Value.To_String,
                                                                           Is_Success         => Is_Success,
@@ -1518,7 +1497,7 @@ package body XCB_Package_Creator is
 
                                     if Is_Success then
                                        Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is array (0.." &
-                                                                 Aida.Strings.To_String (Integer (Union.Children.Element (I).L.Members.Element (1).Value - 1)) & ") of aliased " & N.To_String & ";");
+                                                                 To_String (Aida.Int32.T (Union.Children.Element (I).L.Members.Element (1).Value - 1)) & ") of aliased " & N.To_String & ";");
                                     else
                                        Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & Union.Name.Value.To_String & ", failed to identify kind of array item: " &
                                                                Union.Children.Element (I).L.Kind.Value.To_String);
@@ -1554,14 +1533,14 @@ package body XCB_Package_Creator is
                   case Union.Children.all.Element (I).Kind_Id is
                      when X_Proto.Union.Fs.Child_List =>
                         declare
-                           Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                           Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                         begin
                            Generate_Classic_Array_Type_Name (Prefix_Name => Union.Name.Value.To_String,
                                                              Field_Name  => Union.Children.Element (I).L.Name.Value.To_String,
                                                              New_Name    => Variable_Type_Name);
 
                            declare
-                              Field_Name : Aida.Strings.Unbounded_String_Type;
+                              Field_Name : X_Proto.Large_Bounded_String.T;
                            begin
                               Generate_Struct_Name (Old_Name => Union.Children.Element (I).L.Name.Value.To_String,
                                                     New_Name => Field_Name);
@@ -1610,10 +1589,9 @@ package body XCB_Package_Creator is
       for Event of Xcb.Events.all loop
          if Event.Name.Exists then
             declare
-               New_Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
-               Field_Name             : Aida.Strings.Unbounded_String_Type;
+               New_Variable_Type_Name : X_Proto.Large_Bounded_String.T;
 
-               Padding_Number : Integer := 0;
+               Padding_Number : Aida.Int32.T := 0;
             begin
                for I in Positive range Event.Members.First_Index..Event.Members.Last_Index loop
                   case Event.Members.all.Element (I).Kind_Id is
@@ -1621,16 +1599,12 @@ package body XCB_Package_Creator is
                         null;
                      when X_Proto.Event.Fs.Event_Member_Pad =>
                         if Event.Members.Element (I).P.Bytes.Value > 1 then
-                           declare
-                              Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
-                           begin
-                              Generate_Classic_Event_List_Type_Name (Enum_Name => Event.Name.Value.To_String,
-                                                                     List_Name => "Padding" & Aida.Strings.To_String (Padding_Number),
-                                                                     New_Name  => New_Variable_Type_Name);
+                           Generate_Classic_Event_List_Type_Name (Enum_Name => Event.Name.Value.To_String,
+                                                                  List_Name => "Padding" & To_String (Padding_Number),
+                                                                  New_Name  => New_Variable_Type_Name);
 
-                              Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is array (0.." &
-                                                        Aida.Strings.To_String (Integer (Event.Members.Element (I).P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
-                           end;
+                           Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is array (0.." &
+                                                     To_String (Aida.Int32.T (Event.Members.Element (I).P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
                         end if;
                         Padding_Number := Padding_Number  + 1;
                      when X_Proto.Event.Fs.Event_Member_Doc =>
@@ -1647,7 +1621,7 @@ package body XCB_Package_Creator is
                               when X_Proto.List.Fs.List_Member_Kind_Value =>
                                  declare
                                     Is_Success : Boolean;
-                                    N : Aida.Strings.Unbounded_String_Type;
+                                    N : X_Proto.Large_Bounded_String.T;
                                  begin
                                     Translate_Classic_Variable_Type_Name (Variable_Type_Name => Event.Members.Element (I).L.Kind.Value.To_String,
                                                                           Is_Success         => Is_Success,
@@ -1655,7 +1629,7 @@ package body XCB_Package_Creator is
 
                                     if Is_Success then
                                        Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is array (0.." &
-                                                                 Aida.Strings.To_String (Integer (Event.Members.Element (I).L.Members.Element (1).Value) - 1) & ") of aliased " & N.To_String & ";");
+                                                                 To_String (Aida.Int32.T (Event.Members.Element (I).L.Members.Element (1).Value) - 1) & ") of aliased " & N.To_String & ";");
                                     else
                                        Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & Event.Name.Value.To_String & ", failed to identify kind of array item: " &
                                                                Event.Members.Element (I).L.Kind.Value.To_String);
@@ -1684,7 +1658,7 @@ package body XCB_Package_Creator is
                   case Event.Members.all.Element (I).Kind_Id is
                      when X_Proto.Event.Fs.Event_Member_Field =>
                         declare
-                           Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                           Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                            Is_Success : Boolean;
                         begin
                            Translate_Variable_Type_Name (Variable_Type_Name => Event.Members.Element (I).F.Kind.Value.To_String,
@@ -1693,7 +1667,7 @@ package body XCB_Package_Creator is
 
                            if Is_Success then
                               declare
-                                 Field_Name : Aida.Strings.Unbounded_String_Type;
+                                 Field_Name : X_Proto.Large_Bounded_String.T;
                               begin
                                  Generate_Struct_Name (Old_Name => Event.Members.Element (I).F.Name.Value.To_String,
                                                        New_Name => Field_Name);
@@ -1721,7 +1695,7 @@ package body XCB_Package_Creator is
                                        -- This is interesting because in xproto.xml for lib xcb version 1.10 the
                                        -- first field in all events were 8-bits!
 
-                                       Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
+                                       Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
                                        Put_Tabs (2); Put_Line ("Sequence : aliased Interfaces.Unsigned_16;");
                                        Put_Tabs (2); Put_Line (Field_Name.To_String & " : aliased " & Variable_Type_Name.To_String & ";");
 
@@ -1737,12 +1711,12 @@ package body XCB_Package_Creator is
                         end;
                      when X_Proto.Event.Fs.Event_Member_Pad =>
                         if Event.Members.Element (I).P.Bytes.Value = 1 then
-                           Put_Tabs (2); Put_Line (   "Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
+                           Put_Tabs (2); Put_Line (   "Padding_" & To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
                         else
                            Generate_Classic_Event_List_Type_Name (Enum_Name => Event.Name.Value.To_String,
-                                                                  List_Name => "Padding" & Aida.Strings.To_String (Padding_Number),
+                                                                  List_Name => "Padding" & To_String (Padding_Number),
                                                                   New_Name  => New_Variable_Type_Name);
-                           Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
+                           Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
                         end if;
                         Padding_Number := Padding_Number + 1;
                      when X_Proto.Event.Fs.Event_Member_Doc =>
@@ -1754,7 +1728,7 @@ package body XCB_Package_Creator is
                                                                   New_Name  => New_Variable_Type_Name);
 
                            declare
-                              Variable_Name : Aida.Strings.Unbounded_String_Type;
+                              Variable_Name : X_Proto.Large_Bounded_String.T;
                            begin
                               Generate_Struct_Name (Old_Name => Event.Members.Element (I).L.Name.Value.To_String,
                                                     New_Name => Variable_Name);
@@ -1781,7 +1755,7 @@ package body XCB_Package_Creator is
                Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & New_Variable_Type_Name.To_String & ");");
                Put_Line ("");
                declare
-                  Access_Type_Name : Aida.Strings.Unbounded_String_Type;
+                  Access_Type_Name : X_Proto.Large_Bounded_String.T;
                begin
                   Generate_Classic_Event_Access_Type_Name (Old_Name => Event.Name.Value.To_String,
                                                            New_Name => Access_Type_Name);
@@ -1790,7 +1764,7 @@ package body XCB_Package_Creator is
                end;
             end;
          else
-            Number_Of_Events_With_Errors := Number_Of_Events_With_Errors + 1;
+            Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
          end if;
       end loop;
 
@@ -1798,8 +1772,8 @@ package body XCB_Package_Creator is
          if Event_Copy.Name.Exists then
             if Event_Copy.Ref.Exists then
                declare
-                  Original_Type_Name : Aida.Strings.Unbounded_String_Type;
-                  Derived_Type_Name  : Aida.Strings.Unbounded_String_Type;
+                  Original_Type_Name : X_Proto.Large_Bounded_String.T;
+                  Derived_Type_Name  : X_Proto.Large_Bounded_String.T;
                begin
                   Generate_Classic_Event_Type_Name (Old_Name => Event_Copy.Name.Value.To_String,
                                                     New_Name => Derived_Type_Name);
@@ -1810,7 +1784,7 @@ package body XCB_Package_Creator is
                   Put_Tabs (1); Put_Line ("type " & Derived_Type_Name.To_String & " is new " & Original_Type_Name.To_String & ";");
                   Put_Line ("");
                   declare
-                     Access_Type_Name : Aida.Strings.Unbounded_String_Type;
+                     Access_Type_Name : X_Proto.Large_Bounded_String.T;
                   begin
                      Generate_Classic_Event_Access_Type_Name (Old_Name => Event_Copy.Name.Value.To_String,
                                                               New_Name => Access_Type_Name);
@@ -1829,7 +1803,7 @@ package body XCB_Package_Creator is
       for Error of Xcb.Errors.all loop
          if Error.Name.Exists then
             declare
-               Padding_Number : Integer := 0;
+               Padding_Number : Aida.Int32.T := 0;
             begin
                for Child of Error.Children.all loop
                   case Child.Kind_Id is
@@ -1838,14 +1812,14 @@ package body XCB_Package_Creator is
                      when X_Proto.Error.Fs.Child_Pad =>
                         if Child.P.Bytes.Value > 1 then
                            declare
-                              Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                              Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                            begin
                               Generate_Classic_Array_Type_Name (Prefix_Name => Error.Name.Value.To_String,
-                                                                Field_Name  => "Padding" & Aida.Strings.To_String (Padding_Number),
+                                                                Field_Name  => "Padding" & To_String (Padding_Number),
                                                                 New_Name    => Variable_Type_Name);
 
                               Put_Tabs (1); Put_Line ("type " & Variable_Type_Name.To_String & " is array (0.." &
-                                                        Aida.Strings.To_String (Integer (Child.P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
+                                                        To_String (Aida.Int32.T (Child.P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
                            end;
                         end if;
                         Padding_Number := Padding_Number  + 1;
@@ -1854,8 +1828,8 @@ package body XCB_Package_Creator is
             end;
 
             declare
-               Error_Type_Name : Aida.Strings.Unbounded_String_Type;
-               Padding_Number : Integer := 0;
+               Error_Type_Name : X_Proto.Large_Bounded_String.T;
+               Padding_Number : Aida.Int32.T := 0;
             begin
                Generate_Classic_Error_Type_Name (Old_Name => Error.Name.Value.To_String,
                                                  New_Name => Error_Type_Name);
@@ -1870,7 +1844,7 @@ package body XCB_Package_Creator is
                      when X_Proto.Error.Fs.Child_Field =>
                         if Child.F.Kind.Exists then
                            declare
-                              Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                              Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                               Is_Success : Boolean;
                            begin
                               Translate_Variable_Type_Name (Variable_Type_Name => Child.F.Kind.Value.To_String,
@@ -1879,14 +1853,14 @@ package body XCB_Package_Creator is
 
                               if Is_Success then
                                  declare
-                                    Field_Name : Aida.Strings.Unbounded_String_Type;
+                                    Field_Name : X_Proto.Large_Bounded_String.T;
                                  begin
                                     Generate_Struct_Name (Old_Name => Child.F.Name.Value.To_String,
                                                           New_Name => Field_Name);
                                     Put_Tabs (2); Put_Line (Field_Name.To_String & " : aliased " & Variable_Type_Name.To_String & ";");
 
                                     if Child.F.Enum.Exists then
-                                       Number_Of_Struct_Fields_With_Enum := Number_Of_Struct_Fields_With_Enum + 1;
+                                       Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
                                     end if;
                                  end;
                               else
@@ -1894,19 +1868,19 @@ package body XCB_Package_Creator is
                               end if;
                            end;
                         else
-                           Number_Of_Fields_Without_Kind := Number_Of_Fields_Without_Kind + 1;
+                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
                         end if;
                      when X_Proto.Error.Fs.Child_Pad =>
                         if Child.P.Bytes.Value = 1 then
-                           Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
+                           Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
                         else
                            declare
-                              New_Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                              New_Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                            begin
                               Generate_Classic_Event_List_Type_Name (Enum_Name => Error.Name.Value.To_String,
-                                                                     List_Name => "Padding" & Aida.Strings.To_String (Padding_Number),
+                                                                     List_Name => "Padding" & To_String (Padding_Number),
                                                                      New_Name  => New_Variable_Type_Name);
-                              Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
+                              Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
                            end;
                         end if;
                         Padding_Number := Padding_Number + 1;
@@ -1926,8 +1900,8 @@ package body XCB_Package_Creator is
          if Error_Copy.Name.Exists then
             if Error_Copy.Ref.Exists then
                declare
-                  Original_Type_Name : Aida.Strings.Unbounded_String_Type;
-                  Derived_Type_Name  : Aida.Strings.Unbounded_String_Type;
+                  Original_Type_Name : X_Proto.Large_Bounded_String.T;
+                  Derived_Type_Name  : X_Proto.Large_Bounded_String.T;
                begin
                   Generate_Classic_Error_Type_Name (Old_Name => Error_Copy.Name.Value.To_String,
                                                     New_Name => Derived_Type_Name);
@@ -2211,7 +2185,7 @@ package body XCB_Package_Creator is
             declare
                Does_Specified_Reply_Exist : Boolean := False;
 
-               Request_Reply_Access_Type_Name : Aida.Strings.Unbounded_String_Type;
+               Request_Reply_Access_Type_Name : X_Proto.Large_Bounded_String.T;
 
                Shall_Generate_Size_Of_Function : Boolean := False;
 
@@ -2230,8 +2204,8 @@ package body XCB_Package_Creator is
                         Does_Specified_Reply_Exist := True;
 
                         declare
-                           Padding_Number : Integer := 0;
-                           Reply_Name : Aida.Strings.Unbounded_String_Type;
+                           Padding_Number : Aida.Int32.T := 0;
+                           Reply_Name : X_Proto.Large_Bounded_String.T;
                         begin
                            Reply_Name.Initialize (Request.Name.Value.To_String & "Reply");
 
@@ -2242,14 +2216,14 @@ package body XCB_Package_Creator is
                                  when X_Proto.Reply.Fs.Child_Pad =>
                                     if Child.P.Bytes.Value > 1 then
                                        declare
-                                          Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                                          Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                                        begin
                                           Generate_Classic_Array_Type_Name (Prefix_Name => Reply_Name.To_String,
-                                                                            Field_Name  => "Padding" & Aida.Strings.To_String (Padding_Number),
+                                                                            Field_Name  => "Padding" & To_String (Padding_Number),
                                                                             New_Name    => Variable_Type_Name);
 
                                           Put_Tabs (1); Put_Line ("type " & Variable_Type_Name.To_String & " is array (0.." &
-                                                                    Aida.Strings.To_String (Integer (Child.P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
+                                                                    To_String (Aida.Int32.T (Child.P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
                                        end;
                                     end if;
                                     Padding_Number := Padding_Number  + 1;
@@ -2262,12 +2236,12 @@ package body XCB_Package_Creator is
                         end;
 
                         declare
-                           New_Variable_Name             : Aida.Strings.Unbounded_String_Type;
-                           New_Variable_Type_Name        : Aida.Strings.Unbounded_String_Type;
+                           New_Variable_Name             : X_Proto.Large_Bounded_String.T;
+                           New_Variable_Type_Name        : X_Proto.Large_Bounded_String.T;
 
-                           Padding_Number : Integer := 0;
+                           Padding_Number : Aida.Int32.T := 0;
 
-                           Reply_Name : Aida.Strings.Unbounded_String_Type;
+                           Reply_Name : X_Proto.Large_Bounded_String.T;
 
                            procedure Process_Reply_Child (Reply_Child : X_Proto.Reply.Fs.Child_Ptr;
                                                           Is_First    : Boolean) is
@@ -2276,7 +2250,7 @@ package body XCB_Package_Creator is
                                  when X_Proto.Reply.Fs.Child_Field =>
                                     if Reply_Child.F.Kind.Exists then
                                        declare
-                                          Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                                          Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                                           Is_Success : Boolean;
                                        begin
                                           Translate_Variable_Type_Name (Variable_Type_Name => Reply_Child.F.Kind.Value.To_String,
@@ -2285,7 +2259,7 @@ package body XCB_Package_Creator is
 
                                           if Is_Success then
                                              declare
-                                                Field_Name : Aida.Strings.Unbounded_String_Type;
+                                                Field_Name : X_Proto.Large_Bounded_String.T;
                                              begin
                                                 Generate_Struct_Name (Old_Name => Reply_Child.F.Name.Value.To_String,
                                                                       New_Name => Field_Name);
@@ -2329,21 +2303,21 @@ package body XCB_Package_Creator is
                                     if Reply_Child.P.Bytes.Value = 1 then
                                        if Is_First then
                                           Put_Tabs (2); Put_Line ("Response_Kind : aliased Interfaces.Unsigned_8;");
-                                          Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
+                                          Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
                                           Put_Tabs (2); Put_Line ("Sequence : aliased Interfaces.Unsigned_16;");
                                           Put_Tabs (2); Put_Line ("Length : aliased Interfaces.Unsigned_32;");
                                        else
-                                          Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
+                                          Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
                                        end if;
                                     else
                                        declare
-                                          New_Variable_Type_Name : Aida.Strings.Unbounded_String_Type;
+                                          New_Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                                        begin
                                           Generate_Classic_Array_Type_Name (Prefix_Name => Reply_Name.To_String,
-                                                                            Field_Name  => "Padding" & Aida.Strings.To_String (Padding_Number),
+                                                                            Field_Name  => "Padding" & To_String (Padding_Number),
                                                                             New_Name    => New_Variable_Type_Name);
 
-                                          Put_Tabs (2); Put_Line ("Padding_" & Aida.Strings.To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
+                                          Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
                                        end;
                                     end if;
                                     Padding_Number := Padding_Number + 1;
@@ -2388,12 +2362,12 @@ package body XCB_Package_Creator is
                   end case;
                end Process;
 
-               Reply_Type_Name : Aida.Strings.Unbounded_String_Type;
+               Reply_Type_Name : X_Proto.Large_Bounded_String.T;
 
                procedure Generate_Checked_Or_Unchecked_Function (Suffix : String) is
-                  Name            : Aida.Strings.Unbounded_String_Type;
-                  C_Function_Name : Aida.Strings.Unbounded_String_Type;
-                  Function_Name   : Aida.Strings.Unbounded_String_Type;
+                  Name            : X_Proto.Large_Bounded_String.T;
+                  C_Function_Name : X_Proto.Large_Bounded_String.T;
+                  Function_Name   : X_Proto.Large_Bounded_String.T;
                begin
                   Generate_Struct_Name (Old_Name => Request.Name.Value.To_String,
                                         New_Name => Name); -- There is risk here of erroneous Name
@@ -2416,9 +2390,9 @@ package body XCB_Package_Creator is
 
                if Shall_Generate_Size_Of_Function then
                   declare
-                     Name            : Aida.Strings.Unbounded_String_Type;
-                     C_Function_Name : Aida.Strings.Unbounded_String_Type;
-                     Function_Name   : Aida.Strings.Unbounded_String_Type;
+                     Name            : X_Proto.Large_Bounded_String.T;
+                     C_Function_Name : X_Proto.Large_Bounded_String.T;
+                     Function_Name   : X_Proto.Large_Bounded_String.T;
                   begin
                      Generate_Struct_Name (Old_Name => Request.Name.Value.To_String,
                                            New_Name => Name); -- There is risk here of erroneous Name
@@ -2434,8 +2408,8 @@ package body XCB_Package_Creator is
 
                if Does_Specified_Reply_Exist then
                   declare
-                     Name      : Aida.Strings.Unbounded_String_Type;
-                     Type_Name : Aida.Strings.Unbounded_String_Type;
+                     Name      : X_Proto.Large_Bounded_String.T;
+                     Type_Name : X_Proto.Large_Bounded_String.T;
                   begin
                      Generate_Struct_Name (Old_Name => Request.Name.Value.To_String,
                                            New_Name => Name);
@@ -2452,9 +2426,9 @@ package body XCB_Package_Creator is
                   end;
 
                   declare
-                     Name            : Aida.Strings.Unbounded_String_Type;
-                     C_Function_Name : Aida.Strings.Unbounded_String_Type;
-                     Function_Name   : Aida.Strings.Unbounded_String_Type;
+                     Name            : X_Proto.Large_Bounded_String.T;
+                     C_Function_Name : X_Proto.Large_Bounded_String.T;
+                     Function_Name   : X_Proto.Large_Bounded_String.T;
                   begin
                      Generate_Struct_Name (Old_Name => Request.Name.Value.To_String,
                                            New_Name => Name); -- There is risk here of erroneous Name
@@ -2481,9 +2455,9 @@ package body XCB_Package_Creator is
                end if;
 
                declare
-                  Name            : Aida.Strings.Unbounded_String_Type;
-                  C_Function_Name : Aida.Strings.Unbounded_String_Type;
-                  Function_Name   : Aida.Strings.Unbounded_String_Type;
+                  Name            : X_Proto.Large_Bounded_String.T;
+                  C_Function_Name : X_Proto.Large_Bounded_String.T;
+                  Function_Name   : X_Proto.Large_Bounded_String.T;
                begin
                   Generate_Struct_Name (Old_Name => Request.Name.Value.To_String,
                                         New_Name => Name); -- There is risk here of erroneous Name
@@ -2533,15 +2507,6 @@ package body XCB_Package_Creator is
       Put_Line ("end XCB;");
 
       Ada.Text_IO.Close (File);
-
-      Ada.Text_IO.Put_Line ("Total number of structs:" & Total_Number_Of_Structs'Img);
-      Ada.Text_IO.Put_Line ("Number of structs without name:" & Number_Of_Structs_Without_Name'Img);
-      Ada.Text_IO.Put_Line ("Number of fields without kind:" & Number_Of_Fields_Without_Kind'Img);
-      Ada.Text_IO.Put_Line ("Number of erroneous type definitions:" & Number_Of_Non_Valid_Type_Definitions'Img);
-      Ada.Text_IO.Put_Line ("Number of x identifiers without name:" & Number_Of_X_Ids_Without_Name'Img);
-      Ada.Text_IO.Put_Line ("Number of x identifier unions without name:" & Number_Of_X_Unions_Without_Name'Img);
-      Ada.Text_IO.Put_Line ("Number of events with errors:" & Number_Of_Events_With_Errors'Img);
-      Ada.Text_IO.Put_Line ("Number of struct enum connections:" & Number_Of_Struct_Fields_With_Enum'Img);
 
    end Create_XCB_Package;
 

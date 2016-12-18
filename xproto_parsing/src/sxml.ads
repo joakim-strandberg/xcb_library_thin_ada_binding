@@ -1,5 +1,5 @@
 with BC.Indefinite_Unmanaged_Containers.Collections;
-with Aida.Strings;
+with Aida.Bounded_String;
 
 -- Package that contains types and subprograms for simple xml parsing.
 package SXML is
@@ -8,6 +8,8 @@ package SXML is
 
    package DL is new String_Containers.Collections;
 
-   type Error_Message_Type is new Aida.Strings.Unbounded_String_Type with null record;
+   package Error_Message_P is new Aida.Bounded_String (Maximum_Length_Of_Bounded_String => 2_000);
+
+   subtype Error_Message_T is Error_Message_P.T;
 
 end SXML;

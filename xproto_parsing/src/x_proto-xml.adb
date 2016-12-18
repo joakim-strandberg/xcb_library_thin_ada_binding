@@ -11,6 +11,8 @@ package body X_Proto.XML is
 
    use Struct.Fs.Member_Kind_Id;
    use Operation;
+   use SXML.Error_Message_P;
+   use Large_Bounded_String;
 
    use type Xcb.Ptr;
 
@@ -191,7 +193,7 @@ package body X_Proto.XML is
 
    procedure Parse (Contents      : String;
                     Xcb_V         : in out Xcb.Ptr;
-                    Error_Message : out SXML.Error_Message_Type;
+                    Error_Message : out SXML.Error_Message_T;
                     Is_Success    : out Boolean)
    is
       Parents_Including_Self_To_Current_Tag_Map : Unmanaged_Maps.Map;
@@ -220,10 +222,10 @@ package body X_Proto.XML is
 
       function To_String (Tags : SXML.DL.Collection) return String is
          Iter : SXML.String_Containers.Iterator'Class := Tags.New_Iterator;
-         R : Aida.Strings.Unbounded_String_Type;
+         R : Large_Bounded_String.T;
       begin
          while not Iter.Is_Done loop
-            R.Append (Iter.Current_Item & ", ");
+            Append (R, Iter.Current_Item & ", ");
             Iter.Next;
          end loop;
 
@@ -232,7 +234,7 @@ package body X_Proto.XML is
 
       procedure Start_Tag (Tag_Name      : String;
                            Parent_Tags   : SXML.DL.Collection;
-                           Error_Message : out SXML.Error_Message_Type;
+                           Error_Message : out SXML.Error_Message_T;
                            Is_Success    : out Boolean)
       is
          Parents_Including_Self : SXML.DL.Collection;
@@ -866,7 +868,7 @@ package body X_Proto.XML is
       procedure Attribute (Attribute_Name              : String;
                            Attribute_Value             : String;
                            Parent_Tags_And_Current_Tag : SXML.DL.Collection;
-                           Error_Message               : out SXML.Error_Message_Type;
+                           Error_Message               : out SXML.Error_Message_T;
                            Is_Success                  : out Boolean)
       is
          Current_Tag : Current_Tag_Access_Type := Find_Tag (Parent_Tags_And_Current_Tag);
@@ -883,7 +885,7 @@ package body X_Proto.XML is
                if Attribute_Name = Tag_Xcb_Attribute_Header then
                   Is_Success := True;
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Xcb_V.Set_Header (V);
@@ -895,7 +897,7 @@ package body X_Proto.XML is
             when Tag_Id.Enum_Struct =>
                if Attribute_Name = Tag_Struct_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Struct_V.Set_Name (V);
@@ -907,35 +909,35 @@ package body X_Proto.XML is
             when Tag_Id.Enum_Field =>
                if Attribute_Name = Tag_Field_Attribute_Kind then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Field_V.Set_Kind (V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Field_V.Set_Name (V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Enum then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Field_V.Set_Enum (V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Mask then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Field_V.Set_Mask (V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Alt_Enum then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Field_V.Set_Alt_Enum (V);
@@ -947,7 +949,7 @@ package body X_Proto.XML is
             when Tag_Id.X_Id_Kind_Type_Id =>
                if Attribute_Name = Tag_X_Id_Kind_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.X_Id_Kind_V.Set_Name (V);
@@ -959,7 +961,7 @@ package body X_Proto.XML is
             when Tag_Id.Enum_X_Id_Union =>
                if Attribute_Name = Tag_X_Id_Union_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.X_Id_Union_V.Set_Name (V);
@@ -971,14 +973,14 @@ package body X_Proto.XML is
             when Tag_Id.Type_Definition_Type_Id =>
                if Attribute_Name = Tag_Type_Definition_Attribute_Old_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Type_Definition_V.Set_Old_Name (V);
                   end;
                elsif Attribute_Name = Tag_Type_Definition_Attribute_New_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Type_Definition_V.Set_New_Name (V);
@@ -1012,7 +1014,7 @@ package body X_Proto.XML is
             when Tag_Id.Enum_Enum =>
                if Attribute_Name = Tag_Enum_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Enum_V.Set_Name (V);
@@ -1024,7 +1026,7 @@ package body X_Proto.XML is
             when Tag_Id.Item_Type_Id =>
                if Attribute_Name = Tag_Item_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Item_V.Set_Name (V);
@@ -1036,14 +1038,14 @@ package body X_Proto.XML is
             when Tag_Id.List_Type_Id =>
                if Attribute_Name = Tag_List_Attribute_Kind then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.List_V.Set_Kind (V);
                   end;
                elsif Attribute_Name = Tag_List_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.List_V.Set_Name (V);
@@ -1055,7 +1057,7 @@ package body X_Proto.XML is
             when Tag_Id.Op_Type_Id =>
                if Attribute_Name = Tag_Operation_Attribute_Op then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Set_Op (Current_Tag.Op_V.all, V);
@@ -1067,7 +1069,7 @@ package body X_Proto.XML is
             when Tag_Id.Event_Type_Id =>
                if Attribute_Name = XML_Tag_Event_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Event_V.Set_Name (V);
@@ -1113,14 +1115,14 @@ package body X_Proto.XML is
             when Tag_Id.See_Type_Id =>
                if Attribute_Name = XML_Tag_See_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.See_V.Set_Name (V);
                   end;
                elsif Attribute_Name = XML_Tag_See_Attribute_Kind then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.See_V.Set_Kind (V);
@@ -1132,14 +1134,14 @@ package body X_Proto.XML is
             when Tag_Id.Event_Copy_Type_Id =>
                if Attribute_Name = XML_Tag_Event_Copy_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Event_Copy_V.Set_Name (V);
                   end;
                elsif Attribute_Name = XML_Tag_Event_Copy_Attribute_Ref then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Event_Copy_V.Set_Ref (V);
@@ -1167,7 +1169,7 @@ package body X_Proto.XML is
             when Tag_Id.Union_Type_Id =>
                if Attribute_Name = XML_Tag_Union_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Union_V.Set_Name (V);
@@ -1179,7 +1181,7 @@ package body X_Proto.XML is
             when Tag_Id.Error_Type_Id =>
                if Attribute_Name = XML_Tag_Error_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Error_V.Set_Name (V);
@@ -1202,7 +1204,7 @@ package body X_Proto.XML is
                   end;
                elsif Attribute_Name = XML_Tag_Error_Attribute_Kind then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                         Current_Tag.Error_V.Set_Kind (V);
@@ -1214,7 +1216,7 @@ package body X_Proto.XML is
             when Tag_Id.Error_Copy_Type_Id =>
                if Attribute_Name = XML_Tag_Error_Copy_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Error_Copy_V.Set_Name (V);
@@ -1237,7 +1239,7 @@ package body X_Proto.XML is
                   end;
                elsif Attribute_Name = XML_Tag_Error_Copy_Attribute_Ref then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Error_Copy_V.Set_Ref (V);
@@ -1249,7 +1251,7 @@ package body X_Proto.XML is
             when Tag_Id.Request_Type_Id =>
                if Attribute_Name = XML_Tag_Request_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Request_V.Set_Name (V);
@@ -1286,21 +1288,21 @@ package body X_Proto.XML is
             when Tag_Id.Value_Param_Type_Id =>
                if Attribute_Name = XML_Tag_Value_Param_Attribute_Mask_Kind then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Value_Param_V.Set_Mask_Kind (V);
                   end;
                elsif Attribute_Name = XML_Tag_Value_Param_Attribute_Mask_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Value_Param_V.Set_Mask_Name (V);
                   end;
                elsif Attribute_Name = XML_Tag_Value_Param_Attribute_List_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Value_Param_V.Set_List_Name (V);
@@ -1312,14 +1314,14 @@ package body X_Proto.XML is
             when Tag_Id.Expression_Field_Type_Id =>
                if Attribute_Name = XML_Tag_Expression_Field_Attribute_Name then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Expression_Field_V.Set_Name (V);
                   end;
                elsif Attribute_Name = XML_Tag_Expression_Field_Attribute_Kind then
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
                      Current_Tag.Expression_Field_V.Set_Kind (V);
@@ -1342,7 +1344,7 @@ package body X_Proto.XML is
 
       procedure End_Tag (Tag_Name      : String;
                          Parent_Tags   : SXML.DL.Collection;
-                         Error_Message : out SXML.Error_Message_Type;
+                         Error_Message : out SXML.Error_Message_T;
                          Is_Success    : out Boolean)
       is
          Parents_Including_Self : SXML.DL.Collection;
@@ -1366,7 +1368,7 @@ package body X_Proto.XML is
       procedure End_Tag (Tag_Name      : String;
                          Tag_Value     : String;
                          Parent_Tags   : SXML.DL.Collection;
-                         Error_Message : out SXML.Error_Message_Type;
+                         Error_Message : out SXML.Error_Message_T;
                          Is_Success    : out Boolean)
       is
          Parents_Including_Self : SXML.DL.Collection;
@@ -1425,7 +1427,7 @@ package body X_Proto.XML is
                   when Tag_Id.List_Type_Id =>
                      if Tag_Name = Tag_Field_Reference then
                         declare
-                           V : Aida.Strings.Unbounded_String_Type;
+                           V : Large_Bounded_String.T;
                         begin
                            V.Initialize (Tag_Value);
                            Prev_Tag.List_V.Append_Member (new List.Fs.Member_Type'(Kind_Id         => List.Fs.List_Member_Kind_Field_Reference,
@@ -1438,14 +1440,14 @@ package body X_Proto.XML is
                   when Tag_Id.Documentation_Type_Id =>
                      if Tag_Name = XML_Tag_Brief then
                         declare
-                           V : Aida.Strings.Unbounded_String_Type;
+                           V : Large_Bounded_String.T;
                         begin
                            V.Initialize (Tag_Value);
                            Prev_Tag.Documentation_V.Set_Brief_Description (V);
                         end;
                      elsif Tag_Name = XML_Tag_Description then
                         declare
-                           V : Aida.Strings.Unbounded_String_Type;
+                           V : Large_Bounded_String.T;
                         begin
                            V.Initialize (Tag_Value);
                            Prev_Tag.Documentation_V.Set_Description (V);
@@ -1472,14 +1474,14 @@ package body X_Proto.XML is
             case Current_Tag.Kind_Id is
                when Tag_Id.Kind =>
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Tag_Value);
                      Current_Tag.Kind.Set_Value (V);
                   end;
                when Tag_Id.Enum_Field =>
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Tag_Value);
                      Current_Tag.Field_V.Set_Value (V);
@@ -1502,14 +1504,14 @@ package body X_Proto.XML is
                   end;
                when Tag_Id.Error_Type_Id =>
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Tag_Value);
                      Current_Tag.Error_V.Set_Value (V);
                   end;
                when Tag_Id.Example_Type_Id =>
                   declare
-                     V : Aida.Strings.Unbounded_String_Type;
+                     V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Tag_Value);
                      Current_Tag.Example_V.Set_Value (V);

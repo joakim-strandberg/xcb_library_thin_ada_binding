@@ -5,7 +5,7 @@ generic
    with function "=" (L, R : Element_T) return Boolean is <>;
    MAX_LENGTH : Positive := 100;
 package Aida.Containers.Bounded_Vector is
-   pragma Preelaborate;
+--     pragma Preelaborate;
 
    type Extended_Index_T is new Integer range 0..MAX_LENGTH;
 

@@ -5,7 +5,7 @@ with Ada.Strings.Unbounded;
 with BC.Containers.Collections.Unmanaged;
 
 procedure SXML.Generic_Parse_XML_File (Contents      : String;
-                                       Error_Message : out Error_Message_Type;
+                                       Error_Message : out Error_Message_P.T;
                                        Is_Success    : out Boolean)
 is
    use type Strings_Edit.UTF8.Code_Point;

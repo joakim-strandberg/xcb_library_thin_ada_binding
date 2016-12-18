@@ -1,8 +1,10 @@
 with Ada.Containers.Vectors;
-with Aida.Strings;
 with Aida.Containers.Bounded_Vector;
+with Aida.Bounded_String;
 
 package X_Proto is
+
+   package Large_Bounded_String is new Aida.Bounded_String (Maximum_Length_Of_Bounded_String => 3_000);
 
    package Field is
 
@@ -10,7 +12,7 @@ package X_Proto is
 
          type Kind_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -19,7 +21,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -28,7 +30,7 @@ package X_Proto is
 
          type Enum_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -37,7 +39,7 @@ package X_Proto is
 
          type Mask_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -46,7 +48,7 @@ package X_Proto is
 
          type Value_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -55,7 +57,7 @@ package X_Proto is
 
          type Alt_Enum_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -79,22 +81,22 @@ package X_Proto is
       function Alt_Enum (This : T) return Fs.Alt_Enum_Const_Ptr;
 
       procedure Set_Kind (This : in out T;
-                          Kind : Aida.Strings.Unbounded_String_Type);
+                          Kind : Large_Bounded_String.T);
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       procedure Set_Enum (This : in out T;
-                          Enum : Aida.Strings.Unbounded_String_Type);
+                          Enum : Large_Bounded_String.T);
 
       procedure Set_Mask (This : in out T;
-                          Mask : Aida.Strings.Unbounded_String_Type);
+                          Mask : Large_Bounded_String.T);
 
       procedure Set_Value (This  : in out T;
-                           Value : Aida.Strings.Unbounded_String_Type);
+                           Value : Large_Bounded_String.T);
 
       procedure Set_Alt_Enum (This     : in out T;
-                              Alt_Enum : Aida.Strings.Unbounded_String_Type);
+                              Alt_Enum : Large_Bounded_String.T);
 
       type Ptr is access all T;
 
@@ -145,7 +147,7 @@ package X_Proto is
 
    end Pad;
 
-   type Field_Reference_Type is new Aida.Strings.Unbounded_String_Type with null record;
+   type Field_Reference_Type is new Large_Bounded_String.T with null record;
 
    type Field_Reference_Access_Type is access all Field_Reference_Type;
 
@@ -161,7 +163,7 @@ package X_Proto is
 
          type Op_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -200,7 +202,7 @@ package X_Proto is
       function Members (This : T) return Fs.Members_Const_Ptr;
 
       procedure Set_Op (This : in out T;
-                        Op   : Aida.Strings.Unbounded_String_Type);
+                        Op   : Large_Bounded_String.T);
 
       procedure Append_Member (This   : in out T;
                                Member : Fs.Member_Ptr);
@@ -215,7 +217,7 @@ package X_Proto is
 
          type Kind_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -224,7 +226,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -239,7 +241,7 @@ package X_Proto is
 
          type Member_Type (Kind_Id : Member_Kind_Id_Type) is record
             case Kind_Id is
-            when List_Member_Kind_Field_Reference => Field_Reference : Aida.Strings.Unbounded_String_Type;
+            when List_Member_Kind_Field_Reference => Field_Reference : Large_Bounded_String.T;
             when List_Member_Kind_Value           => Value           : aliased Value_Type;
             when List_Member_Kind_Operation       => Operation       : aliased Operation_T;
             end case;
@@ -263,10 +265,10 @@ package X_Proto is
       function Members (This : T) return Fs.Members_Const_Ptr;
 
       procedure Set_Kind (This : in out T;
-                          Kind : Aida.Strings.Unbounded_String_Type);
+                          Kind : Large_Bounded_String.T);
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       procedure Append_Member (This   : in out T;
                                Member : Fs.Member_Ptr);
@@ -299,7 +301,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -322,7 +324,7 @@ package X_Proto is
                              Kind_Id : Fs.Kind_Id_Type);
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       procedure Set_Value (This  : in out T;
                            Value : Value_Type);
@@ -349,7 +351,7 @@ package X_Proto is
 
          type Kind_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -358,7 +360,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -393,10 +395,10 @@ package X_Proto is
       function Children (This : T) return Fs.Children_Const_Ptr;
 
       procedure Set_Kind (This  : in out T;
-                          Value : Aida.Strings.Unbounded_String_Type);
+                          Value : Large_Bounded_String.T);
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       procedure Append_Child (This  : in out T;
                               Child : Fs.Child_Ptr);
@@ -420,7 +422,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -438,7 +440,7 @@ package X_Proto is
 
          type Kind_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -447,7 +449,7 @@ package X_Proto is
 
          type Value_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -488,16 +490,16 @@ package X_Proto is
       function Children (This : T) return Fs.Children_Const_Ptr;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       procedure Set_Number (This : in out T;
                             Value : Natural);
 
       procedure Set_Kind (This  : in out T;
-                          Value : Aida.Strings.Unbounded_String_Type);
+                          Value : Large_Bounded_String.T);
 
       procedure Set_Value (This  : in out T;
-                           Value : Aida.Strings.Unbounded_String_Type);
+                           Value : Large_Bounded_String.T);
 
       procedure Append_Child (This  : in out T;
                               Child : Fs.Child_Ptr);
@@ -522,7 +524,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -540,7 +542,7 @@ package X_Proto is
 
          type Ref_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -558,13 +560,13 @@ package X_Proto is
       function Ref (This : T) return Fs.Ref_Const_Ptr;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       procedure Set_Number (This : in out T;
                             Value : Natural);
 
       procedure Set_Ref (This  : in out T;
-                         Value : Aida.Strings.Unbounded_String_Type);
+                         Value : Large_Bounded_String.T);
 
       type Ptr is access all T;
 
@@ -585,7 +587,7 @@ package X_Proto is
 
          type Value_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -599,7 +601,7 @@ package X_Proto is
       function Value (This : T) return Fs.Value_Const_Ptr;
 
       procedure Set_Value (This  : in out T;
-                           Value : Aida.Strings.Unbounded_String_Type);
+                           Value : Large_Bounded_String.T);
 
       type Ptr is access all T;
 
@@ -618,7 +620,7 @@ package X_Proto is
 
          type Kind_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -627,7 +629,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -643,10 +645,10 @@ package X_Proto is
       function Name (This : T) return Fs.Name_Const_Ptr;
 
       procedure Set_Kind (This  : in out T;
-                          Value : Aida.Strings.Unbounded_String_Type);
+                          Value : Large_Bounded_String.T);
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       type Ptr is access all T;
 
@@ -666,7 +668,7 @@ package X_Proto is
 
          type Brief_Description_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -675,7 +677,7 @@ package X_Proto is
 
          type Description_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -716,10 +718,10 @@ package X_Proto is
       function Members (This : T) return Fs.Members_Const_Ptr;
 
       procedure Set_Brief_Description (This  : in out T;
-                                       Value : Aida.Strings.Unbounded_String_Type);
+                                       Value : Large_Bounded_String.T);
 
       procedure Set_Description (This  : in out T;
-                                 Value : Aida.Strings.Unbounded_String_Type);
+                                 Value : Large_Bounded_String.T);
 
       procedure Append_Member (This   : in out T;
                                Member : Fs.Member_Ptr);
@@ -743,7 +745,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -761,7 +763,7 @@ package X_Proto is
 
          type Ref_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -779,13 +781,13 @@ package X_Proto is
       function Ref (This : T) return Fs.Ref_Const_Ptr;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       procedure Set_Number (This  : in out T;
                             Value : Natural);
 
       procedure Set_Ref (This : in out T;
-                         Name : Aida.Strings.Unbounded_String_Type);
+                         Name : Large_Bounded_String.T);
 
       type Ptr is access all T;
 
@@ -806,7 +808,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -820,7 +822,7 @@ package X_Proto is
       function Name (This : T) return Fs.Name_Const_Ptr;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       type Ptr is access T;
 
@@ -839,7 +841,7 @@ package X_Proto is
 
          type Value_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -853,7 +855,7 @@ package X_Proto is
       function Value (This : T) return Fs.Value_Const_Ptr;
 
       procedure Set_Value (This : in out T;
-                           Name : Aida.Strings.Unbounded_String_Type);
+                           Name : Large_Bounded_String.T);
 
       type Ptr is access all T;
 
@@ -872,7 +874,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -894,7 +896,7 @@ package X_Proto is
       function Kinds (This : T) return Fs.Type_Vector_Const_Ptr;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       procedure Append_Kind (This : in out T;
                              Kind : Type_P.Ptr);
@@ -916,7 +918,7 @@ package X_Proto is
 
          type Old_Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -925,7 +927,7 @@ package X_Proto is
 
          type New_Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -941,10 +943,10 @@ package X_Proto is
       function New_Name (This : T) return Fs.New_Name_Const_Ptr;
 
       procedure Set_Old_Name (This     : in out T;
-                              Old_Name : Aida.Strings.Unbounded_String_Type);
+                              Old_Name : Large_Bounded_String.T);
 
       procedure Set_New_Name (This     : in out T;
-                              New_Name : Aida.Strings.Unbounded_String_Type);
+                              New_Name : Large_Bounded_String.T);
 
       type Ptr is access all T;
 
@@ -964,7 +966,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -994,7 +996,7 @@ package X_Proto is
       function Documentations (This : T) return Fs.Documentations_Const_Ptr;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       procedure Append_Item (This   : in out T;
                              Item_V : Item.Ptr);
@@ -1021,7 +1023,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -1054,7 +1056,7 @@ package X_Proto is
       function Children (This : T) return Fs.Children_Const_Ptr;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       procedure Append_Child (This  : in out T;
                               Child : Fs.Child_Ptr);
@@ -1077,7 +1079,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -1116,7 +1118,7 @@ package X_Proto is
       function Members (This : T) return Fs.Member_Vectors.Vector;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       procedure Append_Member (This   : in out T;
                                Member : Fs.Member_Ptr);
@@ -1139,7 +1141,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -1211,7 +1213,7 @@ package X_Proto is
       function Members (This : T) return Fs.Members_Const_Ptr;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       procedure Set_Number (This : in out T;
                             Value : Natural);
@@ -1246,7 +1248,7 @@ package X_Proto is
 
          type Mask_Kind_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -1255,7 +1257,7 @@ package X_Proto is
 
          type Mask_Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -1264,7 +1266,7 @@ package X_Proto is
 
          type List_Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -1282,13 +1284,13 @@ package X_Proto is
       function List_Name (This : T) return Fs.List_Name_Const_Ptr;
 
       procedure Set_Mask_Kind (This : in out T;
-                               Value : Aida.Strings.Unbounded_String_Type);
+                               Value : Large_Bounded_String.T);
 
       procedure Set_Mask_Name (This : in out T;
-                               Value : Aida.Strings.Unbounded_String_Type);
+                               Value : Large_Bounded_String.T);
 
       procedure Set_List_Name (This : in out T;
-                               Value : Aida.Strings.Unbounded_String_Type);
+                               Value : Large_Bounded_String.T);
 
       type Ptr is access all T;
 
@@ -1356,7 +1358,7 @@ package X_Proto is
 
          type Name_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -1423,7 +1425,7 @@ package X_Proto is
       function Children (This : T) return Fs.Children_Const_Ptr;
 
       procedure Set_Name (This : in out T;
-                          Name : Aida.Strings.Unbounded_String_Type);
+                          Name : Large_Bounded_String.T);
 
       procedure Set_Op_Code (This  : in out T;
                              Value : Natural);
@@ -1454,7 +1456,7 @@ package X_Proto is
 
          type Header_Type (Exists : Boolean := False) is record
             case Exists is
-               when True  => Value : Aida.Strings.Unbounded_String_Type;
+               when True  => Value : Large_Bounded_String.T;
                when False => null;
             end case;
          end record;
@@ -1555,7 +1557,7 @@ package X_Proto is
       function Requests (This : T) return Fs.Requests_Const_Ptr;
 
       procedure Set_Header (This : in out T;
-                            Text : Aida.Strings.Unbounded_String_Type);
+                            Text : Large_Bounded_String.T);
 
       procedure Append_Struct (This : in out T;
                                Item : Struct.Ptr);
