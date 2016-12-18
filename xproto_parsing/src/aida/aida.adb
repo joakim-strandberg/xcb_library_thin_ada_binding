@@ -1291,6 +1291,19 @@ package body Aida is
          Ada.Text_IO.Put_Line (Standard.String (This));
       end To_Standard_Out;
 
+      function Hash32 (This : T) return Hash32_T is
+        H : Hash32_T := 0;
+        A : Hash32_T := 31_415;
+        B : Hash32_T := 27_183;
+      begin
+         for I in Positive range This'First..This'Last loop
+            H := A*H + Standard.Character'Pos (This (I));
+            A := A*B;
+         end loop;
+
+         return H;
+      end Hash32;
+
    end String;
 
    package body Character is
@@ -1326,6 +1339,11 @@ package body Aida is
          return Ada.Strings.Fixed.Trim (Source => Integer'Image (Integer (Value)),
                                         Side   => Ada.Strings.Both);
       end To_String;
+
+      procedure To_Standard_Out (This : T) is
+      begin
+         Ada.Text_IO.Put_Line (Standard.String (Aida.String.Trim (String_T (Int32_T'Image (This)))));
+      end To_Standard_Out;
 
    end Int32;
 

@@ -15,6 +15,9 @@ package Aida is
    -- This type is a subtype to simplify the Ada code when used together with
    -- String_T instances.
 
+   type Hash32_T is mod 2**32;
+   for Hash32_T'Size use 32;
+
    package String is
 
       subtype T is String_T;
@@ -28,6 +31,8 @@ package Aida is
       function Trim (This : T) return T;
 
       procedure To_Standard_Out (This : T);
+
+      function Hash32 (This : T) return Hash32_T;
 
    end String;
 
@@ -51,6 +56,8 @@ package Aida is
       function To_String (Value : T) return String_T;
 
       function To_String (Value : T) return Standard.String;
+
+      procedure To_Standard_Out (This : T);
 
    end Int32;
 

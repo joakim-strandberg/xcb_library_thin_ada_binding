@@ -12,9 +12,8 @@ package Aida.Containers is
    -- Raised when trying to add more items to a container that has reached
    -- full capacity.
 
-   type Max_Number_Of_Buckets_In_Hash_Map_T is range 4..(2**31);
+   Key_Not_Found_Exception : exception;
 
-   type Hash32_T is mod 2**32;
-   for Hash32_T'Size use 32;
+   type Max_Hash_Map_Size_T is range 3..(2**31);
 
 end Aida.Containers;

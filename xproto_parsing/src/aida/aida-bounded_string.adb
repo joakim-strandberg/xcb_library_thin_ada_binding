@@ -1,5 +1,7 @@
 package body Aida.Bounded_String is
 
+   use Aida.String;
+
    procedure Initialize (This : out T;
                          Text : Standard.String) is
    begin
@@ -74,5 +76,10 @@ package body Aida.Bounded_String is
    begin
       return (This.Text_Length);
    end Length;
+
+   function Hash32 (This : T) return Hash32_T is
+   begin
+      return Hash32 (String_T (This.Text (1..This.Length)));
+   end Hash32;
 
 end Aida.Bounded_String;

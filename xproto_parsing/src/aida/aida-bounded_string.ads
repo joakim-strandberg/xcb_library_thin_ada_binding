@@ -29,6 +29,8 @@ package Aida.Bounded_String is
 
    function "="(Left, Right : T) return Boolean;
 
+   function Hash32 (This : T) return Hash32_T;
+
 private
 
    type T is tagged
