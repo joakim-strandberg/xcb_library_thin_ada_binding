@@ -15,9 +15,13 @@ package Aida.Containers.Bounded_Hash_Map is
 
    type T is limited private;
 
-   procedure Insert (This    : in out T;
-                     Key     : Key_T;
-                     Element : Element_T);
+   procedure Insert (This        : in out T;
+                     Key         : Key_T;
+                     New_Element : Element_T);
+
+   procedure Include (This        : in out T;
+                      Key         : Key_T;
+                      New_Element : Element_T);
 
    function Element (This : T;
                      Key  : Key_T) return Element_T;

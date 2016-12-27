@@ -1,5 +1,3 @@
-with Std_Character;
-
 package Std_String is
    pragma Pure;
 

@@ -1293,7 +1293,7 @@ package body Aida is
       function Hash32 (This : T) return Hash32_T is
         H : Hash32_T := 0;
         A : Hash32_T := 31_415;
-        B : Hash32_T := 27_183;
+        B : constant Hash32_T := 27_183;
       begin
          for I in Positive range This'First..This'Last loop
             H := A*H + Standard.Character'Pos (This (I));

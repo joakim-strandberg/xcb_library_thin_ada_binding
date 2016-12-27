@@ -1,3 +1,5 @@
+with Std_Character;
+
 package body Std_String is
    pragma Suppress (Discriminant_Check);
    pragma Suppress (Division_Check);

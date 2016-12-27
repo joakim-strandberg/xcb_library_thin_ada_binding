@@ -14,6 +14,8 @@ package Aida.Containers is
 
    Key_Not_Found_Exception : exception;
 
+   Key_Already_Present_Exception : exception;
+
    type Max_Hash_Map_Size_T is range 3..(2**31);
 
 end Aida.Containers;

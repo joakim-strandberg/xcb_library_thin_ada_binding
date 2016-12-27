@@ -14,26 +14,61 @@ package body Aida.Containers.Bounded_Hash_Map is
       end if;
    end Normalize_Index;
 
-   procedure Insert (This    : in out T;
-                     Key     : Key_T;
-                     Element : Element_T)
-   is
-      H : constant Hash32_T := Normalize_Index (Hash (Key));
-      BI : constant Bucket_Index_T := Bucket_Index_T (H);
+   procedure Hidden_Insert (This              : in out T;
+                            Key               : Key_T;
+                            New_Element       : Element_T;
+                            BI                : Bucket_Index_T;
+                            Exception_Message : Standard.String) is
    begin
       if Int32_T (This.Number_Of_Stored_Elements (BI)) < Max_Collisions then
          declare
             CI : constant Collision_Index_T := Collision_Index_T (This.Number_Of_Stored_Elements (BI) + 1);
          begin
             This.Buckets (BI)(CI).Key           := Key;
-            This.Buckets (BI)(CI).Element       := Element;
+            This.Buckets (BI)(CI).Element       := New_Element;
             This.Number_Of_Stored_Elements (BI) := This.Number_Of_Stored_Elements (BI) + 1;
          end;
       else
          Ada.Exceptions.Raise_Exception (E       => End_Of_Container_Exception'Identity,
-                                         Message => "Insert");
+                                         Message => Exception_Message);
       end if;
+   end Hidden_Insert;
+   pragma Inline (Hidden_Insert);
+
+   procedure Insert (This        : in out T;
+                     Key         : Key_T;
+                     New_Element : Element_T)
+   is
+      H : constant Hash32_T := Normalize_Index (Hash (Key));
+      BI : constant Bucket_Index_T := Bucket_Index_T (H);
+   begin
+      for I in Collision_Index_T range Collision_Index_T'First..This.Number_Of_Stored_Elements (BI) loop
+         if Equivalent_Keys (This.Buckets (BI)(I).Key , Key) then
+            Ada.Exceptions.Raise_Exception (E       => Key_Already_Present_Exception'Identity,
+                                            Message => "Insert");
+         end if;
+      end loop;
+
+      Hidden_Insert (This, Key, New_Element, Bi, "Insert");
    end Insert;
+
+   procedure Include (This        : in out T;
+                      Key         : Key_T;
+                      New_Element : Element_T)
+   is
+      H : constant Hash32_T := Normalize_Index (Hash (Key));
+      BI : constant Bucket_Index_T := Bucket_Index_T (H);
+   begin
+      for I in Collision_Index_T range Collision_Index_T'First..This.Number_Of_Stored_Elements (BI) loop
+         if Equivalent_Keys (This.Buckets (BI)(I).Key , Key) then
+            This.Buckets (BI)(I).Key           := Key;
+            This.Buckets (BI)(I).Element       := New_Element;
+            return;
+         end if;
+      end loop;
+
+      Hidden_Insert (This, Key, New_Element, Bi, "Include");
+   end Include;
 
    procedure Delete (This : in out T;
                      Key  : Key_T)
@@ -65,7 +100,7 @@ package body Aida.Containers.Bounded_Hash_Map is
       BI : constant Bucket_Index_T := Bucket_Index_T (H);
    begin
       for I in Collision_Index_T range Collision_Index_T'First..This.Number_Of_Stored_Elements (BI) loop
-         if This.Buckets (BI)(I).Key = Key then
+         if Equivalent_Keys (This.Buckets (BI)(I).Key , Key) then
             return This.Buckets (BI)(I).Element;
          end if;
       end loop;
@@ -95,7 +130,7 @@ package body Aida.Containers.Bounded_Hash_Map is
       BI : constant Bucket_Index_T := Bucket_Index_T (H);
    begin
       for I in Collision_Index_T range Collision_Index_T'First..Collision_Index_T (This.Number_Of_Stored_Elements (BI)) loop
-         if This.Buckets (BI)(I).Key = Key then
+         if Equivalent_Keys (This.Buckets (BI)(I).Key, Key) then
             return True;
          end if;
       end loop;

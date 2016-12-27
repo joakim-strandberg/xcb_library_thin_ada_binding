@@ -1,13 +1,10 @@
 with Aida;
-with Ada.Exceptions;
 with Ada.Text_IO;
 with Strings_Edit.UTF8.Mapping;
 with Strings_Edit.UTF8.Categorization;
 with GNAT.Source_Info;
-with Ada.Containers.Hashed_Maps;
-with Ada.Strings.Hash;
 with Ada.Containers.Vectors;
-with Ada.Strings.Fixed.Hash;
+with Aida.Containers.Bounded_Hash_Map;
 --      if checked:
 --          _h(' * This form can be used only if the request will not cause')
 --          _h(' * a reply to be generated. Any returned error will be')
@@ -23,6 +20,8 @@ package body XCB_Package_Creator is
    use type X_Proto.Value_Type;
    use type X_Proto.Request.Fs.Child_Kind_Id_Type;
    use type Aida.Int32.T;
+
+   use X_Proto.Large_Bounded_String;
 
    use Aida.Int32;
 
@@ -41,6 +40,32 @@ package body XCB_Package_Creator is
    Eight_Bit_Variable_Type_Names : Unbounded_String_Vectors.Vector;
 
    Thirty_Two_Bit_Variable_Type_Names : Unbounded_String_Vectors.Vector;
+
+   package Original_Name_To_Adaified_Name_P is new Aida.Containers.Bounded_Hash_Map (Key_T             => X_Proto.Large_Bounded_String.T,
+                                                                                     Element_T         => X_Proto.Large_Bounded_String.T,
+                                                                                     Hash              => X_Proto.Large_Bounded_String.Hash32,
+                                                                                     Equivalent_Keys   => X_Proto.Large_Bounded_String."=",
+                                                                                     Max_Hash_Map_Size => 501,
+                                                                                     Max_Collisions    => 5);
+
+   use Original_Name_To_Adaified_Name_P;
+
+   subtype Original_Name_To_Adaified_Name_T is Original_Name_To_Adaified_Name_P.T;
+
+   subtype Original_Name_To_Adaified_Name_Ptr is Original_Name_To_Adaified_Name_P.Ptr;
+
+   package Enum_Name_To_Size_Identifier_Map_P is new Aida.Containers.Bounded_Hash_Map (Key_T             => X_Proto.Large_Bounded_String.T,
+                                                                                       Element_T         => X_Proto.Large_Bounded_String.T,
+                                                                                       Hash              => X_Proto.Large_Bounded_String.Hash32,
+                                                                                       Equivalent_Keys   => X_Proto.Large_Bounded_String."=",
+                                                                                       Max_Hash_Map_Size => 501,
+                                                                                       Max_Collisions    => 5);
+
+   subtype Enum_Name_To_Size_Identifier_Map_Ptr is Enum_Name_To_Size_Identifier_Map_P.Ptr;
+
+   subtype Enum_Name_To_Size_Identifier_Map_T is Enum_Name_To_Size_Identifier_Map_P.T;
+
+   use Enum_Name_To_Size_Identifier_Map_P;
 
    function Value_Of_Bit (B : X_Proto.Item.Fs.Bit_Type) return Long_Integer is
    begin
@@ -365,26 +390,13 @@ package body XCB_Package_Creator is
                           Item => Text);
       end Put;
 
-      function Hash (Key : X_Proto.Large_Bounded_String.T) return Ada.Containers.Hash_Type is
-      begin
-         return Ada.Strings.Hash (Key.To_String);
-      end Hash;
+      Original_Variable_Name_To_Adaified_Name : constant Original_Name_To_Adaified_Name_Ptr := new Original_Name_To_Adaified_Name_T;
 
-      package Original_Name_To_Adaified_Name_Type_Owner is new Ada.Containers.Hashed_Maps (Key_Type        => X_Proto.Large_Bounded_String.T,
-                                                                                           Element_Type    => X_Proto.Large_Bounded_String.T,
-                                                                                           Hash            => Hash,
-                                                                                           Equivalent_Keys => X_Proto.Large_Bounded_String."=",
-                                                                                           "="             => X_Proto.Large_Bounded_String."=");
+      Original_Name_To_Adaified_Name : constant Original_Name_To_Adaified_Name_Ptr := new Original_Name_To_Adaified_Name_T;
 
-      subtype Original_Name_To_Adaified_Name_Type is Original_Name_To_Adaified_Name_Type_Owner.Map;
+      Original_Name_To_Adaified_Iterator_Type_Name : constant Original_Name_To_Adaified_Name_Ptr := new Original_Name_To_Adaified_Name_T;
 
-      Original_Variable_Name_To_Adaified_Name : Original_Name_To_Adaified_Name_Type;
-
-      Original_Name_To_Adaified_Name : Original_Name_To_Adaified_Name_Type;
-
-      Original_Name_To_Adaified_Iterator_Type_Name : Original_Name_To_Adaified_Name_Type;
-
-      Original_Name_To_Adaified_Iterator_Access_Type_Name : Original_Name_To_Adaified_Name_Type;
+      Original_Name_To_Adaified_Iterator_Access_Type_Name : constant Original_Name_To_Adaified_Name_Ptr := new Original_Name_To_Adaified_Name_T;
 
       procedure Translate_Variable_Type_Name (Variable_Type_Name : String;
                                               Is_Success         : out Boolean;
@@ -397,14 +409,18 @@ package body XCB_Package_Creator is
          if not Is_Success then
             declare
                Searched_For : X_Proto.Large_Bounded_String.T;
-               C : Original_Name_To_Adaified_Name_Type_Owner.Cursor;
             begin
                Searched_For.Initialize (Variable_Type_Name);
-               C := Original_Name_To_Adaified_Name.Find (Key => Searched_For);
-               if Original_Name_To_Adaified_Name_Type_Owner.Has_Element (C) then
-                  Is_Success := True;
-                  Translated_Name := Original_Name_To_Adaified_Name_Type_Owner.Element (C);
-               end if;
+               declare
+                  FER : constant Original_Name_To_Adaified_Name_P.Find_Element_Result_T :=
+                    Find_Element (This => Original_Name_To_Adaified_Name.all,
+                                  Key  => Searched_For);
+               begin
+                  if FER.Exists then
+                     Is_Success := True;
+                     Translated_Name := FER.Element;
+                  end if;
+               end;
             end;
          end if;
       end Translate_Variable_Type_Name;
@@ -414,16 +430,19 @@ package body XCB_Package_Creator is
                                             Translated_Name    : out X_Proto.Large_Bounded_String.T)
       is
          Searched_For : X_Proto.Large_Bounded_String.T;
-         C : Original_Name_To_Adaified_Name_Type_Owner.Cursor;
       begin
          Searched_For.Initialize (Variable_Type_Name);
-         C := Original_Variable_Name_To_Adaified_Name.Find (Key => Searched_For);
-         if Original_Name_To_Adaified_Name_Type_Owner.Has_Element (C) then
-            Is_Success := True;
-            Translated_Name := Original_Name_To_Adaified_Name_Type_Owner.Element (C);
-         else
-            Is_Success := False;
-         end if;
+         declare
+            FER : constant Original_Name_To_Adaified_Name_P.Find_Element_Result_T :=
+              Find_Element (Original_Name_To_Adaified_Name.all, Searched_For);
+         begin
+            if FER.Exists then
+               Is_Success := True;
+               Translated_Name := FER.Element;
+            else
+               Is_Success := False;
+            end if;
+         end;
       end Translate_To_Variable_Name;
 
       procedure Translate_To_Iterator_Type_Name (Variable_Type_Name : String;
@@ -431,16 +450,19 @@ package body XCB_Package_Creator is
                                                  Translated_Name    : out X_Proto.Large_Bounded_String.T)
       is
          Searched_For : X_Proto.Large_Bounded_String.T;
-         C : Original_Name_To_Adaified_Name_Type_Owner.Cursor;
       begin
          Searched_For.Initialize (Variable_Type_Name);
-         C := Original_Name_To_Adaified_Iterator_Type_Name.Find (Key => Searched_For);
-         if Original_Name_To_Adaified_Name_Type_Owner.Has_Element (C) then
-            Is_Success := True;
-            Translated_Name := Original_Name_To_Adaified_Name_Type_Owner.Element (C);
-         else
-            Is_Success := False;
-         end if;
+         declare
+            FER : constant Original_Name_To_Adaified_Name_P.Find_Element_Result_T :=
+              Find_Element (Original_Name_To_Adaified_Name.all, Searched_For);
+         begin
+            if FER.Exists then
+               Is_Success := True;
+               Translated_Name := FER.Element;
+            else
+               Is_Success := False;
+            end if;
+         end;
       end Translate_To_Iterator_Type_Name;
 
       procedure Translate_To_Iterator_Access_Type_Name (Variable_Type_Name : String;
@@ -448,16 +470,19 @@ package body XCB_Package_Creator is
                                                         Translated_Name    : out X_Proto.Large_Bounded_String.T)
       is
          Searched_For : X_Proto.Large_Bounded_String.T;
-         C : Original_Name_To_Adaified_Name_Type_Owner.Cursor;
       begin
          Searched_For.Initialize (Variable_Type_Name);
-         C := Original_Name_To_Adaified_Iterator_Access_Type_Name.Find (Key => Searched_For);
-         if Original_Name_To_Adaified_Name_Type_Owner.Has_Element (C) then
-            Is_Success := True;
-            Translated_Name := Original_Name_To_Adaified_Name_Type_Owner.Element (C);
-         else
-            Is_Success := False;
-         end if;
+         declare
+            FER : constant Original_Name_To_Adaified_Name_P.Find_Element_Result_T :=
+              Find_Element (Original_Name_To_Adaified_Name.all, Searched_For);
+         begin
+            if FER.Exists then
+               Is_Success := True;
+               Translated_Name := FER.Element;
+            else
+               Is_Success := False;
+            end if;
+         end;
       end Translate_To_Iterator_Access_Type_Name;
 
       function Determine_Largest_Value (Items : X_Proto.Enum.Fs.Item_Vectors.Vector) return Long_Integer is
@@ -595,17 +620,21 @@ package body XCB_Package_Creator is
                                    New_Variable_Iterator_Type_Name.To_String & ";");
          Put_Line ("");
 
-         Original_Variable_Name_To_Adaified_Name.Insert (Key      => Name,
-                                                         New_Item => New_Variable_Name);
+         Insert (This        => Original_Variable_Name_To_Adaified_Name.all,
+                 Key         => Name,
+                 New_Element => New_Variable_Name);
 
-         Original_Name_To_Adaified_Name.Insert (Key      => Name,
-                                                New_Item => New_Variable_Type_Name);
+         Insert (This        => Original_Name_To_Adaified_Name.all,
+                 Key         => Name,
+                 New_Element => New_Variable_Type_Name);
 
-         Original_Name_To_Adaified_Iterator_Type_Name.Insert (Key      => Name,
-                                                              New_Item => New_Variable_Iterator_Type_Name);
+         Insert (This        => Original_Name_To_Adaified_Iterator_Type_Name.all,
+                 Key         => Name,
+                 New_Element => New_Variable_Iterator_Type_Name);
 
-         Original_Name_To_Adaified_Iterator_Access_Type_Name.Insert (Key      => Name,
-                                                                     New_Item => New_Variable_Iterator_Access_Type_Name);
+         Insert (This        => Original_Name_To_Adaified_Iterator_Access_Type_Name.all,
+                 Key         => Name,
+                 New_Element => New_Variable_Iterator_Access_Type_Name);
       end Generate_Code_For_X_Id;
 
       function There_Is_No_Value_Param_With_Same_Name_And_Type (Variable_Name      : String;
@@ -667,11 +696,12 @@ package body XCB_Package_Creator is
 
                                  if Children.Element (I).F.Enum.Exists then
                                     declare
-                                       C : constant Original_Name_To_Adaified_Name_Type_Owner.Cursor :=
-                                         Original_Name_To_Adaified_Name.Find (Children.Element (I).F.Enum.Value);
+                                       FER : constant Original_Name_To_Adaified_Name_P.Find_Element_Result_T :=
+                                         Find_Element (This => Original_Name_To_Adaified_Name.all,
+                                                       Key  => Children.Element (I).F.Enum.Value);
                                     begin
-                                       if Original_Name_To_Adaified_Name_Type_Owner.Has_Element (C) then
-                                          Put_Tabs (2); Put (Field_Name.To_String & " : " & Original_Name_To_Adaified_Name_Type_Owner.Element (C).To_String);
+                                       if FER.Exists then
+                                          Put_Tabs (2); Put (Field_Name.To_String & " : " & To_String (FER.Element));
                                        else
                                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", could not find enum type name " & Children.Element (I).F.Enum.Value.To_String);
                                        end if;
@@ -806,18 +836,7 @@ package body XCB_Package_Creator is
 
       Names_Of_Types_To_Make_Array_Types : Unbounded_String_Vectors.Vector;
 
-      function Hash_Of_Enum_Name (This : X_Proto.Large_Bounded_String.T) return Ada.Containers.Hash_Type is (Ada.Strings.Fixed.Hash (This.To_String));
-
-      package Enum_Name_To_Size_Identifier_Map_Type_Owner is new Ada.Containers.Hashed_Maps (Key_Type        => X_Proto.Large_Bounded_String.T,
-                                                                                             Element_Type    => X_Proto.Large_Bounded_String.T,
-                                                                                             Hash            => Hash_Of_Enum_Name,
-                                                                                             Equivalent_Keys => X_Proto.Large_Bounded_String."=",
-                                                                                             "="             => X_Proto.Large_Bounded_String."=");
-
-      use type Enum_Name_To_Size_Identifier_Map_Type_Owner.Cursor;
-      use type X_Proto.Large_Bounded_String.T;
-
-      Enum_Name_To_Size_Identifier_Map : Enum_Name_To_Size_Identifier_Map_Type_Owner.Map;
+      Enum_Name_To_Size_Identifier_Map : constant Enum_Name_To_Size_Identifier_Map_Ptr := new Enum_Name_To_Size_Identifier_Map_T;
 
       procedure Pre_Process_Requests is
       begin
@@ -825,8 +844,6 @@ package body XCB_Package_Creator is
             if Request.Name.Exists then
                declare
                   procedure Handle_Request_Field (F : X_Proto.Field.T) is
-                     C : Enum_Name_To_Size_Identifier_Map_Type_Owner.Cursor;
-
                      Is_Success : Boolean;
                      Translated_Name : X_Proto.Large_Bounded_String.T;
                   begin
@@ -836,17 +853,20 @@ package body XCB_Package_Creator is
                                                               Translated_Name    => Translated_Name);
 
                         if Is_Success then
-                           C := Enum_Name_To_Size_Identifier_Map.Find (F.Enum.Value);
-
-                           if C /= Enum_Name_To_Size_Identifier_Map_Type_Owner.No_Element then
-                              if Enum_Name_To_Size_Identifier_Map_Type_Owner.Element (C) /= Translated_Name then
-                                 Ada.Text_IO.Put_Line ("Expected: '" & Translated_Name.To_String & "', but was: " &
-                                                         Enum_Name_To_Size_Identifier_Map_Type_Owner.Element (C).To_String & "'");
+                           declare
+                              FER : constant Enum_Name_To_Size_Identifier_Map_P.Find_Element_Result_T
+                               := Find_Element (Enum_Name_To_Size_Identifier_Map.all, F.Enum.Value);
+                           begin
+                              if FER.Exists then
+                                 if FER.Element /= Translated_Name then
+                                    Ada.Text_IO.Put_Line ("Expected: '" & Translated_Name.To_String & "', but was: " & To_String (FER.Element) & "'");
+                                 end if;
+                              else
+                                 Include (This        => Enum_Name_To_Size_Identifier_Map.all,
+                                          Key         => F.Enum.Value,
+                                          New_Element => Translated_Name);
                               end if;
-                           else
-                              Enum_Name_To_Size_Identifier_Map.Include (Key      => F.Enum.Value,
-                                                                        New_Item => Translated_Name);
-                           end if;
+                           end;
                         else
                            Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location  & ", could not translate " & F.Kind.Value.To_String);
                         end if;
@@ -1011,17 +1031,21 @@ package body XCB_Package_Creator is
                                             New_Variable_Iterator_Type_Name.To_String & ";");
                   Put_Line ("");
 
-                  Original_Variable_Name_To_Adaified_Name.Insert (Key      => Struct.Name.Value,
-                                                                  New_Item => New_Variable_Name);
+                  Insert (This        => Original_Variable_Name_To_Adaified_Name.all,
+                          Key         => Struct.Name.Value,
+                          New_Element => New_Variable_Name);
 
-                  Original_Name_To_Adaified_Name.Insert (Key      => Struct.Name.Value,
-                                                         New_Item => New_Variable_Type_Name);
+                  Insert (This        => Original_Name_To_Adaified_Name.all,
+                          Key         => Struct.Name.Value,
+                          New_Element => New_Variable_Type_Name);
 
-                  Original_Name_To_Adaified_Iterator_Type_Name.Insert (Key      => Struct.Name.Value,
-                                                                       New_Item => New_Variable_Iterator_Type_Name);
+                  Insert (This        => Original_Name_To_Adaified_Iterator_Type_Name.all,
+                          Key         => Struct.Name.Value,
+                          New_Element => New_Variable_Iterator_Type_Name);
 
-                  Original_Name_To_Adaified_Iterator_Access_Type_Name.Insert (Key      => Struct.Name.Value,
-                                                                              New_Item => New_Variable_Iterator_Access_Type_Name);
+                  Insert (This        => Original_Name_To_Adaified_Iterator_Access_Type_Name.all,
+                          Key         => Struct.Name.Value,
+                          New_Element => New_Variable_Iterator_Access_Type_Name);
                end;
             else
                Ada.Text_IO.Put_Line ("A struct exists without name attribute");
@@ -1187,42 +1211,46 @@ package body XCB_Package_Creator is
 
                declare
                   Searched_For : X_Proto.Large_Bounded_String.T;
-                  C : Original_Name_To_Adaified_Name_Type_Owner.Cursor;
                   X_Id_Union_Type_Name : X_Proto.Large_Bounded_String.T;
                begin
                   Searched_For.Initialize (X_Id_Union.Name.Value.To_String);
-                  C := Original_Name_To_Adaified_Name.Find (Key => Searched_For);
-                  if Original_Name_To_Adaified_Name_Type_Owner.Has_Element (C) then
-                     X_Id_Union_Type_Name := Original_Name_To_Adaified_Name_Type_Owner.Element (C);
+                  declare
+                     FER : constant Original_Name_To_Adaified_Name_P.Find_Element_Result_T :=
+                       Find_Element (This => Original_Name_To_Adaified_Name.all,
+                                     Key => Searched_For);
+                  begin
+                     if FER.Exists then
+                        X_Id_Union_Type_Name := FER.Element;
 
-                     for Kind of X_Id_Union.Kinds.all loop
-                        if Kind.Value.Exists then
-                           for X_Id_Index in 1..Last_Index (Xcb.X_Ids.all) loop
-                              declare
-                                 X_Id : X_Proto.X_Id.Ptr renames Element (Xcb.X_Ids.all, X_Id_Index);
-                              begin
-                                 if X_Id.Name.Exists then
-                                    if Kind.Value.Value.To_String = X_Id.Name.Value.To_String then
-                                       Generate_Code_For_X_Id (X_Id.Name.Value,
-                                                               X_Id_Union_Type_Name.To_String,
-                                                               How => Use_The_Subtype_Keyword);
+                        for Kind of X_Id_Union.Kinds.all loop
+                           if Kind.Value.Exists then
+                              for X_Id_Index in 1..Last_Index (Xcb.X_Ids.all) loop
+                                 declare
+                                    X_Id : X_Proto.X_Id.Ptr renames Element (Xcb.X_Ids.all, X_Id_Index);
+                                 begin
+                                    if X_Id.Name.Exists then
+                                       if Kind.Value.Value.To_String = X_Id.Name.Value.To_String then
+                                          Generate_Code_For_X_Id (X_Id.Name.Value,
+                                                                  X_Id_Union_Type_Name.To_String,
+                                                                  How => Use_The_Subtype_Keyword);
 
-                                       Processed_X_Ids.Append (X_Id.Name.Value);
+                                          Processed_X_Ids.Append (X_Id.Name.Value);
 
-                                       exit;
+                                          exit;
+                                       end if;
+                                    else
+                                       Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
                                     end if;
-                                 else
-                                    Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
-                                 end if;
-                              end;
-                           end loop;
-                        else
-                           Ada.Text_IO.Put_Line ("xidunion " & X_Id_Union.Name.Value.To_String & " has errors");
-                        end if;
-                     end loop;
-                  else
-                     Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Failed to translate: " & Searched_For.To_String);
-                  end if;
+                                 end;
+                              end loop;
+                           else
+                              Ada.Text_IO.Put_Line ("xidunion " & X_Id_Union.Name.Value.To_String & " has errors");
+                           end if;
+                        end loop;
+                     else
+                        Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Failed to translate: " & Searched_For.To_String);
+                     end if;
+                  end;
                end;
             else
                Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
@@ -1251,34 +1279,14 @@ package body XCB_Package_Creator is
       for Enum of Xcb.Enums.all loop
          if Enum.Name.Exists then
             declare
-               Are_Correct : Boolean := True;
-
-               type Previous_Value_Type (Exists : Boolean := False) is record
-                  case Exists is
-                  when True  => Value : X_Proto.Value_Type;
-                  when False => null;
-                  end case;
-               end record;
-
-               Previous_Value : Previous_Value_Type;
-               Are_Values_In_Increasing_Order : Boolean := True; -- i.e. 0,1,2,..
-
                Number_Of_Values : Integer := 0;
                Number_Of_Bits   : Integer := 0;
             begin
                for Item of Enum.Items.all loop
                   case Item.Kind_Id is
-                     when X_Proto.Item.Fs.Not_Specified =>
-                        Are_Correct := False;
+                     when X_Proto.Item.Fs.Not_Specified => null;
                      when X_Proto.Item.Fs.Specified_As_Value =>
                         Number_Of_Values := Number_Of_Values + 1;
-                        if Previous_Value.Exists then
-                           if Item.Value /= Previous_Value.Value + 1 then
-                              Are_Values_In_Increasing_Order := False;
-                           end if;
-                        end if;
-                        Previous_Value := (Exists => True,
-                                           Value  => Item.Value);
                      when X_Proto.Item.Fs.Specified_As_Bit =>
                         Number_Of_Bits := Number_Of_Bits + 1;
                   end case;
@@ -1314,16 +1322,14 @@ package body XCB_Package_Creator is
                      end loop;
                      Put_Tabs (1); Put_Line ("");
                   else
-
                      declare
-                        Largest_Value : Long_Integer := Determine_Largest_Value (Enum.Items.all);
+                        Largest_Value : constant Long_Integer := Determine_Largest_Value (Enum.Items.all);
 
-                        C : Enum_Name_To_Size_Identifier_Map_Type_Owner.Cursor :=
-                          Enum_Name_To_Size_Identifier_Map.Find (Enum.Name.Value);
+                        FER : constant Enum_Name_To_Size_Identifier_Map_P.Find_Element_Result_T :=
+                          Find_Element (Enum_Name_To_Size_Identifier_Map.all, Enum.Name.Value);
                      begin
-                        if C /= Enum_Name_To_Size_Identifier_Map_Type_Owner.No_Element then
-                           Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new " &
-                                                   Enum_Name_To_Size_Identifier_Map_Type_Owner.Element (C).To_String &";");
+                        if FER.Exists then
+                           Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new " & To_String (FER.Element) &";");
                         else
                            if Largest_Value <= 127 then
                               Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new Interfaces.Unsigned_8;");
@@ -1333,8 +1339,9 @@ package body XCB_Package_Creator is
                            end if;
                         end if;
 
-                        Original_Name_To_Adaified_Name.Insert (Key      => Enum.Name.Value,
-                                                               New_Item => New_Variable_Type_Name);
+                        Insert (This        => Original_Name_To_Adaified_Name.all,
+                                Key         => Enum.Name.Value,
+                                New_Element => New_Variable_Type_Name);
 
 
                         for I in Positive range Enum.Items.First_Index..Enum.Items.Last_Index loop
@@ -1408,17 +1415,21 @@ package body XCB_Package_Creator is
                                           New_Variable_Iterator_Type_Name.To_String & ";");
                   Put_Line ("");
 
-                  Original_Variable_Name_To_Adaified_Name.Insert (Key      => Type_Definition.New_Name.Value,
-                                                                  New_Item => New_Variable_Name);
+                  Insert (This        => Original_Variable_Name_To_Adaified_Name.all,
+                          Key         => Type_Definition.New_Name.Value,
+                          New_Element => New_Variable_Name);
 
-                  Original_Name_To_Adaified_Name.Insert (Key      => Type_Definition.New_Name.Value,
-                                                         New_Item => New_Variable_Type_Name);
+                  Insert (This        => Original_Name_To_Adaified_Name.all,
+                          Key         => Type_Definition.New_Name.Value,
+                          New_Element => New_Variable_Type_Name);
 
-                  Original_Name_To_Adaified_Iterator_Type_Name.Insert (Key      => Type_Definition.New_Name.Value,
-                                                                       New_Item => New_Variable_Iterator_Type_Name);
+                  Insert (This        => Original_Name_To_Adaified_Iterator_Type_Name.all,
+                          Key         => Type_Definition.New_Name.Value,
+                          New_Element => New_Variable_Iterator_Type_Name);
 
-                  Original_Name_To_Adaified_Iterator_Access_Type_Name.Insert (Key      => Type_Definition.New_Name.Value,
-                                                                              New_Item => New_Variable_Iterator_Access_Type_Name);
+                  Insert (This        => Original_Name_To_Adaified_Iterator_Access_Type_Name.all,
+                          Key         => Type_Definition.New_Name.Value,
+                          New_Element => New_Variable_Iterator_Access_Type_Name);
 
                   if
                     Type_Definition.Old_Name.Value.To_String = "CARD8" or
@@ -1578,8 +1589,9 @@ package body XCB_Package_Creator is
                Put_Line ("");
 
 
-               Original_Name_To_Adaified_Name.Insert (Key      => Union.Name.Value,
-                                                      New_Item => New_Variable_Type_Name);
+               Insert (This        => Original_Name_To_Adaified_Name.all,
+                       Key         => Union.Name.Value,
+                       New_Element => New_Variable_Type_Name);
             end;
          else
             Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Union exists without name!");

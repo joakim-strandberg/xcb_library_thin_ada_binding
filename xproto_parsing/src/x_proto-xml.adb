@@ -241,9 +241,9 @@ package body X_Proto.XML is
 
          procedure Insert (CT : Current_Tag_Access_Type) is
          begin
-            Insert (This    => Parents_Including_Self_To_Current_Tag_Map,
-                    Key     => Parents_Including_Self,
-                    Element => CT);
+            Insert (This        => Parents_Including_Self_To_Current_Tag_Map,
+                    Key         => Parents_Including_Self,
+                    New_Element => CT);
          end Insert;
 
          Prev_Tag : constant Current_Tag_Access_Type := Find_Tag (Parent_Tags);
@@ -259,10 +259,10 @@ package body X_Proto.XML is
                end if;
 
                Xcb_V := new Xcb.T;
-               Insert (This    => Parents_Including_Self_To_Current_Tag_Map,
-                       Key     => Parents_Including_Self,
-                       Element => new Current_Tag_Type'(Kind_Id  => Tag_Id.Xcb_Type_Id,
-                                                        Find_Tag => Find_Tag (Parent_Tags),
+               Insert (This        => Parents_Including_Self_To_Current_Tag_Map,
+                       Key         => Parents_Including_Self,
+                       New_Element => new Current_Tag_Type'(Kind_Id  => Tag_Id.Xcb_Type_Id,
+                                                            Find_Tag => Find_Tag (Parent_Tags),
                                                         Xcb_V    => Xcb_V));
                Is_Success := True;
             else
