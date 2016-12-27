@@ -667,7 +667,7 @@ package body XCB_Package_Creator is
 
                                  if Children.Element (I).F.Enum.Exists then
                                     declare
-                                       C : Original_Name_To_Adaified_Name_Type_Owner.Cursor :=
+                                       C : constant Original_Name_To_Adaified_Name_Type_Owner.Cursor :=
                                          Original_Name_To_Adaified_Name.Find (Children.Element (I).F.Enum.Value);
                                     begin
                                        if Original_Name_To_Adaified_Name_Type_Owner.Has_Element (C) then

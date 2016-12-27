@@ -1,5 +1,3 @@
-with Ada.Strings.Unbounded;
-
 package body X_Proto is
 
    package body Struct is

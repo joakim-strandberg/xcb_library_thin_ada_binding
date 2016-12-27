@@ -12,11 +12,13 @@ package Aida.Containers.Bounded_Vector is
    subtype Index_T is Extended_Index_T range Extended_Index_T'First + 1..Extended_Index_T'Last;
 
 
-   type Elements_Array_T is array (Index_T range <>) of Element_T;
+   type Elements_Array_T is array (Index_T range <>) of aliased Element_T;
 
-   type T is limited private;
+   type T is private;
    -- The vector type is limited because making copies would mean
    -- introducing reference counting to know when to deallocate the vector.
+
+   function "=" (L, R : T) return Boolean;
 
    procedure Append (This     : in out T;
                      New_Item : Element_T);
@@ -39,6 +41,11 @@ package Aida.Containers.Bounded_Vector is
    generic
       with procedure Do_Something (Elements : in out Elements_Array_T);
    procedure Act_On_Mutable_Elements (This : in out T);
+
+   type Element_Const_Ptr is access constant Element_T;
+
+   function Const_Ref (This  : T;
+                       Index : Index_T) return Element_Const_Ptr;
 
 private
 

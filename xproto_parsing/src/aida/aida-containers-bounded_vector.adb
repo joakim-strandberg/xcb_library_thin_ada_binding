@@ -73,4 +73,30 @@ package body Aida.Containers.Bounded_Vector is
       Do_Something (This.Items (1..Index_T(This.Last_Index)));
    end Act_On_Mutable_Elements;
 
+   function Const_Ref (This  : T;
+                       Index : Index_T) return Element_Const_Ptr is
+   begin
+      if Index > This.Last_Index then
+         Ada.Exceptions.Raise_Exception (E       => Out_Of_Bounds_Exception'Identity,
+                                         Message => "Const_Ref");
+      else
+         return This.Items (Index)'Unchecked_Access;
+      end if;
+   end Const_Ref;
+
+   function "=" (L, R : T) return Boolean is
+   begin
+      if Last_Index (L) = Last_Index (R) then
+         for I in Index_T range 1..Last_Index (L) loop
+            if L.Items (I) /= R.Items (I) then
+               return False;
+            end if;
+         end loop;
+
+         return True;
+      else
+         return False;
+      end if;
+   end "=";
+
 end Aida.Containers.Bounded_Vector;

@@ -1,12 +1,17 @@
-with BC.Indefinite_Unmanaged_Containers.Collections;
+--  with BC.Indefinite_Unmanaged_Containers.Collections;
 with Aida.Bounded_String;
+with Aida.Containers.Bounded_Vector;
 
 -- Package that contains types and subprograms for simple xml parsing.
 package SXML is
 
-   package String_Containers is new BC.Indefinite_Unmanaged_Containers (String);
+   package Bounded_String is new Aida.Bounded_String (Maximum_Length_Of_Bounded_String => 200);
 
-   package DL is new String_Containers.Collections;
+   subtype Bounded_String_T is Bounded_String.T;
+
+   package DL is new Aida.Containers.Bounded_Vector (Element_T  => Bounded_String_T,
+                                                     "="        => Bounded_String."=",
+                                                     MAX_LENGTH => 100);
 
    package Error_Message_P is new Aida.Bounded_String (Maximum_Length_Of_Bounded_String => 2_000);
 

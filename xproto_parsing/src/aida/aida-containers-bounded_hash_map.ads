@@ -6,7 +6,7 @@ generic
 
    with function Hash (Key : Key_T) return Hash32_T;
    with function Equivalent_Keys (Left, Right : Key_T) return Boolean;
-   with function "=" (Left, Right : Element_T) return Boolean is <>;
+--     with function "=" (Left, Right : Element_T) return Boolean is <>;
 
    Max_Hash_Map_Size : Max_Hash_Map_Size_T;
 
@@ -22,9 +22,9 @@ package Aida.Containers.Bounded_Hash_Map is
    function Element (This : T;
                      Key  : Key_T) return Element_T;
 
-   type Find_Element_Result_T (Element_Exists : Boolean) is
+   type Find_Element_Result_T (Exists : Boolean) is
       record
-         case Element_Exists is
+         case Exists is
             when True  => Element : Element_T;
             when False => null;
          end case;
@@ -36,6 +36,11 @@ package Aida.Containers.Bounded_Hash_Map is
    function Contains (This : T;
                       Key  : Key_T) return Boolean;
 
+   procedure Delete (This : in out T;
+                     Key  : Key_T);
+
+   type Ptr is access all T;
+
 private
 
    type Node_T is
@@ -44,17 +49,17 @@ private
          Element : Element_T;
       end record;
 
-   type Collision_Index_T is new Int32_T range Int32_T'(0)..Int32_T (Max_Collisions - 1);
-
-   type Collision_Array_T is array (Collision_Index_T) of Node_T;
-
    subtype Bucket_Index_T is Hash32_T range Hash32_T'(0)..Hash32_T (Max_Hash_Map_Size - 1);
-
-   type Bucket_Array_T is array (Bucket_Index_T) of Collision_Array_T;
 
    type Number_Of_Stored_Elements_T is new Int32_T range Int32_T'(0)..Int32_T (Max_Collisions);
 
    type Number_Of_Stored_Elements_Array_T is array (Bucket_Index_T) of Number_Of_Stored_Elements_T;
+
+   subtype Collision_Index_T is Number_Of_Stored_Elements_T range Number_Of_Stored_Elements_T'(1)..Number_Of_Stored_Elements_T (Max_Collisions);
+
+   type Collision_Array_T is array (Collision_Index_T) of Node_T;
+
+   type Bucket_Array_T is array (Bucket_Index_T) of Collision_Array_T;
 
    type T is
       record

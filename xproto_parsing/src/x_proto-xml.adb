@@ -2,16 +2,16 @@ with Ada.Text_IO;
 with SXML.Generic_Parse_XML_File;
 with GNAT.Source_Info;
 with Std_String;
-with BC.Indefinite_Unmanaged_Containers.Collections;
-with BC.Containers.Maps.Unmanaged;
-with Ada.Strings.Hash;
 with Ada.Exceptions;
+with Aida.Containers.Bounded_Hash_Map;
 
 package body X_Proto.XML is
 
    use Struct.Fs.Member_Kind_Id;
    use Operation;
    use SXML.Error_Message_P;
+   use SXML.DL;
+   use SXML.Bounded_String;
    use Large_Bounded_String;
 
    use type Xcb.Ptr;
@@ -117,7 +117,7 @@ package body X_Proto.XML is
                                 Reply_Type_Id,
                                 Example_Type_Id,
                                 Expression_Field_Type_Id
-                                );
+                               );
 
    end Tag_Id;
 
@@ -160,86 +160,93 @@ package body X_Proto.XML is
       end case;
    end record;
 
-   package Abstract_Current_Tag_Containers is new BC.Containers (Item => Current_Tag_Access_Type,
-                                                                 "="  => "=");
+   function Hash (Parent_And_Self_Tags : SXML.DL.T) return Aida.Hash32_T is
+      R : Aida.Hash32_T := 0;
 
-   package Abstract_Current_Tag_Maps is new Abstract_Current_Tag_Containers.Maps (Key => SXML.DL.Collection,
-                                                                                  "=" => SXML.DL."=");
-
-   function Hash (Parent_And_Self_Tags : SXML.DL.Collection) return Natural is
-      R : Ada.Containers.Hash_Type := 0;
-
-      use type Ada.Containers.Hash_Type;
+      use type Aida.Hash32_T;
    begin
-      if SXML.DL.Is_Empty (Parent_And_Self_Tags) then
+      if Is_Empty (Parent_And_Self_Tags) then
          return 0;
       end if;
 
-      declare
-         Iter : SXML.String_Containers.Iterator'Class := SXML.DL.New_Iterator (Parent_And_Self_Tags);
-      begin
-         while not Iter.Is_Done loop
-            R := R + Ada.Strings.Hash (Iter.Current_Item);
-            Iter.Next;
-         end loop;
-      end;
-      R := R mod Ada.Containers.Hash_Type (Natural'Last);
-      return Natural (R);
+      for I in SXML.DL.Index_T range 1..Last_Index (Parent_And_Self_Tags) loop
+         R := R + SXML.Bounded_String.Hash32 (Const_Ref (Parent_And_Self_Tags, I).all);
+      end loop;
+      return R;
    end Hash;
 
+   package List_Of_Tag_Names_To_Current_Tag_Maps is new Aida.Containers.Bounded_Hash_Map (Key_T             => SXML.DL.T,
+                                                                                          Element_T         => Current_Tag_Access_Type,
+                                                                                          Hash              => Hash,
+                                                                                          Equivalent_Keys   => SXML.DL."=",
+                                                                                          Max_Hash_Map_Size => 1001,
+                                                                                          Max_Collisions    => 5);
 
-   package Unmanaged_Maps is new Abstract_Current_Tag_Maps.Unmanaged (Hash    => Hash,
-                                                                      Buckets => 1000);
+   use List_Of_Tag_Names_To_Current_Tag_Maps;
+
+   Parents_Including_Self_To_Current_Tag_Map : List_Of_Tag_Names_To_Current_Tag_Maps.T;
 
    procedure Parse (Contents      : String;
                     Xcb_V         : in out Xcb.Ptr;
                     Error_Message : out SXML.Error_Message_T;
                     Is_Success    : out Boolean)
    is
-      Parents_Including_Self_To_Current_Tag_Map : Unmanaged_Maps.Map;
-
-      procedure Populate_Parents_Including_Self (Parents_Including_Self : in out SXML.DL.Collection;
-                                                 Parents                : SXML.DL.Collection;
-                                                 Tag_Name               : String) is
-         Iter : SXML.String_Containers.Iterator'Class := Parents.New_Iterator;
+--        Parents_Including_Self_To_Current_Tag_Map_Pointer : List_Of_Tag_Names_To_Current_Tag_Maps.Ptr :=
+--          new List_Of_Tag_Names_To_Current_Tag_Maps.T;
+--        Parents_Including_Self_To_Current_Tag_Map renames Parents_Including_Self_To_Current_Tag_Map_Pointer.all;
+--
+      procedure Populate_Parents_Including_Self (Parents_Including_Self : in out SXML.DL.T;
+                                                 Parents                : SXML.DL.T;
+                                                 Tag_Name               : String)
+      is
+         TN : SXML.Bounded_String_T;
       begin
-         while not Iter.Is_Done loop
-            Parents_Including_Self.Append (Iter.Current_Item);
-            Iter.Next;
+         for I in SXML.DL.Index_T range 1..Last_Index (Parents) loop
+            Append (This     => Parents_Including_Self,
+                    New_Item => Const_Ref (Parents, I).all);
          end loop;
-         Parents_Including_Self.Append (Tag_Name);
+         Initialize (This => TN,
+                     Text => Tag_Name);
+         Append (This     => Parents_Including_Self,
+                 New_Item => TN);
       end Populate_Parents_Including_Self;
 
-
-      function Find_Tag (Key : SXML.DL.Collection) return Current_Tag_Access_Type is
-      begin
-         if Parents_Including_Self_To_Current_Tag_Map.Is_Bound (Key) then
-            return Parents_Including_Self_To_Current_Tag_Map.Item_Of (Key);
-         else
-            return null;
-         end if;
-      end Find_Tag;
-
-      function To_String (Tags : SXML.DL.Collection) return String is
-         Iter : SXML.String_Containers.Iterator'Class := Tags.New_Iterator;
+      function To_String (Tags : SXML.DL.T) return String is
          R : Large_Bounded_String.T;
       begin
-         while not Iter.Is_Done loop
-            Append (R, Iter.Current_Item & ", ");
-            Iter.Next;
+         for I in SXML.DL.Index_T range 1..Last_Index (Tags) loop
+            R.Append (To_String (Element (Tags, I)) & ", ");
          end loop;
 
          return R.To_String;
       end To_String;
 
+      function Find_Tag (Key : SXML.DL.T) return Current_Tag_Access_Type is
+         R : constant List_Of_Tag_Names_To_Current_Tag_Maps.Find_Element_Result_T :=
+           Find_Element (Parents_Including_Self_To_Current_Tag_Map, Key);
+      begin
+         if R.Exists then
+            return R.Element;
+         else
+            return null;
+         end if;
+      end Find_Tag;
+
       procedure Start_Tag (Tag_Name      : String;
-                           Parent_Tags   : SXML.DL.Collection;
+                           Parent_Tags   : SXML.DL.T;
                            Error_Message : out SXML.Error_Message_T;
                            Is_Success    : out Boolean)
       is
-         Parents_Including_Self : SXML.DL.Collection;
+         Parents_Including_Self : SXML.DL.T;
 
-         Prev_Tag : Current_Tag_Access_Type := Find_Tag (Parent_Tags);
+         procedure Insert (CT : Current_Tag_Access_Type) is
+         begin
+            Insert (This    => Parents_Including_Self_To_Current_Tag_Map,
+                    Key     => Parents_Including_Self,
+                    Element => CT);
+         end Insert;
+
+         Prev_Tag : constant Current_Tag_Access_Type := Find_Tag (Parent_Tags);
       begin
          Populate_Parents_Including_Self (Parents_Including_Self, Parent_Tags, Tag_Name);
 
@@ -252,14 +259,15 @@ package body X_Proto.XML is
                end if;
 
                Xcb_V := new Xcb.T;
-               Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                               I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Xcb_Type_Id,
-                                                                                          Find_Tag => Find_Tag (Parent_Tags),
-                                                                                          Xcb_V    => Xcb_V));
+               Insert (This    => Parents_Including_Self_To_Current_Tag_Map,
+                       Key     => Parents_Including_Self,
+                       Element => new Current_Tag_Type'(Kind_Id  => Tag_Id.Xcb_Type_Id,
+                                                        Find_Tag => Find_Tag (Parent_Tags),
+                                                        Xcb_V    => Xcb_V));
                Is_Success := True;
             else
                Is_Success := False;
-               Error_Message.Initialize (GNAT.Source_Info.Source_Location & "Expected " & Tag_Struct & ", but found " & Tag_Name);
+               Error_Message.Initialize (GNAT.Source_Info.Source_Location & "Expected " & Tag_Xcb & ", but found " & Tag_Name);
             end if;
             return;
          end if;
@@ -268,15 +276,14 @@ package body X_Proto.XML is
             when Tag_Id.Xcb_Type_Id =>
                if Tag_Name = Tag_Struct then
                   declare
-                     Struct_V : Struct.Ptr := new Struct.T;
+                     Struct_V : constant Struct.Ptr := new Struct.T;
                   begin
                      case Prev_Tag.Kind_Id is
                         when Tag_Id.Xcb_Type_Id =>
                            Prev_Tag.Xcb_V.Append_Struct (Struct_V);
-                           Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                           I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Enum_Struct,
-                                                                                                      Find_Tag             => Prev_Tag,
-                                                                                                      Struct_V             => Struct_V));
+                           Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Enum_Struct,
+                                                         Find_Tag             => Prev_Tag,
+                                                         Struct_V             => Struct_V));
                            Is_Success := True;
                         when others =>
                            Is_Success := False;
@@ -285,113 +292,103 @@ package body X_Proto.XML is
                   end;
                elsif Tag_Name = Tag_X_Id_Kind then
                   declare
-                     X_Id_Type_V : X_Id.Ptr := new X_Id.T;
+                     X_Id_Type_V : constant X_Id.Ptr := new X_Id.T;
                   begin
                      Prev_Tag.Xcb_V.Append_X_Id (X_Id_Type_V);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id     => Tag_Id.X_Id_Kind_Type_Id,
-                                                                                                Find_Tag    => Prev_Tag,
-                                                                                                X_Id_Kind_V => X_Id_Type_V));
+                     Insert (new Current_Tag_Type'(Kind_Id     => Tag_Id.X_Id_Kind_Type_Id,
+                                                   Find_Tag    => Prev_Tag,
+                                                   X_Id_Kind_V => X_Id_Type_V));
                   end;
                elsif Tag_Name = Tag_X_Id_Union then
                   declare
-                     X_Id_Union_V : X_Id_Union.Ptr := new X_Id_Union.T;
+                     X_Id_Union_V : constant X_Id_Union.Ptr := new X_Id_Union.T;
                   begin
                      Prev_Tag.Xcb_V.Append_X_Id_Union (X_Id_Union_V);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id      => Tag_Id.Enum_X_Id_Union,
-                                                                                                Find_Tag     => Prev_Tag,
-                                                                                                X_Id_Union_V => X_Id_Union_V));
+                     Insert (new Current_Tag_Type'(Kind_Id      => Tag_Id.Enum_X_Id_Union,
+                                                   Find_Tag     => Prev_Tag,
+                                                   X_Id_Union_V => X_Id_Union_V));
                   end;
                elsif Tag_Name = Tag_Type_Definition then
                   declare
-                     TD : Type_Definition.Ptr := new Type_Definition.T;
+                     TD : constant Type_Definition.Ptr := new Type_Definition.T;
                   begin
                      Prev_Tag.Xcb_V.Append_Type_Definition (TD);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id           => Tag_Id.Type_Definition_Type_Id,
-                                                                                                Find_Tag          => Prev_Tag,
-                                                                                                Type_Definition_V => TD));
+                     Insert (new Current_Tag_Type'(Kind_Id           => Tag_Id.Type_Definition_Type_Id,
+                                                   Find_Tag          => Prev_Tag,
+                                                   Type_Definition_V => TD));
                   end;
                elsif Tag_Name = Tag_Enum then
                   declare
-                     Enum_V : Enum.Ptr := new Enum.T;
+                     Enum_V : constant Enum.Ptr := new Enum.T;
                   begin
                      Prev_Tag.Xcb_V.Append_Enum (Enum_V);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Enum,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Enum_V   => Enum_V));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Enum,
+                                                   Find_Tag => Prev_Tag,
+                                                   Enum_V   => Enum_V));
                   end;
                elsif Tag_Name = XML_Tag_Event then
                   declare
-                     E : Event.Ptr := new Event.T;
+                     E : constant Event.Ptr := new Event.T;
                   begin
                      Prev_Tag.Xcb_V.Append_Event (E);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Event_Type_Id,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Event_V  => E));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Event_Type_Id,
+                                                   Find_Tag => Prev_Tag,
+                                                   Event_V  => E));
                   end;
                elsif Tag_Name = XML_Tag_Event_Copy then
                   declare
-                     EC : Event_Copy.Ptr := new Event_Copy.T;
+                     EC : constant Event_Copy.Ptr := new Event_Copy.T;
                   begin
                      Prev_Tag.Xcb_V.Append_Event_Copy (EC);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id      => Tag_Id.Event_Copy_Type_Id,
-                                                                                                Find_Tag     => Prev_Tag,
-                                                                                                Event_Copy_V => EC));
+                     Insert (new Current_Tag_Type'(Kind_Id      => Tag_Id.Event_Copy_Type_Id,
+                                                   Find_Tag     => Prev_Tag,
+                                                   Event_Copy_V => EC));
                   end;
                elsif Tag_Name = XML_Tag_Union then
                   declare
-                     U : Union.Ptr := new Union.T;
+                     U : constant Union.Ptr := new Union.T;
                   begin
                      Prev_Tag.Xcb_V.Append_Union (U);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Union_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Union_V              => U));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Union_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Union_V              => U));
                   end;
                elsif Tag_Name = XML_Tag_Error then
                   declare
-                     E : Error.Ptr := new Error.T;
+                     E : constant Error.Ptr := new Error.T;
                   begin
                      Prev_Tag.Xcb_V.Append_Error (E);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Error_V              => E));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Error_V              => E));
                   end;
                elsif Tag_Name = XML_Tag_Error_Copy then
                   declare
-                     E : Error_Copy.Ptr := new Error_Copy.T;
+                     E : constant Error_Copy.Ptr := new Error_Copy.T;
                   begin
                      Prev_Tag.Xcb_V.Append_Error_Copy (E);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Copy_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Error_Copy_V         => E));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Copy_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Error_Copy_V         => E));
                   end;
                elsif Tag_Name = XML_Tag_Request then
                   declare
-                     R : Request.Ptr := new Request.T;
+                     R : constant Request.Ptr := new Request.T;
                   begin
                      Prev_Tag.Xcb_V.Append_Request (R);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Request_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Request_V            => R));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Request_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Request_V            => R));
                   end;
                else
                   Is_Success := False;
@@ -404,10 +401,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Struct_V.Append_Member (F);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Field_V  => F.F'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                                                   Find_Tag => Prev_Tag,
+                                                   Field_V  => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
@@ -415,10 +411,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Struct_V.Append_Member (P);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Pad_V    => P.P'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                                                   Find_Tag => Prev_Tag,
+                                                   Pad_V    => P.P'Access));
                   end;
                elsif Tag_Name = Tag_List then
                   declare
@@ -426,10 +421,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Struct_V.Append_Member (L);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.List_Type_Id,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                List_V   => L.L'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.List_Type_Id,
+                                                   Find_Tag => Prev_Tag,
+                                                   List_V   => L.L'Access));
                   end;
                else
                   Is_Success := False;
@@ -438,14 +432,13 @@ package body X_Proto.XML is
             when Tag_Id.Enum_X_Id_Union =>
                if Tag_Name = Tag_Kind then
                   declare
-                     Kind : Type_P.Ptr := new Type_P.T;
+                     Kind : constant Type_P.Ptr := new Type_P.T;
                   begin
                      Prev_Tag.X_Id_Union_V.Append_Kind (Kind);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Kind,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Kind     => Kind));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Kind,
+                                                   Find_Tag => Prev_Tag,
+                                                   Kind     => Kind));
                   end;
                else
                   Is_Success := False;
@@ -454,25 +447,23 @@ package body X_Proto.XML is
             when Tag_Id.Enum_Enum =>
                if Tag_Name = Tag_Item then
                   declare
-                     Item_V : Item.Ptr := new Item.T;
+                     Item_V : constant Item.Ptr := new Item.T;
                   begin
                      Prev_Tag.Enum_V.Append_Item (Item_V);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Item_Type_Id,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Item_V   => Item_V));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Item_Type_Id,
+                                                   Find_Tag => Prev_Tag,
+                                                   Item_V   => Item_V));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
-                     D : Documentation.Ptr := new Documentation.T;
+                     D : constant Documentation.Ptr := new Documentation.T;
                   begin
                      Prev_Tag.Enum_V.Append_Documentation (D);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id         => Tag_Id.Documentation_Type_Id,
-                                                                                                Find_Tag        => Prev_Tag,
-                                                                                                Documentation_V => D));
+                     Insert (new Current_Tag_Type'(Kind_Id         => Tag_Id.Documentation_Type_Id,
+                                                   Find_Tag        => Prev_Tag,
+                                                   Documentation_V => D));
                   end;
                else
                   Is_Success := False;
@@ -496,10 +487,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.List_V.Append_Member (Operation);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Op_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Op_V                 => Operation.Operation'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Op_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Op_V                 => Operation.Operation'Access));
                   end;
                elsif Tag_Name = XML_Tag_Value then
                   declare
@@ -507,10 +497,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.List_V.Append_Member (V);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Value_Type_Id,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Value_V  => V.Value'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Value_Type_Id,
+                                                   Find_Tag => Prev_Tag,
+                                                   Value_V  => V.Value'Access));
                   end;
                else
                   Is_Success := False;
@@ -519,15 +508,14 @@ package body X_Proto.XML is
             when Tag_Id.Op_Type_Id =>
                if Tag_Name = XML_Tag_Operation then
                   declare
-                     V : Operation.Fs.Member_Ptr := new Operation.Fs.Member_Type (Operation.Fs.Member_Operation);
+                     V : constant Operation.Fs.Member_Ptr := new Operation.Fs.Member_Type (Operation.Fs.Member_Operation);
                   begin
                      V.Operation := new Operation.T;
                      Append_Member (Prev_Tag.Op_V.all, V);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Op_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Op_V                 => V.Operation));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Op_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Op_V                 => V.Operation));
                   end;
                elsif Tag_Name = Tag_Field_Reference then
                   declare
@@ -535,10 +523,9 @@ package body X_Proto.XML is
                   begin
                      Append_Member (Prev_Tag.Op_V.all, V);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Field_Reference,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Field_Reference      => V.Field_Reference'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Field_Reference,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Field_Reference      => V.Field_Reference'Access));
                   end;
                elsif Tag_Name = XML_Tag_Value then
                   declare
@@ -546,10 +533,9 @@ package body X_Proto.XML is
                   begin
                      Append_Member (Prev_Tag.Op_V.all, V);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Value_Type_Id,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Value_V  => V.Value'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Value_Type_Id,
+                                                   Find_Tag => Prev_Tag,
+                                                   Value_V  => V.Value'Access));
                   end;
                else
                   Is_Success := False;
@@ -562,10 +548,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Event_V.Append_Member (F);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Enum_Field,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Field_V              => F.F'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Enum_Field,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Field_V              => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
@@ -573,10 +558,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Event_V.Append_Member (P);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Pad_V    => P.P'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                                                   Find_Tag => Prev_Tag,
+                                                   Pad_V    => P.P'Access));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
@@ -584,10 +568,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Event_V.Append_Member (D);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Documentation_V      => D.D'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Documentation_V      => D.D'Access));
                   end;
                elsif Tag_Name = Tag_List then
                   declare
@@ -595,10 +578,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Event_V.Append_Member (L);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.List_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                List_V               => L.L'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   List_V               => L.L'Access));
                   end;
                else
                   Is_Success := False;
@@ -611,10 +593,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Documentation_V.Append_Member (D);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Field_V  => D.F'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                                                   Find_Tag => Prev_Tag,
+                                                   Field_V  => D.F'Access));
                   end;
                elsif Tag_Name = XML_Tag_See then
                   declare
@@ -622,10 +603,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Documentation_V.Append_Member (D);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.See_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                See_V                => D.S'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.See_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   See_V                => D.S'Access));
                   end;
                elsif Tag_Name = XML_Tag_Error then
                   declare
@@ -633,10 +613,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Documentation_V.Append_Member (D);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Error_V              => D.E'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Error_V              => D.E'Access));
                   end;
                elsif Tag_Name = XML_Tag_Example then
                   declare
@@ -644,10 +623,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Documentation_V.Append_Member (D);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Example_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Example_V            => D.Ex'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Example_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Example_V            => D.Ex'Access));
                   end;
                elsif Tag_Name = XML_Tag_Brief then
                   Is_Success := True;
@@ -664,10 +642,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Union_V.Append_Child (L);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.List_Type_Id,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                List_V   => L.L'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.List_Type_Id,
+                                                   Find_Tag => Prev_Tag,
+                                                   List_V   => L.L'Access));
                   end;
                else
                   Is_Success := False;
@@ -680,10 +657,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Error_V.Append_Child (F);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Field_V  => F.F'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                                                   Find_Tag => Prev_Tag,
+                                                   Field_V  => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
@@ -691,10 +667,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Error_V.Append_Child (P);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Pad_V    => P.P'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                                                   Find_Tag => Prev_Tag,
+                                                   Pad_V    => P.P'Access));
                   end;
                else
                   Is_Success := False;
@@ -707,10 +682,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Request_V.Append_Child (F);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Field_V  => F.F'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                                                   Find_Tag => Prev_Tag,
+                                                   Field_V  => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
@@ -718,10 +692,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Request_V.Append_Child (P);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Pad_V    => P.P'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                                                   Find_Tag => Prev_Tag,
+                                                   Pad_V    => P.P'Access));
                   end;
                elsif Tag_Name = XML_Tag_Value_Param then
                   declare
@@ -729,10 +702,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Request_V.Append_Child (V);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Value_Param_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Value_Param_V        => V.V'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Value_Param_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Value_Param_V        => V.V'Access));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
@@ -740,10 +712,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Request_V.Append_Child (V);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Documentation_V      => V.D'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Documentation_V      => V.D'Access));
                   end;
                elsif Tag_Name = XML_Tag_Reply then
                   declare
@@ -751,10 +722,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Request_V.Append_Child (R);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Reply_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Reply_V              => R.R'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Reply_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Reply_V              => R.R'Access));
                   end;
                elsif Tag_Name = Tag_List then
                   declare
@@ -762,10 +732,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Request_V.Append_Child (R);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.List_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                List_V               => R.L'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   List_V               => R.L'Access));
                   end;
                elsif Tag_Name = XML_Tag_Expression_Field then
                   declare
@@ -773,10 +742,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Request_V.Append_Child (R);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Expression_Field_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Expression_Field_V   => R.EF'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Expression_Field_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Expression_Field_V   => R.EF'Access));
                   end;
                else
                   Is_Success := False;
@@ -789,10 +757,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Reply_V.Append_Child (F);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Field_V  => F.F'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                                                   Find_Tag => Prev_Tag,
+                                                   Field_V  => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
@@ -800,10 +767,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Reply_V.Append_Child (F);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
-                                                                                                Find_Tag => Prev_Tag,
-                                                                                                Pad_V    => F.P'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                                                   Find_Tag => Prev_Tag,
+                                                   Pad_V    => F.P'Access));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
@@ -811,10 +777,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Reply_V.Append_Child (F);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Documentation_V      => F.D'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Documentation_V      => F.D'Access));
                   end;
                elsif Tag_Name = Tag_List then
                   declare
@@ -822,10 +787,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Reply_V.Append_Child (F);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.List_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                List_V               => F.L'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   List_V               => F.L'Access));
                   end;
                else
                   Is_Success := False;
@@ -838,10 +802,9 @@ package body X_Proto.XML is
                   begin
                      Prev_Tag.Expression_Field_V.Append_Child (C);
                      Is_Success := True;
-                     Parents_Including_Self_To_Current_Tag_Map.Bind (K => Parents_Including_Self,
-                                                                     I => new Current_Tag_Type'(Kind_Id              => Tag_Id.Op_Type_Id,
-                                                                                                Find_Tag             => Prev_Tag,
-                                                                                                Op_V                 => C.Op'Access));
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Op_Type_Id,
+                                                   Find_Tag             => Prev_Tag,
+                                                   Op_V                 => C.Op'Access));
                   end;
                else
                   Is_Success := False;
@@ -860,18 +823,18 @@ package body X_Proto.XML is
                  Tag_Id.Error_Copy_Type_Id |
                  Tag_Id.Value_Param_Type_Id |
                  Tag_Id.Example_Type_Id =>
-                 Is_Success := False;
-                 Error_Message.Initialize (GNAT.Source_Info.Source_Location & "Error, tag name is " & Tag_Name);
+               Is_Success := False;
+               Error_Message.Initialize (GNAT.Source_Info.Source_Location & "Error, tag name is " & Tag_Name);
          end case;
       end Start_Tag;
 
       procedure Attribute (Attribute_Name              : String;
                            Attribute_Value             : String;
-                           Parent_Tags_And_Current_Tag : SXML.DL.Collection;
+                           Parent_Tags_And_Current_Tag : SXML.DL.T;
                            Error_Message               : out SXML.Error_Message_T;
                            Is_Success                  : out Boolean)
       is
-         Current_Tag : Current_Tag_Access_Type := Find_Tag (Parent_Tags_And_Current_Tag);
+         Current_Tag : constant Current_Tag_Access_Type := Find_Tag (Parent_Tags_And_Current_Tag);
       begin
          if Current_Tag = null then
             Is_Success := False;
@@ -1207,7 +1170,7 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      V.Initialize (Attribute_Value);
-                        Current_Tag.Error_V.Set_Kind (V);
+                     Current_Tag.Error_V.Set_Kind (V);
                   end;
                else
                   Is_Success := False;
@@ -1343,20 +1306,21 @@ package body X_Proto.XML is
       end Attribute;
 
       procedure End_Tag (Tag_Name      : String;
-                         Parent_Tags   : SXML.DL.Collection;
+                         Parent_Tags   : SXML.DL.T;
                          Error_Message : out SXML.Error_Message_T;
                          Is_Success    : out Boolean)
       is
-         Parents_Including_Self : SXML.DL.Collection;
+         Parents_Including_Self : SXML.DL.T;
       begin
          Populate_Parents_Including_Self (Parents_Including_Self => Parents_Including_Self,
                                           Parents                => Parent_Tags,
                                           Tag_Name               => Tag_Name);
 
          begin
-            Parents_Including_Self_To_Current_Tag_Map.Unbind (K => Parents_Including_Self);
+            Delete (Parents_Including_Self_To_Current_Tag_Map, Parents_Including_Self);
          exception
-            when Unknown_Exception : BC.Not_Found =>
+            when Unknown_Exception : others =>
+               Ada.Text_IO.Put_Line ("delete 1");
                Is_Success := False;
                Error_Message.Initialize (GNAT.Source_Info.Source_Location & Ada.Exceptions.Exception_Information(Unknown_Exception));
                return;
@@ -1367,11 +1331,11 @@ package body X_Proto.XML is
 
       procedure End_Tag (Tag_Name      : String;
                          Tag_Value     : String;
-                         Parent_Tags   : SXML.DL.Collection;
+                         Parent_Tags   : SXML.DL.T;
                          Error_Message : out SXML.Error_Message_T;
                          Is_Success    : out Boolean)
       is
-         Parents_Including_Self : SXML.DL.Collection;
+         Parents_Including_Self : SXML.DL.T;
 
          Current_Tag : Current_Tag_Access_Type;
       begin
@@ -1383,7 +1347,7 @@ package body X_Proto.XML is
 
          if Current_Tag = null then
             declare
-               Prev_Tag : Current_Tag_Access_Type := Find_Tag (Parent_Tags);
+               Prev_Tag : constant Current_Tag_Access_Type := Find_Tag (Parent_Tags);
             begin
                if Prev_Tag = null then
                   Is_Success := False;
@@ -1463,9 +1427,10 @@ package body X_Proto.XML is
             end;
          else
             begin
-               Parents_Including_Self_To_Current_Tag_Map.Unbind (K => Parents_Including_Self);
+               Delete (Parents_Including_Self_To_Current_Tag_Map, Parents_Including_Self);
             exception
-               when Unknown_Exception : BC.Not_Found =>
+               when Unknown_Exception : others =>
+                  Ada.Text_IO.Put_Line ("delete 2");
                   Is_Success := False;
                   Error_Message.Initialize (GNAT.Source_Info.Source_Location & Ada.Exceptions.Exception_Information(Unknown_Exception));
                   return;
@@ -1584,6 +1549,9 @@ package body X_Proto.XML is
                                                                            End_Tag,
                                                                            End_Tag);
    begin
+--        Is_Success := False;
+--        return;
+
       Parse_X_Proto_XML_File (Contents,
                               Error_Message,
                               Is_Success);

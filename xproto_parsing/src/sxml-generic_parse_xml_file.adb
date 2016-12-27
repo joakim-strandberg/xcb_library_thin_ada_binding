@@ -1,6 +1,5 @@
 with Strings_Edit.UTF8;
 with Ada.Characters.Latin_1;
-with Ada.Strings.Unbounded;
 --  with Ada.Text_IO;
 with BC.Containers.Collections.Unmanaged;
 
@@ -10,7 +9,10 @@ procedure SXML.Generic_Parse_XML_File (Contents      : String;
 is
    use type Strings_Edit.UTF8.Code_Point;
 
-   Tag_Names : DL.Collection;
+   use SXML.Bounded_String;
+   use SXML.DL;
+
+   Tag_Names : DL.T;
 
    type State_Id_Type is (
                           Searching_For_XML_Start_String,
@@ -47,10 +49,9 @@ is
 
    State_Id : State_Id_Type := Searching_For_XML_Start_String;
 
-   XML_File_Start_String : String := "<?xml version=""1.0"" encoding=""utf-8""?>";
+   XML_File_Start_String : constant String := "<?xml version=""1.0"" encoding=""utf-8""?>";
 
-   F : Natural := Contents'First;
-   L : Natural := Contents'Last;
+   F : constant Natural := Contents'First;
 
    package Abstract_Boolean_List is new BC.Containers (Item => Boolean);
 
@@ -192,9 +193,14 @@ begin
                      return;
                   end if;
 
-                  DL.Append (C    => Tag_Names,
-                             Elem => Contents (Start_Tag_Name_First_Index..Start_Tag_Name_Last_Index));
-
+                  declare
+                     S : SXML.Bounded_String_T;
+                  begin
+                     Initialize (This => S,
+                                 Text => Contents (Start_Tag_Name_First_Index..Start_Tag_Name_Last_Index));
+                     Append (This     => Tag_Names,
+                             New_Item => S);
+                  end;
 
                   Boolean_List.Append (C    => Shall_Ignore_Tag_Value_List,
                                        Elem => Shall_Ignore_Tag_Value);
@@ -213,8 +219,14 @@ begin
                      return;
                   end if;
 
-                  DL.Append (C    => Tag_Names,
-                             Elem => Contents (Start_Tag_Name_First_Index..Start_Tag_Name_Last_Index));
+                  declare
+                     S : SXML.Bounded_String_T;
+                  begin
+                     Initialize (This => S,
+                                 Text => Contents (Start_Tag_Name_First_Index..Start_Tag_Name_Last_Index));
+                     Append (This     => Tag_Names,
+                             New_Item => S);
+                  end;
 
                   Boolean_List.Append (C    => Shall_Ignore_Tag_Value_List,
                                        Elem => Shall_Ignore_Tag_Value);
@@ -244,12 +256,10 @@ begin
                if CP = Character'Pos ('>') then
                   State_Id := Expecting_NL_Sign_Or_Space_Or_Less_Sign;
 
-
                   declare
-                     Tag_Name : String := DL.Last (Tag_Names);
+                     Tag_Name : constant String := To_String (Last_Element (Tag_Names));
                   begin
-                     DL.Remove (C        => Tag_Names,
-                                At_Index => DL.Length (Tag_Names));
+                     Delete_Last (Tag_Names);
                      End_Tag (Tag_Name,
                               Tag_Names,
                               Error_Message,
@@ -408,7 +418,7 @@ begin
                   End_Tag_Name_Last_Index := Prev_Prev_P;
 
                   declare
-                     Tag_Name : String := DL.Last (Tag_Names);
+                     Tag_Name : constant String := To_String (Last_Element (Tag_Names));
                   begin
                      if Tag_Name /= Contents (End_Tag_Name_First_Index..End_Tag_Name_Last_Index) then
                         Error_Message.Initialize ("Tag names does not match! Start tag is '" & Tag_Name &
@@ -417,8 +427,7 @@ begin
                         return;
                      end if;
 
-                     DL.Remove (C        => Tag_Names,
-                                At_Index => DL.Length (Tag_Names));
+                     Delete_Last (Tag_Names);
 
                      if not Shall_Ignore_Tag_Value then
                         End_Tag (Tag_Name,

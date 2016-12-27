@@ -1,4 +1,3 @@
-with Std_Character;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;
 

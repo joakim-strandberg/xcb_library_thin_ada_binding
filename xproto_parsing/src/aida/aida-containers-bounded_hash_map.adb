@@ -18,15 +18,15 @@ package body Aida.Containers.Bounded_Hash_Map is
                      Key     : Key_T;
                      Element : Element_T)
    is
-      H : Hash32_T := Normalize_Index (Hash (Key));
-      BI : Bucket_Index_T := Bucket_Index_T (H);
+      H : constant Hash32_T := Normalize_Index (Hash (Key));
+      BI : constant Bucket_Index_T := Bucket_Index_T (H);
    begin
       if Int32_T (This.Number_Of_Stored_Elements (BI)) < Max_Collisions then
          declare
-            CI : Collision_Index_T := Collision_Index_T (This.Number_Of_Stored_Elements (BI));
+            CI : constant Collision_Index_T := Collision_Index_T (This.Number_Of_Stored_Elements (BI) + 1);
          begin
-            This.Buckets (BI)(CI).Key               := Key;
-            This.Buckets (BI)(CI).Element           := Element;
+            This.Buckets (BI)(CI).Key           := Key;
+            This.Buckets (BI)(CI).Element       := Element;
             This.Number_Of_Stored_Elements (BI) := This.Number_Of_Stored_Elements (BI) + 1;
          end;
       else
@@ -35,13 +35,36 @@ package body Aida.Containers.Bounded_Hash_Map is
       end if;
    end Insert;
 
+   procedure Delete (This : in out T;
+                     Key  : Key_T)
+   is
+      H : constant Hash32_T := Normalize_Index (Hash (Key));
+      BI : constant Bucket_Index_T := Bucket_Index_T (H);
+   begin
+      for I in Collision_Index_T range Collision_Index_T'First..This.Number_Of_Stored_Elements (BI) loop
+         if Equivalent_Keys (This.Buckets (BI)(I).Key, Key) then
+            declare
+               LI : constant Collision_Index_T := This.Number_Of_Stored_Elements (BI); -- LI short for Last Index
+            begin
+               This.Buckets (BI)(I).Key     := This.Buckets (BI)(LI).Key;
+               This.Buckets (BI)(I).Element := This.Buckets (BI)(LI).Element;
+               This.Number_Of_Stored_Elements (BI) := LI - 1;
+            end;
+            return;
+         end if;
+      end loop;
+
+      Ada.Exceptions.Raise_Exception (E       => Key_Not_Found_Exception'Identity,
+                                      Message => "Delete");
+   end Delete;
+
    function Element (This : T;
                      Key  : Key_T) return Element_T
    is
-      H : Hash32_T := Normalize_Index (Hash (Key));
-      BI : Bucket_Index_T := Bucket_Index_T (Aida.Int32.T (H) mod Max_Collisions);
+      H : constant Hash32_T := Normalize_Index (Hash (Key));
+      BI : constant Bucket_Index_T := Bucket_Index_T (H);
    begin
-      for I in Collision_Index_T range Collision_Index_T'First..Collision_Index_T (This.Number_Of_Stored_Elements (BI)) loop
+      for I in Collision_Index_T range Collision_Index_T'First..This.Number_Of_Stored_Elements (BI) loop
          if This.Buckets (BI)(I).Key = Key then
             return This.Buckets (BI)(I).Element;
          end if;
@@ -53,23 +76,23 @@ package body Aida.Containers.Bounded_Hash_Map is
    function Find_Element (This : T;
                           Key  : Key_T) return Find_Element_Result_T
    is
-      H : Hash32_T := Normalize_Index (Hash (Key));
-      BI : Bucket_Index_T := Bucket_Index_T (Aida.Int32.T (H) mod Max_Collisions);
+      H : constant Hash32_T := Normalize_Index (Hash (Key));
+      BI : constant Bucket_Index_T := Bucket_Index_T (H);
    begin
-      for I in Collision_Index_T range Collision_Index_T'First..Collision_Index_T (This.Number_Of_Stored_Elements (BI)) loop
-         if This.Buckets (BI)(I).Key = Key then
-            return (Element_Exists => True,
-                    Element        => This.Buckets (BI)(I).Element);
+      for I in Collision_Index_T range Collision_Index_T'First..This.Number_Of_Stored_Elements (BI) loop
+         if Equivalent_Keys (This.Buckets (BI)(I).Key, Key) then
+            return (Exists  => True,
+                    Element => This.Buckets (BI)(I).Element);
          end if;
       end loop;
-      return (Element_Exists => False);
+      return (Exists => False);
    end Find_Element;
 
    function Contains (This : T;
                       Key  : Key_T) return Boolean
    is
-      H : Hash32_T := Normalize_Index (Hash (Key));
-      BI : Bucket_Index_T := Bucket_Index_T (Aida.Int32.T (H) mod Max_Collisions);
+      H : constant Hash32_T := Normalize_Index (Hash (Key));
+      BI : constant Bucket_Index_T := Bucket_Index_T (H);
    begin
       for I in Collision_Index_T range Collision_Index_T'First..Collision_Index_T (This.Number_Of_Stored_Elements (BI)) loop
          if This.Buckets (BI)(I).Key = Key then
