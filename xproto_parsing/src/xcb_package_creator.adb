@@ -99,84 +99,84 @@ package body XCB_Package_Creator is
       Is_Previous_An_Undercase  : Boolean := False;
    begin
       if Old_Name = "CHAR2B" then
-         New_Name.Initialize ("Char_2B");
+         Initialize (New_Name, "Char_2B");
          return;
       end if;
 
       if Old_Name = "VISUALTYPE" then
-         New_Name.Initialize ("Visual_Kind");
+         Initialize (New_Name, "Visual_Kind");
          return;
       end if;
 
       if Old_Name = "TIMECOORD" then
-         New_Name.Initialize ("Time_Coordinate");
+         Initialize (New_Name, "Time_Coordinate");
          return;
       end if;
 
       if Old_Name = "FONTPROP" then
-         New_Name.Initialize ("Font_Properties");
+         Initialize (New_Name, "Font_Properties");
          return;
       end if;
 
       if Old_Name = "CHARINFO" then
-         New_Name.Initialize ("Character_Information");
+         Initialize (New_Name, "Character_Information");
          return;
       end if;
 
       if Old_Name = "COLORITEM" then
-         New_Name.Initialize ("Color_Item");
+         Initialize (New_Name, "Color_Item");
          return;
       end if;
 
       if Old_Name = "RGB" then
-         New_Name.Initialize ("Red_Green_Blue");
+         Initialize (New_Name, "Red_Green_Blue");
          return;
       end if;
 
       if Old_Name = "VISUALID" then
-         New_Name.Initialize ("Visual_Id");
+         Initialize (New_Name, "Visual_Id");
          return;
       end if;
 
       if Old_Name = "BUTTON" then
-         New_Name.Initialize ("Button_Id");
+         Initialize (New_Name, "Button_Id");
          return;
       end if;
 
       if Old_Name = "GetPropertyType" then
-         New_Name.Initialize ("Get_Property_Kind");
+         Initialize (New_Name, "Get_Property_Kind");
          return;
       end if;
 
       if Old_Name = "new" then
-         New_Name.Initialize ("U_New"); -- The same as in the C header file.
+         Initialize (New_Name, "U_New"); -- The same as in the C header file.
          return;
       end if;
 
       if Old_Name = "delta" then
-         New_Name.Initialize ("U_Delta");
+         Initialize (New_Name, "U_Delta");
          return;
       end if;
 
       if Old_Name = "type" then
-         New_Name.Initialize ("Kind");
+         Initialize (New_Name, "Kind");
          return;
       end if;
 
       if Old_Name = "string" then
-         New_Name.Initialize ("Text");
+         Initialize (New_Name, "Text");
          return;
       end if;
 
-      New_Name.Initialize ("");
+      Initialize (New_Name, "");
       Strings_Edit.UTF8.Get (Source  => Old_Name,
                              Pointer => P,
                              Value   => CP);
 
       if Strings_Edit.UTF8.Mapping.Is_Uppercase (CP) then
-         New_Name.Append (Strings_Edit.UTF8.Image (CP));
+         Append (New_Name, Strings_Edit.UTF8.Image (CP));
       else
-         New_Name.Append (Strings_Edit.UTF8.Image (Strings_Edit.UTF8.Mapping.To_Uppercase (CP)));
+         Append (New_Name, Strings_Edit.UTF8.Image (Strings_Edit.UTF8.Mapping.To_Uppercase (CP)));
       end if;
 
       while P <= Old_Name'Last loop
@@ -185,30 +185,30 @@ package body XCB_Package_Creator is
                                 Value   => CP);
 
          if Strings_Edit.UTF8.Image (CP) = "_" then
-            New_Name.Append ("_");
+            Append (New_Name, "_");
             Is_Previous_An_Undercase := True;
          else
             if Strings_Edit.UTF8.Categorization.Is_Digit (CP) then
                if Is_Previous_A_Number then
-                  New_Name.Append (Strings_Edit.UTF8.Image (CP));
+                  Append (New_Name, Strings_Edit.UTF8.Image (CP));
                else
-                  New_Name.Append ("_" & Strings_Edit.UTF8.Image (CP));
+                  Append (New_Name, "_" & Strings_Edit.UTF8.Image (CP));
                end if;
 
                Is_Previous_A_Number := True;
             else
                if Strings_Edit.UTF8.Mapping.Is_Uppercase (CP) then
                   if Is_Previous_Lowercase then
-                     New_Name.Append ("_" & Strings_Edit.UTF8.Image (CP));
+                     Append (New_Name, "_" & Strings_Edit.UTF8.Image (CP));
                      Is_Previous_Lowercase := False;
                   else
-                     New_Name.Append (Strings_Edit.UTF8.Image (Strings_Edit.UTF8.Mapping.To_Lowercase (CP)));
+                     Append (New_Name, Strings_Edit.UTF8.Image (Strings_Edit.UTF8.Mapping.To_Lowercase (CP)));
                   end if;
                else
                   if Is_Previous_An_Undercase then
-                     New_Name.Append (Strings_Edit.UTF8.Image (Strings_Edit.UTF8.Mapping.To_Uppercase (CP)));
+                     Append (New_Name, Strings_Edit.UTF8.Image (Strings_Edit.UTF8.Mapping.To_Uppercase (CP)));
                   else
-                     New_Name.Append (Strings_Edit.UTF8.Image (CP));
+                     Append (New_Name, Strings_Edit.UTF8.Image (CP));
                   end if;
                   Is_Previous_Lowercase := True;
                end if;
@@ -227,7 +227,7 @@ package body XCB_Package_Creator is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
-      New_Name.Append ("_Type");
+      Append (New_Name, "_Type");
    end Generate_Classic_Type_Name;
 
    procedure Generate_Classic_Access_Type_Name (Old_Name : String;
@@ -235,7 +235,7 @@ package body XCB_Package_Creator is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
-      New_Name.Append ("_Access_Type");
+      Append (New_Name, "_Access_Type");
    end Generate_Classic_Access_Type_Name;
 
    procedure Generate_Classic_Iterator_Type_Name (Old_Name : String;
@@ -243,7 +243,7 @@ package body XCB_Package_Creator is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
-      New_Name.Append ("_Iterator_Type");
+      Append (New_Name, "_Iterator_Type");
    end Generate_Classic_Iterator_Type_Name;
 
    procedure Generate_Classic_Iterator_Access_Type_Name (Old_Name : String;
@@ -251,7 +251,7 @@ package body XCB_Package_Creator is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
-      New_Name.Append ("_Iterator_Access_Type");
+      Append (New_Name, "_Iterator_Access_Type");
    end Generate_Classic_Iterator_Access_Type_Name;
 
    procedure Generate_Classic_Variable_Id_Name (Old_Name : String;
@@ -259,7 +259,7 @@ package body XCB_Package_Creator is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
-      New_Name.Append ("_Id");
+      Append (New_Name, "_Id");
    end Generate_Classic_Variable_Id_Name;
 
    procedure Generate_Classic_Type_Id_Name (Old_Name : String;
@@ -267,7 +267,7 @@ package body XCB_Package_Creator is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
-      New_Name.Append ("_Id_Type");
+      Append (New_Name, "_Id_Type");
    end Generate_Classic_Type_Id_Name;
 
    procedure Generate_Classic_Access_Type_Id_Name (Old_Name : String;
@@ -275,7 +275,7 @@ package body XCB_Package_Creator is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
-      New_Name.Append ("_Id_Access_Type");
+      Append (New_Name, "_Id_Access_Type");
    end Generate_Classic_Access_Type_Id_Name;
 
    procedure Generate_Classic_Iterator_Type_Id_Name (Old_Name : String;
@@ -283,7 +283,7 @@ package body XCB_Package_Creator is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
-      New_Name.Append ("_Id_Iterator_Type");
+      Append (New_Name, "_Id_Iterator_Type");
    end Generate_Classic_Iterator_Type_Id_Name;
 
    procedure Generate_Classic_Iterator_Access_Type_Id_Name (Old_Name : String;
@@ -291,7 +291,7 @@ package body XCB_Package_Creator is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
-      New_Name.Append ("_Id_Iterator_Access_Type");
+      Append (New_Name, "_Id_Iterator_Access_Type");
    end Generate_Classic_Iterator_Access_Type_Id_Name;
 
    procedure Generate_Classic_Event_Type_Name (Old_Name : String;
@@ -299,7 +299,7 @@ package body XCB_Package_Creator is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
-      New_Name.Append ("_Event_Type");
+      Append (New_Name, "_Event_Type");
    end Generate_Classic_Event_Type_Name;
 
    procedure Generate_Classic_Event_Access_Type_Name (Old_Name : String;
@@ -307,7 +307,7 @@ package body XCB_Package_Creator is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
-      New_Name.Append ("_Event_Access_Type");
+      Append (New_Name, "_Event_Access_Type");
    end Generate_Classic_Event_Access_Type_Name;
 
    procedure Generate_Classic_Error_Type_Name (Old_Name : String;
@@ -315,7 +315,7 @@ package body XCB_Package_Creator is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
-      New_Name.Append ("_Error_Type");
+      Append (New_Name, "_Error_Type");
    end Generate_Classic_Error_Type_Name;
 
    procedure Generate_Classic_Event_List_Type_Name (Enum_Name : String;
@@ -329,7 +329,7 @@ package body XCB_Package_Creator is
 
       Generate_Struct_Name (Enum_Name,
                             New_Name);
-      New_Name.Append ("_Event_" & Adafied_List_Name.To_String & "_Array_Type");
+      Append (New_Name, "_Event_" & To_String (Adafied_List_Name) & "_Array_Type");
    end Generate_Classic_Event_List_Type_Name;
 
    procedure Translate_Classic_Variable_Type_Name (Variable_Type_Name : String;
@@ -338,24 +338,24 @@ package body XCB_Package_Creator is
    begin
       Is_Success := True;
       if Variable_Type_Name = "CARD8" then
-         Translated_Name.Initialize ("Interfaces.Unsigned_8");
+         Initialize (Translated_Name, "Interfaces.Unsigned_8");
       elsif Variable_Type_Name = "CARD16" then
-         Translated_Name.Initialize ("Interfaces.Unsigned_16");
+         Initialize (Translated_Name, "Interfaces.Unsigned_16");
       elsif Variable_Type_Name = "CARD32" then
-         Translated_Name.Initialize ("Interfaces.Unsigned_32");
+         Initialize (Translated_Name, "Interfaces.Unsigned_32");
       elsif Variable_Type_Name = "BYTE" then
-         Translated_Name.Initialize ("Interfaces.Unsigned_8");
+         Initialize (Translated_Name, "Interfaces.Unsigned_8");
       elsif Variable_Type_Name = "BOOL" then
-         Translated_Name.Initialize ("Interfaces.Unsigned_8");
+         Initialize (Translated_Name, "Interfaces.Unsigned_8");
       elsif Variable_Type_Name = "INT8" then
-         Translated_Name.Initialize ("Interfaces.Integer_8");
+         Initialize (Translated_Name, "Interfaces.Integer_8");
       elsif Variable_Type_Name = "INT16" then
-         Translated_Name.Initialize ("Interfaces.Integer_16");
+         Initialize (Translated_Name, "Interfaces.Integer_16");
       elsif Variable_Type_Name = "INT32" then
-         Translated_Name.Initialize ("Interfaces.Integer_32");
+         Initialize (Translated_Name, "Interfaces.Integer_32");
       else
          Is_Success := False;
-         Translated_Name.Initialize ("");
+         Initialize (Translated_Name, "");
          return;
       end if;
    end Translate_Classic_Variable_Type_Name;
@@ -367,7 +367,7 @@ package body XCB_Package_Creator is
       Adafied_List_Name : X_Proto.Large_Bounded_String.T;
    begin
       if Prefix_Name = "CARD32" then
-         New_Name.Initialize ("Unsigned_32");
+         Initialize (New_Name, "Unsigned_32");
       else
          Generate_Struct_Name (Prefix_Name,
                                New_Name);
@@ -376,9 +376,9 @@ package body XCB_Package_Creator is
       if Field_Name /= "" then
          Generate_Struct_Name (Field_Name,
                                Adafied_List_Name);
-         New_Name.Append ("_" & Adafied_List_Name.To_String & "_Array_Type");
+         Append (New_Name, "_" & To_String (Adafied_List_Name) & "_Array_Type");
       else
-         New_Name.Append ("_Array_Type");
+         Append (New_Name, "_Array_Type");
       end if;
    end Generate_Classic_Array_Type_Name;
 
@@ -425,7 +425,7 @@ package body XCB_Package_Creator is
             declare
                Searched_For : X_Proto.Large_Bounded_String.T;
             begin
-               Searched_For.Initialize (Variable_Type_Name);
+               Initialize (Searched_For, Variable_Type_Name);
                declare
                   FER : constant Original_Name_To_Adaified_Name_P.Find_Element_Result_T :=
                     Find_Element (This => Original_Name_To_Adaified_Name.all,
@@ -446,7 +446,7 @@ package body XCB_Package_Creator is
       is
          Searched_For : X_Proto.Large_Bounded_String.T;
       begin
-         Searched_For.Initialize (Variable_Type_Name);
+         Initialize (Searched_For, Variable_Type_Name);
          declare
             FER : constant Original_Name_To_Adaified_Name_P.Find_Element_Result_T :=
               Find_Element (Original_Name_To_Adaified_Name.all, Searched_For);
@@ -466,7 +466,7 @@ package body XCB_Package_Creator is
       is
          Searched_For : X_Proto.Large_Bounded_String.T;
       begin
-         Searched_For.Initialize (Variable_Type_Name);
+         Initialize (Searched_For, Variable_Type_Name);
          declare
             FER : constant Original_Name_To_Adaified_Name_P.Find_Element_Result_T :=
               Find_Element (Original_Name_To_Adaified_Name.all, Searched_For);
@@ -486,7 +486,7 @@ package body XCB_Package_Creator is
       is
          Searched_For : X_Proto.Large_Bounded_String.T;
       begin
-         Searched_For.Initialize (Variable_Type_Name);
+         Initialize (Searched_For, Variable_Type_Name);
          declare
             FER : constant Original_Name_To_Adaified_Name_P.Find_Element_Result_T :=
               Find_Element (Original_Name_To_Adaified_Name.all, Searched_For);
@@ -529,7 +529,7 @@ package body XCB_Package_Creator is
          C_Function_Name           : X_Proto.Large_Bounded_String.T;
          Is_Success : Boolean;
       begin
-         C_Function_Name.Initialize ("xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (Name) & "_next");
+         Initialize (C_Function_Name, "xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (Name) & "_next");
 
          Translate_To_Variable_Name (Variable_Type_Name => Name,
                                      Is_Success         => Is_Success,
@@ -544,10 +544,10 @@ package body XCB_Package_Creator is
                                                  Translated_Name    => Iterator_Access_Type_Name);
 
          if Is_Success then
-            Procedure_Name.Initialize (N.To_String & "_Next");
+            Initialize (Procedure_Name, To_String (N) & "_Next");
 
-            Put_Tabs (1); Put_Line ("procedure " & Procedure_Name.To_String & " (I : " & Iterator_Access_Type_Name.To_String & ");");
-            Put_Tabs (1); Put_Line ("pragma Import (C, " & Procedure_Name.To_String & ", """ & C_Function_Name.To_String & """);");
+            Put_Tabs (1); Put_Line ("procedure " & To_String (Procedure_Name) & " (I : " & To_String (Iterator_Access_Type_Name) & ");");
+            Put_Tabs (1); Put_Line ("pragma Import (C, " & To_String (Procedure_Name) & ", """ & To_String (C_Function_Name) & """);");
             Put_Line ("");
          else
             Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Failed to convert " & Name & " to corresponding iterator type name.");
@@ -561,7 +561,7 @@ package body XCB_Package_Creator is
          C_Function_Name    : X_Proto.Large_Bounded_String.T;
          Is_Success : Boolean;
       begin
-         C_Function_Name.Initialize ("xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (Name) & "_end");
+         Initialize (C_Function_Name, "xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (Name) & "_end");
 
          Translate_To_Variable_Name (Variable_Type_Name => Name,
                                      Is_Success         => Is_Success,
@@ -576,10 +576,10 @@ package body XCB_Package_Creator is
                                           Translated_Name    => Iterator_Type_Name);
 
          if Is_Success then
-            Function_Name.Initialize (N.To_String & "_End");
+            Initialize (Function_Name, To_String (N) & "_End");
 
-            Put_Tabs (1); Put_Line ("function " & Function_Name.To_String & " (I : " & Iterator_Type_Name.To_String & ") return " & Generic_Iterator_Type_Name & ";");
-            Put_Tabs (1); Put_Line ("pragma Import (C, " & Function_Name.To_String & ", """ & C_Function_Name.To_String & """);");
+            Put_Tabs (1); Put_Line ("function " & To_String (Function_Name) & " (I : " & To_String (Iterator_Type_Name) & ") return " & Generic_Iterator_Type_Name & ";");
+            Put_Tabs (1); Put_Line ("pragma Import (C, " & To_String (Function_Name) & ", """ & To_String (C_Function_Name) & """);");
             Put_Line ("");
          else
             Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Failed to convert " & Name & " to corresponding iterator access type name.");
@@ -601,38 +601,38 @@ package body XCB_Package_Creator is
          New_Variable_Iterator_Type_Name        : X_Proto.Large_Bounded_String.T;
          New_Variable_Iterator_Access_Type_Name : X_Proto.Large_Bounded_String.T;
       begin
-         Generate_Classic_Variable_Id_Name (Old_Name => Name.To_String,
+         Generate_Classic_Variable_Id_Name (Old_Name => To_String (Name),
                                             New_Name => New_Variable_Name);
 
-         Generate_Classic_Type_Id_Name (Old_Name => Name.To_String,
+         Generate_Classic_Type_Id_Name (Old_Name => To_String (Name),
                                         New_Name => New_Variable_Type_Name);
          case How is
             when Use_The_New_Keyword =>
-               Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new " & Type_Name & ";");
+               Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is new " & Type_Name & ";");
             when Use_The_Subtype_Keyword =>
-               Put_Tabs (1); Put_Line ("subtype " & New_Variable_Type_Name.To_String & " is " & Type_Name & ";");
+               Put_Tabs (1); Put_Line ("subtype " & To_String (New_Variable_Type_Name) & " is " & Type_Name & ";");
          end case;
          Put_Line ("");
 
-         Generate_Classic_Access_Type_Id_Name (Old_Name => Name.To_String,
+         Generate_Classic_Access_Type_Id_Name (Old_Name => To_String (Name),
                                                New_Name => New_Variable_Access_Type_Name);
-         Put_Tabs (1); Put_Line ("type " & New_Variable_Access_Type_Name.To_String & " is access all " & New_Variable_Type_Name.To_String & ";");
+         Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Access_Type_Name) & " is access all " & To_String (New_Variable_Type_Name) & ";");
          Put_Line ("");
 
-         Generate_Classic_Iterator_Type_Id_Name (Old_Name => Name.To_String,
+         Generate_Classic_Iterator_Type_Id_Name (Old_Name => To_String (Name),
                                                  New_Name => New_Variable_Iterator_Type_Name);
-         Put_Tabs (1); Put_Line ("type " & New_Variable_Iterator_Type_Name.To_String & " is record");
-         Put_Tabs (2); Put_Line ("Data  : " & New_Variable_Access_Type_Name.To_String & ";");
+         Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Iterator_Type_Name) & " is record");
+         Put_Tabs (2); Put_Line ("Data  : " & To_String (New_Variable_Access_Type_Name) & ";");
          Put_Tabs (2); Put_Line ("C_Rem : aliased Interfaces.C.int;");
          Put_Tabs (2); Put_Line ("Index : aliased Interfaces.C.int;");
          Put_Tabs (1); Put_Line ("end record;");
-         Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & New_Variable_Iterator_Type_Name.To_String & ");");
+         Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & To_String (New_Variable_Iterator_Type_Name) & ");");
          Put_Line ("");
 
-         Generate_Classic_Iterator_Access_Type_Id_Name (Old_Name => Name.To_String,
+         Generate_Classic_Iterator_Access_Type_Id_Name (Old_Name => To_String (Name),
                                                         New_Name => New_Variable_Iterator_Access_Type_Name);
-         Put_Tabs (1); Put_Line ("type " & New_Variable_Iterator_Access_Type_Name.To_String & " is access all " &
-                                   New_Variable_Iterator_Type_Name.To_String & ";");
+         Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Iterator_Access_Type_Name) & " is access all " &
+                                   To_String (New_Variable_Iterator_Type_Name) & ";");
          Put_Line ("");
 
          Insert (This        => Original_Variable_Name_To_Adaified_Name.all,
@@ -659,8 +659,8 @@ package body XCB_Package_Creator is
          for J in X_Proto.Request.Fs.Child_Vector.Index_T range 1..Last_Index (Children) loop
             if Element (Children, J).Kind_Id = X_Proto.Request.Fs.Child_Value_Param then
                if
-                 Element (Children, J).V.Mask_Kind.Value.To_String = Variable_Type_Name and
-                 Element (Children, J).V.Mask_Name.Value.To_String = Variable_Name
+                 To_String (Element (Children, J).V.Mask_Kind.Value) = Variable_Type_Name and
+                 To_String (Element (Children, J).V.Mask_Name.Value) = Variable_Name
                then
                   return True;
                end if;
@@ -678,7 +678,7 @@ package body XCB_Package_Creator is
       is
          Is_First_Parameter : Boolean := True;
       begin
-         Put_Tabs (1); Put_Line ("function " & Function_Name.To_String);
+         Put_Tabs (1); Put_Line ("function " & To_String (Function_Name));
          Put_Tabs (1); Put_Line ("  (");
          Put_Tabs (2); Put ("C : Connection_Access_Type");
 
@@ -686,15 +686,15 @@ package body XCB_Package_Creator is
             case Element (Children, I).Kind_Id is
                when X_Proto.Request.Fs.Child_Field =>
                   if Element (Children, I).F.Kind.Exists then
-                     if not There_Is_No_Value_Param_With_Same_Name_And_Type (Variable_Name      => Element (Children, I).F.Name.Value.To_String,
-                                                                             Variable_Type_Name => Element (Children, I).F.Kind.Value.To_String,
+                     if not There_Is_No_Value_Param_With_Same_Name_And_Type (Variable_Name      => To_String (Element (Children, I).F.Name.Value),
+                                                                             Variable_Type_Name => To_String (Element (Children, I).F.Kind.Value),
                                                                              Children           => Children)
                      then
                         declare
                            Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                            Is_Success : Boolean;
                         begin
-                           Translate_Variable_Type_Name (Variable_Type_Name => Element (Children, I).F.Kind.Value.To_String,
+                           Translate_Variable_Type_Name (Variable_Type_Name => To_String (Element (Children, I).F.Kind.Value),
                                                          Is_Success         => Is_Success,
                                                          Translated_Name    => Variable_Type_Name);
 
@@ -702,7 +702,7 @@ package body XCB_Package_Creator is
                               declare
                                  Field_Name : X_Proto.Large_Bounded_String.T;
                               begin
-                                 Generate_Struct_Name (Old_Name => Element (Children, I).F.Name.Value.To_String,
+                                 Generate_Struct_Name (Old_Name => To_String (Element (Children, I).F.Name.Value),
                                                        New_Name => Field_Name);
                                  Put_Line (";");
                                  if Is_First_Parameter then
@@ -716,17 +716,17 @@ package body XCB_Package_Creator is
                                                        Key  => Element (Children, I).F.Enum.Value);
                                     begin
                                        if FER.Exists then
-                                          Put_Tabs (2); Put (Field_Name.To_String & " : " & To_String (FER.Element));
+                                          Put_Tabs (2); Put (To_String (Field_Name) & " : " & To_String (FER.Element));
                                        else
-                                          Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", could not find enum type name " & Element (Children, I).F.Enum.Value.To_String);
+                                          Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", could not find enum type name " & To_String (Element (Children, I).F.Enum.Value));
                                        end if;
                                     end;
                                  else
-                                    Put_Tabs (2); Put (Field_Name.To_String & " : " & Variable_Type_Name.To_String);
+                                    Put_Tabs (2); Put (To_String (Field_Name) & " : " & To_String (Variable_Type_Name));
                                  end if;
                               end;
                            else
-                              Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & Element (Children, I).F.Kind.Value.To_String);
+                              Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & To_String (Element (Children, I).F.Kind.Value));
                            end if;
                         end;
                      end if;
@@ -738,11 +738,11 @@ package body XCB_Package_Creator is
                   --                             declare
                   --                                Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                   --                             begin
-                  --                                Generate_Classic_Event_List_Type_Name (Enum_Name => Event.Name.Value.To_String,
+                  --                                Generate_Classic_Event_List_Type_Name (Enum_Name => To_String (Event.Name.Value),
                   --                                                                       List_Name => "Padding" & Aida.Strings.To_String (Padding_Number),
                   --                                                                       New_Name  => New_Variable_Type_Name);
                   --
-                  --                                Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is array (0.." &
+                  --                                Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is array (0.." &
                   --                                                          Aida.Strings.To_String (Integer (Event.Members.Element (I).P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
                   --                             end;
                   --                          end if;
@@ -758,7 +758,7 @@ package body XCB_Package_Creator is
                         Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                         Is_Success : Boolean;
                      begin
-                        Translate_Classic_Variable_Type_Name (Variable_Type_Name => Element (Children, I).V.Mask_Kind.Value.To_String,
+                        Translate_Classic_Variable_Type_Name (Variable_Type_Name => To_String (Element (Children, I).V.Mask_Kind.Value),
                                                               Is_Success         => Is_Success,
                                                               Translated_Name    => Variable_Type_Name);
 
@@ -766,26 +766,26 @@ package body XCB_Package_Creator is
                            declare
                               Field_Name : X_Proto.Large_Bounded_String.T;
                            begin
-                              Generate_Struct_Name (Old_Name => Element (Children, I).V.Mask_Name.Value.To_String,
+                              Generate_Struct_Name (Old_Name => To_String (Element (Children, I).V.Mask_Name.Value),
                                                     New_Name => Field_Name);
                               Put_Line (";");
                               if Is_First_Parameter then
                                  Is_First_Parameter := False;
                               end if;
-                              Put_Tabs (2); Put_Line (Field_Name.To_String & " : " & Variable_Type_Name.To_String & ";");
+                              Put_Tabs (2); Put_Line (To_String (Field_Name) & " : " & To_String (Variable_Type_Name) & ";");
                            end;
 
                            declare
                               Field_Name : X_Proto.Large_Bounded_String.T;
                            begin
-                              Generate_Struct_Name (Old_Name => Element (Children, I).V.List_Name.Value.To_String,
+                              Generate_Struct_Name (Old_Name => To_String (Element (Children, I).V.List_Name.Value),
                                                     New_Name => Field_Name);
 
-                              Put_Tabs (2); Put (Field_Name.To_String & " : Value_List_Array");
+                              Put_Tabs (2); Put (To_String (Field_Name) & " : Value_List_Array");
                            end;
                         else
                            Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Request " & Request_Name &
-                                                   " has  unexpected or unknown field type name " & Element (Children, I).V.Mask_Kind.Value.To_String);
+                                                   " has  unexpected or unknown field type name " & To_String (Element (Children, I).V.Mask_Kind.Value));
                         end if;
                      end;
                   else
@@ -804,33 +804,33 @@ package body XCB_Package_Creator is
                         Field_Name               : X_Proto.Large_Bounded_String.T;
                         Variable_Array_Type_Name : X_Proto.Large_Bounded_String.T;
                      begin
-                        Generate_Classic_Array_Type_Name (Prefix_Name => Element (Children, I).L.Kind.Value.To_String,
+                        Generate_Classic_Array_Type_Name (Prefix_Name => To_String (Element (Children, I).L.Kind.Value),
                                                           Field_Name  => "",
                                                           New_Name    => Variable_Array_Type_Name);
-                        Generate_Struct_Name (Old_Name => Element (Children, I).L.Name.Value.To_String,
+                        Generate_Struct_Name (Old_Name => To_String (Element (Children, I).L.Name.Value),
                                               New_Name => Field_Name);
                         Put_Line (";");
                         if Is_Empty (Element (Children, I).L.Members.all) then
                            -- Assuming the refence indicates length is already specified
-                           Put_Tabs (2); Put_Line (Field_Name.To_String & "_Length : Interfaces.Unsigned_32;");
+                           Put_Tabs (2); Put_Line (To_String (Field_Name) & "_Length : Interfaces.Unsigned_32;");
                         end if;
-                        if Element (Children, I).L.Kind.Value.To_String = "char" then
-                           Put_Tabs (2); Put (Field_Name.To_String & " : Interfaces.C.Strings.chars_ptr");
+                        if To_String (Element (Children, I).L.Kind.Value) = "char" then
+                           Put_Tabs (2); Put (To_String (Field_Name) & " : Interfaces.C.Strings.chars_ptr");
                         elsif
-                          Element (Children, I).L.Kind.Value.To_String = "void" or
-                          Element (Children, I).L.Kind.Value.To_String = "STR"
+                          To_String (Element (Children, I).L.Kind.Value) = "void" or
+                          To_String (Element (Children, I).L.Kind.Value) = "STR"
                         then
-                           Put_Tabs (2); Put (Field_Name.To_String & " : System.Address");
-                        elsif Element (Children, I).L.Kind.Value.To_String = "CARD8" then
-                           Put_Tabs (2); Put (Field_Name.To_String & " : access Interfaces.Unsigned_8");
-                        elsif Element (Children, I).L.Kind.Value.To_String = "KEYSYM" then
-                           Put_Tabs (2); Put (Field_Name.To_String & " : access Keysym_Type");
-                        elsif Element (Children, I).L.Kind.Value.To_String = "ATOM" then
-                           Put_Tabs (2); Put (Field_Name.To_String & " : access Atom_Id_Type");
-                        elsif Element (Children, I).L.Kind.Value.To_String = "KEYCODE" then
-                           Put_Tabs (2); Put (Field_Name.To_String & " : access Keycode_Type");
+                           Put_Tabs (2); Put (To_String (Field_Name) & " : System.Address");
+                        elsif To_String (Element (Children, I).L.Kind.Value) = "CARD8" then
+                           Put_Tabs (2); Put (To_String (Field_Name) & " : access Interfaces.Unsigned_8");
+                        elsif To_String (Element (Children, I).L.Kind.Value) = "KEYSYM" then
+                           Put_Tabs (2); Put (To_String (Field_Name) & " : access Keysym_Type");
+                        elsif To_String (Element (Children, I).L.Kind.Value) = "ATOM" then
+                           Put_Tabs (2); Put (To_String (Field_Name) & " : access Atom_Id_Type");
+                        elsif To_String (Element (Children, I).L.Kind.Value) = "KEYCODE" then
+                           Put_Tabs (2); Put (To_String (Field_Name) & " : access Keycode_Type");
                         else
-                           Put_Tabs (2); Put (Field_Name.To_String & " : " & Variable_Array_Type_Name.To_String);
+                           Put_Tabs (2); Put (To_String (Field_Name) & " : " & To_String (Variable_Array_Type_Name));
                         end if;
                      end;
                   end if;
@@ -840,8 +840,8 @@ package body XCB_Package_Creator is
          end loop;
 
          Put_Line ("");
-         Put_Tabs (1); Put_Line ("  ) return " & Reply_Type_Name.To_String & ";");
-         Put_Tabs (1); Put_Line ("pragma Import (C, " & Function_Name.To_String & ", """ & C_Function_Name.To_String & """);");
+         Put_Tabs (1); Put_Line ("  ) return " & To_String (Reply_Type_Name) & ";");
+         Put_Tabs (1); Put_Line ("pragma Import (C, " & To_String (Function_Name) & ", """ & To_String (C_Function_Name) & """);");
          Put_Line ("");
       end Generate_Request_With_Reply_Code;
 
@@ -868,7 +868,7 @@ package body XCB_Package_Creator is
                Translated_Name : X_Proto.Large_Bounded_String.T;
             begin
                if F.Enum.Exists then
-                  Translate_Classic_Variable_Type_Name (Variable_Type_Name => F.Kind.Value.To_String,
+                  Translate_Classic_Variable_Type_Name (Variable_Type_Name => To_String (F.Kind.Value),
                                                         Is_Success         => Is_Success,
                                                         Translated_Name    => Translated_Name);
 
@@ -879,7 +879,7 @@ package body XCB_Package_Creator is
                      begin
                         if FER.Exists then
                            if FER.Element /= Translated_Name then
-                              Ada.Text_IO.Put_Line ("Expected: '" & Translated_Name.To_String & "', but was: " & To_String (FER.Element) & "'");
+                              Ada.Text_IO.Put_Line ("Expected: '" & To_String (Translated_Name) & "', but was: " & To_String (FER.Element) & "'");
                            end if;
                         else
                            Include (This        => Enum_Name_To_Size_Identifier_Map.all,
@@ -888,7 +888,7 @@ package body XCB_Package_Creator is
                         end if;
                      end;
                   else
-                     Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location  & ", could not translate " & F.Kind.Value.To_String);
+                     Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location  & ", could not translate " & To_String (F.Kind.Value));
                   end if;
                else
                   null; -- Far from all fields are expected to have an enum specified
@@ -954,11 +954,11 @@ package body XCB_Package_Creator is
                         declare
                            Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                         begin
-                           Generate_Classic_Array_Type_Name (Prefix_Name => Struct.Name.Value.To_String,
+                           Generate_Classic_Array_Type_Name (Prefix_Name => To_String (Struct.Name.Value),
                                                              Field_Name  => "Padding" & To_String (Padding_Number),
                                                              New_Name    => Variable_Type_Name);
 
-                           Put_Tabs (1); Put_Line ("type " & Variable_Type_Name.To_String & " is array (0.." &
+                           Put_Tabs (1); Put_Line ("type " & To_String (Variable_Type_Name) & " is array (0.." &
                                                      To_String (Aida.Int32.T (Child.P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
                         end;
                      end if;
@@ -992,7 +992,7 @@ package body XCB_Package_Creator is
                               Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                               Is_Success : Boolean;
                            begin
-                              Translate_Variable_Type_Name (Variable_Type_Name => Child.F.Kind.Value.To_String,
+                              Translate_Variable_Type_Name (Variable_Type_Name => To_String (Child.F.Kind.Value),
                                                             Is_Success         => Is_Success,
                                                             Translated_Name    => Variable_Type_Name);
 
@@ -1000,12 +1000,12 @@ package body XCB_Package_Creator is
                                  declare
                                     Field_Name : X_Proto.Large_Bounded_String.T;
                                  begin
-                                    Generate_Struct_Name (Old_Name => Child.F.Name.Value.To_String,
+                                    Generate_Struct_Name (Old_Name => To_String (Child.F.Name.Value),
                                                           New_Name => Field_Name);
-                                    Put_Tabs (2); Put_Line (Field_Name.To_String & " : aliased " & Variable_Type_Name.To_String & ";");
+                                    Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_Type_Name) & ";");
                                  end;
                               else
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & Child.F.Kind.Value.To_String);
+                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & To_String (Child.F.Kind.Value));
                               end if;
                            end;
                         else
@@ -1018,11 +1018,11 @@ package body XCB_Package_Creator is
                            declare
                               New_Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                            begin
-                              Generate_Classic_Array_Type_Name (Prefix_Name => Struct.Name.Value.To_String,
+                              Generate_Classic_Array_Type_Name (Prefix_Name => To_String (Struct.Name.Value),
                                                                 Field_Name  => "Padding" & To_String (Padding_Number),
                                                                 New_Name    => New_Variable_Type_Name);
 
-                              Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
+                              Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased " & To_String (New_Variable_Type_Name) & ";");
                            end;
                         end if;
                         Padding_Number := Padding_Number + 1;
@@ -1032,40 +1032,40 @@ package body XCB_Package_Creator is
                end Handle_Struct_Child;
 
             begin
-               Generate_Struct_Name (Old_Name => Struct.Name.Value.To_String,
+               Generate_Struct_Name (Old_Name => To_String (Struct.Name.Value),
                                      New_Name => New_Variable_Name);
 
-               Generate_Classic_Type_Name (Old_Name => Struct.Name.Value.To_String,
+               Generate_Classic_Type_Name (Old_Name => To_String (Struct.Name.Value),
                                            New_Name => New_Variable_Type_Name);
-               Generate_Classic_Access_Type_Name (Old_Name => Struct.Name.Value.To_String,
+               Generate_Classic_Access_Type_Name (Old_Name => To_String (Struct.Name.Value),
                                                   New_Name => New_Variable_Access_Type_Name);
 
-               Generate_Classic_Iterator_Type_Name (Old_Name => Struct.Name.Value.To_String,
+               Generate_Classic_Iterator_Type_Name (Old_Name => To_String (Struct.Name.Value),
                                                     New_Name => New_Variable_Iterator_Type_Name);
 
-               Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is record");
+               Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is record");
 
                for I in X_Proto.Struct.Fs.Member_Vector.Index_T range 1..Last_Index (Struct.Members.all) loop
                   Handle_Struct_Child (Element (Struct.Members.all, I).all);
                end loop;
 
                Put_Tabs (1); Put_Line ("end record;");
-               Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & New_Variable_Type_Name.To_String & ");");
+               Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & To_String (New_Variable_Type_Name) & ");");
                Put_Line ("");
-               Put_Tabs (1); Put_Line ("type " & New_Variable_Access_Type_Name.To_String & " is access all " & New_Variable_Type_Name.To_String & ";");
+               Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Access_Type_Name) & " is access all " & To_String (New_Variable_Type_Name) & ";");
                Put_Line ("");
-               Put_Tabs (1); Put_Line ("type " & New_Variable_Iterator_Type_Name.To_String & " is record");
-               Put_Tabs (2); Put_Line ("Data  : " & New_Variable_Access_Type_Name.To_String & ";");
+               Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Iterator_Type_Name) & " is record");
+               Put_Tabs (2); Put_Line ("Data  : " & To_String (New_Variable_Access_Type_Name) & ";");
                Put_Tabs (2); Put_Line ("C_Rem : aliased Interfaces.C.int;");
                Put_Tabs (2); Put_Line ("Index : aliased Interfaces.C.int;");
                Put_Tabs (1); Put_Line ("end record;");
-               Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & New_Variable_Iterator_Type_Name.To_String & ");");
+               Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & To_String (New_Variable_Iterator_Type_Name) & ");");
                Put_Line ("");
 
-               Generate_Classic_Iterator_Access_Type_Name (Old_Name => Struct.Name.Value.To_String,
+               Generate_Classic_Iterator_Access_Type_Name (Old_Name => To_String (Struct.Name.Value),
                                                            New_Name => New_Variable_Iterator_Access_Type_Name);
-               Put_Tabs (1); Put_Line ("type " & New_Variable_Iterator_Access_Type_Name.To_String & " is access all " &
-                                         New_Variable_Iterator_Type_Name.To_String & ";");
+               Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Iterator_Access_Type_Name) & " is access all " &
+                                         To_String (New_Variable_Iterator_Type_Name) & ";");
                Put_Line ("");
 
                Insert (This        => Original_Variable_Name_To_Adaified_Name.all,
@@ -1113,10 +1113,10 @@ package body XCB_Package_Creator is
                declare
                   Constant_Name : X_Proto.Large_Bounded_String.T;
                begin
-                  Generate_Struct_Name (Old_Name => Event.Name.Value.To_String,
+                  Generate_Struct_Name (Old_Name => To_String (Event.Name.Value),
                                         New_Name => Constant_Name);
-                  Constant_Name.Initialize ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (Constant_Name.To_String));
-                  Put_Tabs (1); Put_Line (Constant_Name.To_String & " : constant :=" & Event.Number.Value'Img & ";");
+                  Initialize (Constant_Name, "XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (To_String (Constant_Name)));
+                  Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Event.Number.Value'Img & ";");
                end;
             else
                Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", event without name or number!?");
@@ -1144,10 +1144,10 @@ package body XCB_Package_Creator is
                declare
                   Constant_Name : X_Proto.Large_Bounded_String.T;
                begin
-                  Generate_Struct_Name (Old_Name => Event_Copy.Name.Value.To_String,
+                  Generate_Struct_Name (Old_Name => To_String (Event_Copy.Name.Value),
                                         New_Name => Constant_Name);
-                  Constant_Name.Initialize ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (Constant_Name.To_String));
-                  Put_Tabs (1); Put_Line (Constant_Name.To_String & " : constant :=" & Event_Copy.Number.Value'Img & ";");
+                  Initialize (Constant_Name, "XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (To_String (Constant_Name)));
+                  Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Event_Copy.Number.Value'Img & ";");
                end;
             else
                Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", event copy without name or number!?");
@@ -1173,10 +1173,10 @@ package body XCB_Package_Creator is
                declare
                   Constant_Name : X_Proto.Large_Bounded_String.T;
                begin
-                  Generate_Struct_Name (Old_Name => Error.Name.Value.To_String,
+                  Generate_Struct_Name (Old_Name => To_String (Error.Name.Value),
                                         New_Name => Constant_Name);
-                  Constant_Name.Initialize ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (Constant_Name.To_String));
-                  Put_Tabs (1); Put_Line (Constant_Name.To_String & " : constant :=" & Error.Number.Value'Img & ";");
+                  Initialize (Constant_Name, "XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (To_String (Constant_Name)));
+                  Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Error.Number.Value'Img & ";");
                end;
             else
                Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error without name or number!?");
@@ -1202,10 +1202,10 @@ package body XCB_Package_Creator is
                declare
                   Constant_Name : X_Proto.Large_Bounded_String.T;
                begin
-                  Generate_Struct_Name (Old_Name => Error_Copy.Name.Value.To_String,
+                  Generate_Struct_Name (Old_Name => To_String (Error_Copy.Name.Value),
                                         New_Name => Constant_Name);
-                  Constant_Name.Initialize ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (Constant_Name.To_String));
-                  Put_Tabs (1); Put_Line (Constant_Name.To_String & " : constant :=" & Error_Copy.Number.Value'Img & ";");
+                  Initialize (Constant_Name, "XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (To_String (Constant_Name)));
+                  Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Error_Copy.Number.Value'Img & ";");
                end;
             else
                Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error copy without name or number!?");
@@ -1233,10 +1233,10 @@ package body XCB_Package_Creator is
                declare
                   Constant_Name : X_Proto.Large_Bounded_String.T;
                begin
-                  Generate_Struct_Name (Old_Name => Request.Name.Value.To_String,
+                  Generate_Struct_Name (Old_Name => To_String (Request.Name.Value),
                                         New_Name => Constant_Name);
-                  Constant_Name.Initialize ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (Constant_Name.To_String));
-                  Put_Tabs (1); Put_Line (Constant_Name.To_String & " : constant :=" & Request.Op_Code.Value'Img & ";");
+                  Initialize (Constant_Name, "XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (To_String (Constant_Name)));
+                  Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Request.Op_Code.Value'Img & ";");
                end;
             else
                Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", event without name or number!?");
@@ -1264,7 +1264,7 @@ package body XCB_Package_Creator is
                                        "X_Id_Type",
                                        How => Use_The_New_Keyword);
 
-               Searched_For.Initialize (X_Id_Union.Name.Value.To_String);
+               Initialize (Searched_For, To_String (X_Id_Union.Name.Value));
 
                declare
                   FER : constant Original_Name_To_Adaified_Name_P.Find_Element_Result_T :=
@@ -1284,9 +1284,9 @@ package body XCB_Package_Creator is
                                     X_Id : X_Proto.X_Id.Ptr renames Element (Xcb.X_Ids.all, X_Id_Index);
                                  begin
                                     if X_Id.Name.Exists then
-                                       if Kind.Value.Value.To_String = X_Id.Name.Value.To_String then
+                                       if To_String (Kind.Value.Value) = To_String (X_Id.Name.Value) then
                                           Generate_Code_For_X_Id (X_Id.Name.Value,
-                                                                  X_Id_Union_Type_Name.To_String,
+                                                                  To_String (X_Id_Union_Type_Name),
                                                                   How => Use_The_Subtype_Keyword);
 
                                           Append (Processed_X_Ids.all, X_Id.Name.Value);
@@ -1299,12 +1299,12 @@ package body XCB_Package_Creator is
                                  end;
                               end loop;
                            else
-                              Ada.Text_IO.Put_Line ("xidunion " & X_Id_Union.Name.Value.To_String & " has errors");
+                              Ada.Text_IO.Put_Line ("xidunion " & To_String (X_Id_Union.Name.Value) & " has errors");
                            end if;
                         end;
                      end loop;
                   else
-                     Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Failed to translate: " & Searched_For.To_String);
+                     Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Failed to translate: " & To_String (Searched_For));
                   end if;
                end;
             else
@@ -1331,18 +1331,18 @@ package body XCB_Package_Creator is
                   Enum_Prefix_Name       : X_Proto.Large_Bounded_String.T;
                   Enum_Value_Name        : X_Proto.Large_Bounded_String.T;
                begin
-                  Generate_Classic_Type_Name (Old_Name => Enum.Name.Value.To_String,
+                  Generate_Classic_Type_Name (Old_Name => To_String (Enum.Name.Value),
                                               New_Name => New_Variable_Type_Name);
 
-                  Generate_Struct_Name (Old_Name => Enum.Name.Value.To_String,
+                  Generate_Struct_Name (Old_Name => To_String (Enum.Name.Value),
                                         New_Name => Enum_Prefix_Name);
 
-                  if Enum.Name.Value.To_String = "Atom" then
+                  if To_String (Enum.Name.Value) = "Atom" then
                      for I in X_Proto.Enum.Fs.Item_Vector.Index_T range 1..Last_Index (Enum.Items.all) loop
-                        Generate_Struct_Name (Old_Name => Element (Enum.Items.all, I).Name.Value.To_String,
+                        Generate_Struct_Name (Old_Name => To_String (Element (Enum.Items.all, I).Name.Value),
                                               New_Name => Enum_Value_Name);
 
-                        Put_Tabs (1); Put ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (Enum_Prefix_Name.To_String & "_" & Enum_Value_Name.To_String) & " : constant Atom_Id_Type :=");
+                        Put_Tabs (1); Put ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (To_String (Enum_Prefix_Name) & "_" & To_String (Enum_Value_Name)) & " : constant Atom_Id_Type :=");
                         case Element (Enum.Items.all, I).Kind_Id is
                            when X_Proto.Item.Fs.Not_Specified =>
                               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", should never happen");
@@ -1362,13 +1362,13 @@ package body XCB_Package_Creator is
                           Find_Element (Enum_Name_To_Size_Identifier_Map.all, Enum.Name.Value);
                      begin
                         if FER.Exists then
-                           Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new " & To_String (FER.Element) &";");
+                           Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is new " & To_String (FER.Element) &";");
                         else
                            if Largest_Value <= 127 then
-                              Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new Interfaces.Unsigned_8;");
+                              Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is new Interfaces.Unsigned_8;");
                               Append (Eight_Bit_Variable_Type_Names.all, Enum.Name.Value);
                            else
-                              Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new Interfaces.Unsigned_32;");
+                              Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is new Interfaces.Unsigned_32;");
                            end if;
                         end if;
 
@@ -1378,11 +1378,11 @@ package body XCB_Package_Creator is
 
 
                         for I in X_Proto.Enum.Fs.Item_Vector.Index_T range 1..Last_Index (Enum.Items.all) loop
-                           Generate_Struct_Name (Old_Name => Element (Enum.Items.all, I).Name.Value.To_String,
+                           Generate_Struct_Name (Old_Name => To_String (Element (Enum.Items.all, I).Name.Value),
                                                  New_Name => Enum_Value_Name);
 
-                           Put_Tabs (1); Put ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (Enum_Prefix_Name.To_String & "_" & Enum_Value_Name.To_String) & " : constant " &
-                                                New_Variable_Type_Name.To_String & " :=");
+                           Put_Tabs (1); Put ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (To_String (Enum_Prefix_Name) & "_" & To_String (Enum_Value_Name)) & " : constant " &
+                                                To_String (New_Variable_Type_Name) & " :=");
                            case Element (Enum.Items.all, I).Kind_Id is
                               when X_Proto.Item.Fs.Not_Specified =>
                                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", should never happen");
@@ -1422,38 +1422,38 @@ package body XCB_Package_Creator is
             Is_Success : Boolean;
          begin
             if Type_Definition.Old_Name.Exists and Type_Definition.New_Name.Exists then
-               Translate_Classic_Variable_Type_Name (Variable_Type_Name => Type_Definition.Old_Name.Value.To_String,
+               Translate_Classic_Variable_Type_Name (Variable_Type_Name => To_String (Type_Definition.Old_Name.Value),
                                                      Is_Success         => Is_Success,
                                                      Translated_Name    => Old_Variable_Type_Name);
 
                if Is_Success then
-                  Generate_Struct_Name (Old_Name => Type_Definition.New_Name.Value.To_String,
+                  Generate_Struct_Name (Old_Name => To_String (Type_Definition.New_Name.Value),
                                         New_Name => New_Variable_Name);
 
-                  Generate_Classic_Type_Name (Old_Name => Type_Definition.New_Name.Value.To_String,
+                  Generate_Classic_Type_Name (Old_Name => To_String (Type_Definition.New_Name.Value),
                                               New_Name => New_Variable_Type_Name);
-                  Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is new " & Old_Variable_Type_Name.To_String & ";");
+                  Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is new " & To_String (Old_Variable_Type_Name) & ";");
                   Put_Line ("");
 
-                  Generate_Classic_Access_Type_Name (Old_Name => Type_Definition.New_Name.Value.To_String,
+                  Generate_Classic_Access_Type_Name (Old_Name => To_String (Type_Definition.New_Name.Value),
                                                      New_Name => New_Variable_Access_Type_Name);
-                  Put_Tabs (1); Put_Line ("type " & New_Variable_Access_Type_Name.To_String & " is access all " & New_Variable_Type_Name.To_String & ";");
+                  Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Access_Type_Name) & " is access all " & To_String (New_Variable_Type_Name) & ";");
                   Put_Line ("");
 
-                  Generate_Classic_Iterator_Type_Name (Old_Name => Type_Definition.New_Name.Value.To_String,
+                  Generate_Classic_Iterator_Type_Name (Old_Name => To_String (Type_Definition.New_Name.Value),
                                                        New_Name => New_Variable_Iterator_Type_Name);
-                  Put_Tabs (1); Put_Line ("type " & New_Variable_Iterator_Type_Name.To_String & " is record");
-                  Put_Tabs (2); Put_Line ("Data  : " & New_Variable_Access_Type_Name.To_String & ";");
+                  Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Iterator_Type_Name) & " is record");
+                  Put_Tabs (2); Put_Line ("Data  : " & To_String (New_Variable_Access_Type_Name) & ";");
                   Put_Tabs (2); Put_Line ("C_Rem : aliased Interfaces.C.int;");
                   Put_Tabs (2); Put_Line ("Index : aliased Interfaces.C.int;");
                   Put_Tabs (1); Put_Line ("end record;");
-                  Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & New_Variable_Iterator_Type_Name.To_String & ");");
+                  Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & To_String (New_Variable_Iterator_Type_Name) & ");");
                   Put_Line ("");
 
-                  Generate_Classic_Iterator_Access_Type_Name (Old_Name => Type_Definition.New_Name.Value.To_String,
+                  Generate_Classic_Iterator_Access_Type_Name (Old_Name => To_String (Type_Definition.New_Name.Value),
                                                               New_Name => New_Variable_Iterator_Access_Type_Name);
-                  Put_Tabs (1); Put_Line ("type " & New_Variable_Iterator_Access_Type_Name.To_String & " is access all " &
-                                            New_Variable_Iterator_Type_Name.To_String & ";");
+                  Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Iterator_Access_Type_Name) & " is access all " &
+                                            To_String (New_Variable_Iterator_Type_Name) & ";");
                   Put_Line ("");
 
                   Insert (This        => Original_Variable_Name_To_Adaified_Name.all,
@@ -1473,18 +1473,18 @@ package body XCB_Package_Creator is
                           New_Element => New_Variable_Iterator_Access_Type_Name);
 
                   if
-                    Type_Definition.Old_Name.Value.To_String = "CARD8" or
-                    Type_Definition.Old_Name.Value.To_String = "BYTE" or
+                    To_String (Type_Definition.Old_Name.Value) = "CARD8" or
+                    To_String (Type_Definition.Old_Name.Value) = "BYTE" or
                     Contains (Eight_Bit_Variable_Type_Names.all, Type_Definition.Old_Name.Value)
                   then
                      Append (Eight_Bit_Variable_Type_Names.all, Type_Definition.New_Name.Value);
                   elsif
-                    Type_Definition.Old_Name.Value.To_String = "CARD32"
+                    To_String (Type_Definition.Old_Name.Value) = "CARD32"
                   then
                      Append (Thirty_Two_Bit_Variable_Type_Names.all, Type_Definition.New_Name.Value);
                   end if;
                else
-                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Failed to translate: " & Type_Definition.Old_Name.Value.To_String);
+                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Failed to translate: " & To_String (Type_Definition.Old_Name.Value));
                end if;
             else
                Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
@@ -1516,54 +1516,54 @@ package body XCB_Package_Creator is
                      case Element (Union.Children.all, I).Kind_Id is
                      when X_Proto.Union.Fs.Child_List =>
                         if Last_Index (Element (Union.Children.all, I).L.Members.all) = 1 then
-                           Generate_Classic_Array_Type_Name (Prefix_Name => Union.Name.Value.To_String,
-                                                             Field_Name  => Element (Union.Children.all, I).L.Name.Value.To_String,
+                           Generate_Classic_Array_Type_Name (Prefix_Name => To_String (Union.Name.Value),
+                                                             Field_Name  => To_String (Element (Union.Children.all, I).L.Name.Value),
                                                              New_Name    => New_Variable_Type_Name);
 
                            case Element (Element (Union.Children.all, I).L.Members.all, 1).Kind_Id is
                               when X_Proto.List.Fs.List_Member_Kind_Field_Reference =>
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & Union.Name.Value.To_String & " with list field child is unimplemented.");
+                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & To_String (Union.Name.Value) & " with list field child is unimplemented.");
                               when X_Proto.List.Fs.List_Member_Kind_Value =>
                                  declare
                                     Is_Success : Boolean;
                                     N : X_Proto.Large_Bounded_String.T;
                                  begin
-                                    Translate_Classic_Variable_Type_Name (Variable_Type_Name => Element (Union.Children.all, I).L.Kind.Value.To_String,
+                                    Translate_Classic_Variable_Type_Name (Variable_Type_Name => To_String (Element (Union.Children.all, I).L.Kind.Value),
                                                                           Is_Success         => Is_Success,
                                                                           Translated_Name    => N);
 
                                     if Is_Success then
-                                       Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is array (0.." &
-                                                                 To_String (Aida.Int32.T (Element (Element (Union.Children.all, I).L.Members.all, 1).Value - 1)) & ") of aliased " & N.To_String & ";");
+                                       Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is array (0.." &
+                                                                 To_String (Aida.Int32.T (Element (Element (Union.Children.all, I).L.Members.all, 1).Value - 1)) & ") of aliased " & To_String (N) & ";");
                                     else
-                                       Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & Union.Name.Value.To_String & ", failed to identify kind of array item: " &
-                                                               Element (Union.Children.all, I).L.Kind.Value.To_String);
+                                       Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & To_String (Union.Name.Value) & ", failed to identify kind of array item: " &
+                                                               To_String (Element (Union.Children.all, I).L.Kind.Value));
                                     end if;
                                  end;
                               when X_Proto.List.Fs.List_Member_Kind_Operation =>
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & Union.Name.Value.To_String & " with list kind child is unimplemented.");
+                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & To_String (Union.Name.Value) & " with list kind child is unimplemented.");
                            end case;
 
                         else
-                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & Union.Name.Value.To_String & " contains list child with" &
+                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & To_String (Union.Name.Value) & " contains list child with" &
                                                    Last_Index (Element (Union.Children.all, I).L.Members.all)'Img & " number fo children");
                         end if;
                      end case;
                   end loop;
 
-                  Generate_Classic_Type_Name (Old_Name => Union.Name.Value.To_String,
+                  Generate_Classic_Type_Name (Old_Name => To_String (Union.Name.Value),
                                               New_Name => New_Variable_Type_Name);
 
-                  Generate_Classic_Access_Type_Name (Old_Name => Union.Name.Value.To_String,
+                  Generate_Classic_Access_Type_Name (Old_Name => To_String (Union.Name.Value),
                                                      New_Name => New_Variable_Access_Type_Name);
 
-                  Generate_Classic_Iterator_Type_Name (Old_Name => Union.Name.Value.To_String,
+                  Generate_Classic_Iterator_Type_Name (Old_Name => To_String (Union.Name.Value),
                                                        New_Name => New_Variable_Iterator_Type_Name);
 
-                  Generate_Classic_Iterator_Access_Type_Name (Old_Name => Union.Name.Value.To_String,
+                  Generate_Classic_Iterator_Access_Type_Name (Old_Name => To_String (Union.Name.Value),
                                                               New_Name => New_Variable_Iterator_Access_Type_Name);
 
-                  Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " (Discriminant : Natural := 0) is record");
+                  Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " (Discriminant : Natural := 0) is record");
                   Put_Tabs (2); Put_Line ("case Discriminant is");
 
                   for I in X_Proto.Union.Fs.Child_Vector.Index_T range 1..Last_Index (Union.Children.all) loop
@@ -1572,22 +1572,22 @@ package body XCB_Package_Creator is
                         declare
                            Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                         begin
-                           Generate_Classic_Array_Type_Name (Prefix_Name => Union.Name.Value.To_String,
-                                                             Field_Name  => Element (Union.Children.all, I).L.Name.Value.To_String,
+                           Generate_Classic_Array_Type_Name (Prefix_Name => To_String (Union.Name.Value),
+                                                             Field_Name  => To_String (Element (Union.Children.all, I).L.Name.Value),
                                                              New_Name    => Variable_Type_Name);
 
                            declare
                               Field_Name : X_Proto.Large_Bounded_String.T;
                            begin
-                              Generate_Struct_Name (Old_Name => Element (Union.Children.all, I).L.Name.Value.To_String,
+                              Generate_Struct_Name (Old_Name => To_String (Element (Union.Children.all, I).L.Name.Value),
                                                     New_Name => Field_Name);
 
                               if Last_Index (Union.Children.all) /= I then
                                  Put_Tabs (3); Put_Line ("when" & Discriminant_Number'Img & " =>");
-                                 Put_Tabs (4); Put_Line (Field_Name.To_String & " : aliased " & Variable_Type_Name.To_String & ";");
+                                 Put_Tabs (4); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_Type_Name) & ";");
                               else
                                  Put_Tabs (3); Put_Line ("when others =>");
-                                 Put_Tabs (4); Put_Line (Field_Name.To_String & " : aliased " & Variable_Type_Name.To_String & ";");
+                                 Put_Tabs (4); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_Type_Name) & ";");
                               end if;
                               Discriminant_Number := Discriminant_Number + 1;
                            end;
@@ -1597,21 +1597,21 @@ package body XCB_Package_Creator is
 
                   Put_Tabs (2); Put_Line ("end case;");
                   Put_Tabs (1); Put_Line ("end record;");
-                  Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & New_Variable_Type_Name.To_String & ");");
-                  Put_Tabs (1); Put_Line ("pragma Unchecked_Union (" & New_Variable_Type_Name.To_String & ");");
+                  Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & To_String (New_Variable_Type_Name) & ");");
+                  Put_Tabs (1); Put_Line ("pragma Unchecked_Union (" & To_String (New_Variable_Type_Name) & ");");
                   Put_Tabs (1); Put_Line ("");
-                  Put_Tabs (1); Put_Line ("type " & New_Variable_Access_Type_Name.To_String & " is access all " & New_Variable_Type_Name.To_String & ";");
+                  Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Access_Type_Name) & " is access all " & To_String (New_Variable_Type_Name) & ";");
                   Put_Line ("");
-                  Put_Tabs (1); Put_Line ("type " & New_Variable_Iterator_Type_Name.To_String & " is record");
-                  Put_Tabs (2); Put_Line ("Data  : " & New_Variable_Access_Type_Name.To_String & ";");
+                  Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Iterator_Type_Name) & " is record");
+                  Put_Tabs (2); Put_Line ("Data  : " & To_String (New_Variable_Access_Type_Name) & ";");
                   Put_Tabs (2); Put_Line ("C_Rem : aliased Interfaces.C.int;");
                   Put_Tabs (2); Put_Line ("Index : aliased Interfaces.C.int;");
                   Put_Tabs (1); Put_Line ("end record;");
-                  Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & New_Variable_Iterator_Type_Name.To_String & ");");
+                  Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & To_String (New_Variable_Iterator_Type_Name) & ");");
                   Put_Line ("");
 
-                  Put_Tabs (1); Put_Line ("type " & New_Variable_Iterator_Access_Type_Name.To_String & " is access all " &
-                                            New_Variable_Iterator_Type_Name.To_String & ";");
+                  Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Iterator_Access_Type_Name) & " is access all " &
+                                            To_String (New_Variable_Iterator_Type_Name) & ";");
                   Put_Line ("");
 
 
@@ -1648,11 +1648,11 @@ package body XCB_Package_Creator is
                         null;
                      when X_Proto.Event.Fs.Event_Member_Pad =>
                         if Element (Event.Members.all, I).P.Bytes.Value > 1 then
-                           Generate_Classic_Event_List_Type_Name (Enum_Name => Event.Name.Value.To_String,
+                           Generate_Classic_Event_List_Type_Name (Enum_Name => To_String (Event.Name.Value),
                                                                   List_Name => "Padding" & To_String (Padding_Number),
                                                                   New_Name  => New_Variable_Type_Name);
 
-                           Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is array (0.." &
+                           Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is array (0.." &
                                                      To_String (Aida.Int32.T (Element (Event.Members.all, I).P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
                         end if;
                         Padding_Number := Padding_Number  + 1;
@@ -1660,36 +1660,36 @@ package body XCB_Package_Creator is
                         null;
                      when X_Proto.Event.Fs.Event_Member_List =>
                         if Last_Index (Element (Event.Members.all, I).L.Members.all) = 1 then
-                           Generate_Classic_Event_List_Type_Name (Enum_Name => Event.Name.Value.To_String,
-                                                                  List_Name => Element (Event.Members.all, I).L.Name.Value.To_String,
+                           Generate_Classic_Event_List_Type_Name (Enum_Name => To_String (Event.Name.Value),
+                                                                  List_Name => To_String (Element (Event.Members.all, I).L.Name.Value),
                                                                   New_Name  => New_Variable_Type_Name);
 
                            case Element (Element (Event.Members.all, I).L.Members.all, 1).Kind_Id is
                               when X_Proto.List.Fs.List_Member_Kind_Field_Reference =>
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & Event.Name.Value.To_String & " with list field child is unimplemented.");
+                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Event.Name.Value) & " with list field child is unimplemented.");
                               when X_Proto.List.Fs.List_Member_Kind_Value =>
                                  declare
                                     Is_Success : Boolean;
                                     N : X_Proto.Large_Bounded_String.T;
                                  begin
-                                    Translate_Classic_Variable_Type_Name (Variable_Type_Name => Element (Event.Members.all, I).L.Kind.Value.To_String,
+                                    Translate_Classic_Variable_Type_Name (Variable_Type_Name => To_String (Element (Event.Members.all, I).L.Kind.Value),
                                                                           Is_Success         => Is_Success,
                                                                           Translated_Name    => N);
 
                                     if Is_Success then
-                                       Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is array (0.." &
-                                                                 To_String (Aida.Int32.T (Element (Element (Event.Members.all, I).L.Members.all, 1).Value) - 1) & ") of aliased " & N.To_String & ";");
+                                       Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is array (0.." &
+                                                                 To_String (Aida.Int32.T (Element (Element (Event.Members.all, I).L.Members.all, 1).Value) - 1) & ") of aliased " & To_String (N) & ";");
                                     else
-                                       Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & Event.Name.Value.To_String & ", failed to identify kind of array item: " &
-                                                               Element (Event.Members.all, I).L.Kind.Value.To_String);
+                                       Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Event.Name.Value) & ", failed to identify kind of array item: " &
+                                                               To_String (Element (Event.Members.all, I).L.Kind.Value));
                                     end if;
                                  end;
                               when X_Proto.List.Fs.List_Member_Kind_Operation =>
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & Event.Name.Value.To_String & " with list kind child is unimplemented.");
+                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Event.Name.Value) & " with list kind child is unimplemented.");
                            end case;
 
                         else
-                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & Event.Name.Value.To_String & " contains list child with" &
+                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Event.Name.Value) & " contains list child with" &
                                                    Last_Index (Element (Event.Members.all, I).L.Members.all)'Img & " number fo children");
                         end if;
                      end case;
@@ -1697,10 +1697,10 @@ package body XCB_Package_Creator is
 
                   Padding_Number := 0;
 
-                  Generate_Classic_Event_Type_Name (Old_Name => Event.Name.Value.To_String,
+                  Generate_Classic_Event_Type_Name (Old_Name => To_String (Event.Name.Value),
                                                     New_Name => New_Variable_Type_Name);
 
-                  Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is record");
+                  Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is record");
                   Put_Tabs (2); Put_Line ("Response_Kind : aliased Interfaces.Unsigned_8;");
 
                   for I in X_Proto.Event.Fs.Member_Vector.Index_T range 1..Last_Index (Event.Members.all) loop
@@ -1710,7 +1710,7 @@ package body XCB_Package_Creator is
                            Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                            Is_Success : Boolean;
                         begin
-                           Translate_Variable_Type_Name (Variable_Type_Name => Element (Event.Members.all, I).F.Kind.Value.To_String,
+                           Translate_Variable_Type_Name (Variable_Type_Name => To_String (Element (Event.Members.all, I).F.Kind.Value),
                                                          Is_Success         => Is_Success,
                                                          Translated_Name    => Variable_Type_Name);
 
@@ -1718,7 +1718,7 @@ package body XCB_Package_Creator is
                               declare
                                  Field_Name : X_Proto.Large_Bounded_String.T;
                               begin
-                                 Generate_Struct_Name (Old_Name => Element (Event.Members.all, I).F.Name.Value.To_String,
+                                 Generate_Struct_Name (Old_Name => To_String (Element (Event.Members.all, I).F.Name.Value),
                                                        New_Name => Field_Name);
 
                                  if I = 1 then
@@ -1726,13 +1726,13 @@ package body XCB_Package_Creator is
                                       Contains (Eight_Bit_Variable_Type_Names.all, (Element (Event.Members.all, I).F.Kind.Value))
                                     then
                                        if Element (Event.Members.all, I).F.Enum.Exists then
-                                          Translate_Variable_Type_Name (Variable_Type_Name => Element (Event.Members.all, I).F.Enum.Value.To_String,
+                                          Translate_Variable_Type_Name (Variable_Type_Name => To_String (Element (Event.Members.all, I).F.Enum.Value),
                                                                         Is_Success         => Is_Success,
                                                                         Translated_Name    => Variable_Type_Name);
                                        end if;
 
 
-                                       Put_Tabs (2); Put_Line (Field_Name.To_String & " : aliased " & Variable_Type_Name.To_String & ";");
+                                       Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_Type_Name) & ";");
 
                                        if Event.No_Sequence_Number.Exists and then not Event.No_Sequence_Number.Value then
                                           Put_Tabs (2); Put_Line ("Sequence : aliased Interfaces.Unsigned_16;");
@@ -1740,75 +1740,75 @@ package body XCB_Package_Creator is
                                           Put_Tabs (2); Put_Line ("Sequence : aliased Interfaces.Unsigned_16;");
                                        end if;
                                     else
-                                       Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & Event.Name.Value.To_String & " has first field non-8-bits.");
+                                       Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Event.Name.Value) & " has first field non-8-bits.");
                                        -- This is interesting because in xproto.xml for lib xcb version 1.10 the
                                        -- first field in all events were 8-bits!
 
                                        Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
                                        Put_Tabs (2); Put_Line ("Sequence : aliased Interfaces.Unsigned_16;");
-                                       Put_Tabs (2); Put_Line (Field_Name.To_String & " : aliased " & Variable_Type_Name.To_String & ";");
+                                       Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_Type_Name) & ";");
 
                                        Padding_Number := Padding_Number + 1;
                                     end if;
                                  else
-                                    Put_Tabs (2); Put_Line (Field_Name.To_String & " : aliased " & Variable_Type_Name.To_String & ";");
+                                    Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_Type_Name) & ";");
                                  end if;
                               end;
                            else
-                              Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & Element (Event.Members.all, I).F.Kind.Value.To_String);
+                              Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & To_String (Element (Event.Members.all, I).F.Kind.Value));
                            end if;
                         end;
                      when X_Proto.Event.Fs.Event_Member_Pad =>
                         if Element (Event.Members.all, I).P.Bytes.Value = 1 then
                            Put_Tabs (2); Put_Line (   "Padding_" & To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
                         else
-                           Generate_Classic_Event_List_Type_Name (Enum_Name => Event.Name.Value.To_String,
+                           Generate_Classic_Event_List_Type_Name (Enum_Name => To_String (Event.Name.Value),
                                                                   List_Name => "Padding" & To_String (Padding_Number),
                                                                   New_Name  => New_Variable_Type_Name);
-                           Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
+                           Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased " & To_String (New_Variable_Type_Name) & ";");
                         end if;
                         Padding_Number := Padding_Number + 1;
                      when X_Proto.Event.Fs.Event_Member_Doc =>
                         null;
                      when X_Proto.Event.Fs.Event_Member_List =>
                         if Last_Index (Element (Event.Members.all, I).L.Members.all) = 1 then
-                           Generate_Classic_Event_List_Type_Name (Enum_Name => Event.Name.Value.To_String,
-                                                                  List_Name => Element (Event.Members.all, I).L.Name.Value.To_String,
+                           Generate_Classic_Event_List_Type_Name (Enum_Name => To_String (Event.Name.Value),
+                                                                  List_Name => To_String (Element (Event.Members.all, I).L.Name.Value),
                                                                   New_Name  => New_Variable_Type_Name);
 
                            declare
                               Variable_Name : X_Proto.Large_Bounded_String.T;
                            begin
-                              Generate_Struct_Name (Old_Name => Element (Event.Members.all, I).L.Name.Value.To_String,
+                              Generate_Struct_Name (Old_Name => To_String (Element (Event.Members.all, I).L.Name.Value),
                                                     New_Name => Variable_Name);
                               case Element (Element (Event.Members.all, I).L.Members.all, 1).Kind_Id is
                               when X_Proto.List.Fs.List_Member_Kind_Field_Reference =>
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & Event.Name.Value.To_String & " with list field child is unimplemented.");
+                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Event.Name.Value) & " with list field child is unimplemented.");
                               when X_Proto.List.Fs.List_Member_Kind_Value =>
-                                 Put_Tabs (2); Put_Line (Variable_Name.To_String & " : aliased " & New_Variable_Type_Name.To_String & ";");
+                                 Put_Tabs (2); Put_Line (To_String (Variable_Name) & " : aliased " & To_String (New_Variable_Type_Name) & ";");
                               when X_Proto.List.Fs.List_Member_Kind_Operation =>
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & Event.Name.Value.To_String & " with list kind child is unimplemented.");
+                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Event.Name.Value) & " with list kind child is unimplemented.");
                               end case;
                            end;
                         else
-                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & Event.Name.Value.To_String & " contains list child with" &
+                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Event.Name.Value) & " contains list child with" &
                                                    Last_Index (Element (Event.Members.all, I).L.Members.all)'Img & " number fo children");
                         end if;
                      end case;
                   end loop;
 
-                  Generate_Classic_Event_Type_Name (Old_Name => Event.Name.Value.To_String,
+                  Generate_Classic_Event_Type_Name (Old_Name => To_String (Event.Name.Value),
                                                     New_Name => New_Variable_Type_Name);
 
                   Put_Tabs (1); Put_Line ("end record;");
-                  Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & New_Variable_Type_Name.To_String & ");");
+                  Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & To_String (New_Variable_Type_Name) & ");");
                   Put_Line ("");
                   declare
                      Access_Type_Name : X_Proto.Large_Bounded_String.T;
                   begin
-                     Generate_Classic_Event_Access_Type_Name (Old_Name => Event.Name.Value.To_String,
+                     Generate_Classic_Event_Access_Type_Name (Old_Name => To_String (Event.Name.Value),
                                                               New_Name => Access_Type_Name);
-                     Put_Tabs (1); Put_Line ("type " & Access_Type_Name.To_String & " is access all " & New_Variable_Type_Name.To_String & ";");
+                     Put_Tabs (1); Put_Line ("type " & To_String (Access_Type_Name) & " is access all " & To_String (New_Variable_Type_Name) & ";");
                      Put_Line ("");
                   end;
                end;
@@ -1835,25 +1835,25 @@ package body XCB_Package_Creator is
                      Original_Type_Name : X_Proto.Large_Bounded_String.T;
                      Derived_Type_Name  : X_Proto.Large_Bounded_String.T;
                   begin
-                     Generate_Classic_Event_Type_Name (Old_Name => Event_Copy.Name.Value.To_String,
+                     Generate_Classic_Event_Type_Name (Old_Name => To_String (Event_Copy.Name.Value),
                                                        New_Name => Derived_Type_Name);
 
-                     Generate_Classic_Event_Type_Name (Old_Name => Event_Copy.Ref.Value.To_String,
+                     Generate_Classic_Event_Type_Name (Old_Name => To_String (Event_Copy.Ref.Value),
                                                        New_Name => Original_Type_Name);
 
-                     Put_Tabs (1); Put_Line ("type " & Derived_Type_Name.To_String & " is new " & Original_Type_Name.To_String & ";");
+                     Put_Tabs (1); Put_Line ("type " & To_String (Derived_Type_Name) & " is new " & To_String (Original_Type_Name) & ";");
                      Put_Line ("");
                      declare
                         Access_Type_Name : X_Proto.Large_Bounded_String.T;
                      begin
-                        Generate_Classic_Event_Access_Type_Name (Old_Name => Event_Copy.Name.Value.To_String,
+                        Generate_Classic_Event_Access_Type_Name (Old_Name => To_String (Event_Copy.Name.Value),
                                                                  New_Name => Access_Type_Name);
-                        Put_Tabs (1); Put_Line ("type " & Access_Type_Name.To_String & " is access all " & Derived_Type_Name.To_String & ";");
+                        Put_Tabs (1); Put_Line ("type " & To_String (Access_Type_Name) & " is access all " & To_String (Derived_Type_Name) & ";");
                         Put_Line ("");
                      end;
                   end;
                else
-                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event copy " & Event_Copy.Name.Value.To_String & " with no ref!?");
+                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event copy " & To_String (Event_Copy.Name.Value) & " with no ref!?");
                end if;
             else
                Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event copy exists without a name!?");
@@ -1886,11 +1886,11 @@ package body XCB_Package_Creator is
                            declare
                               Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                            begin
-                              Generate_Classic_Array_Type_Name (Prefix_Name => Error.Name.Value.To_String,
+                              Generate_Classic_Array_Type_Name (Prefix_Name => To_String (Error.Name.Value),
                                                                 Field_Name  => "Padding" & To_String (Padding_Number),
                                                                 New_Name    => Variable_Type_Name);
 
-                              Put_Tabs (1); Put_Line ("type " & Variable_Type_Name.To_String & " is array (0.." &
+                              Put_Tabs (1); Put_Line ("type " & To_String (Variable_Type_Name) & " is array (0.." &
                                                         To_String (Aida.Int32.T (Child.P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
                            end;
                         end if;
@@ -1917,7 +1917,7 @@ package body XCB_Package_Creator is
                               Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                               Is_Success : Boolean;
                            begin
-                              Translate_Variable_Type_Name (Variable_Type_Name => Child.F.Kind.Value.To_String,
+                              Translate_Variable_Type_Name (Variable_Type_Name => To_String (Child.F.Kind.Value),
                                                             Is_Success         => Is_Success,
                                                             Translated_Name    => Variable_Type_Name);
 
@@ -1925,16 +1925,16 @@ package body XCB_Package_Creator is
                                  declare
                                     Field_Name : X_Proto.Large_Bounded_String.T;
                                  begin
-                                    Generate_Struct_Name (Old_Name => Child.F.Name.Value.To_String,
+                                    Generate_Struct_Name (Old_Name => To_String (Child.F.Name.Value),
                                                           New_Name => Field_Name);
-                                    Put_Tabs (2); Put_Line (Field_Name.To_String & " : aliased " & Variable_Type_Name.To_String & ";");
+                                    Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_Type_Name) & ";");
 
                                     if Child.F.Enum.Exists then
                                        Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
                                     end if;
                                  end;
                               else
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & Child.F.Kind.Value.To_String);
+                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & To_String (Child.F.Kind.Value));
                               end if;
                            end;
                         else
@@ -1947,10 +1947,10 @@ package body XCB_Package_Creator is
                            declare
                               New_Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                            begin
-                              Generate_Classic_Event_List_Type_Name (Enum_Name => Error.Name.Value.To_String,
+                              Generate_Classic_Event_List_Type_Name (Enum_Name => To_String (Error.Name.Value),
                                                                      List_Name => "Padding" & To_String (Padding_Number),
                                                                      New_Name  => New_Variable_Type_Name);
-                              Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
+                              Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased " & To_String (New_Variable_Type_Name) & ";");
                            end;
                         end if;
                         Padding_Number := Padding_Number + 1;
@@ -1958,9 +1958,9 @@ package body XCB_Package_Creator is
                   end Handle_Error_Child;
 
                begin
-                  Generate_Classic_Error_Type_Name (Old_Name => Error.Name.Value.To_String,
+                  Generate_Classic_Error_Type_Name (Old_Name => To_String (Error.Name.Value),
                                                     New_Name => Error_Type_Name);
-                  Put_Tabs (1); Put_Line ("type " & Error_Type_Name.To_String & " is record");
+                  Put_Tabs (1); Put_Line ("type " & To_String (Error_Type_Name) & " is record");
 
                   Put_Tabs (2); Put_Line ("Response_Kind : aliased Interfaces.Unsigned_8;");
                   Put_Tabs (2); Put_Line ("Error_Code : aliased Interfaces.Unsigned_8;");
@@ -1971,7 +1971,7 @@ package body XCB_Package_Creator is
                   end loop;
 
                   Put_Tabs (1); Put_Line ("end record;");
-                  Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & Error_Type_Name.To_String & ");");
+                  Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & To_String (Error_Type_Name) & ");");
                   Put_Line ("");
                end;
             else
@@ -1997,17 +1997,17 @@ package body XCB_Package_Creator is
                      Original_Type_Name : X_Proto.Large_Bounded_String.T;
                      Derived_Type_Name  : X_Proto.Large_Bounded_String.T;
                   begin
-                     Generate_Classic_Error_Type_Name (Old_Name => Error_Copy.Name.Value.To_String,
+                     Generate_Classic_Error_Type_Name (Old_Name => To_String (Error_Copy.Name.Value),
                                                        New_Name => Derived_Type_Name);
 
-                     Generate_Classic_Error_Type_Name (Old_Name => Error_Copy.Ref.Value.To_String,
+                     Generate_Classic_Error_Type_Name (Old_Name => To_String (Error_Copy.Ref.Value),
                                                        New_Name => Original_Type_Name);
 
-                     Put_Tabs (1); Put_Line ("type " & Derived_Type_Name.To_String & " is new " & Original_Type_Name.To_String & ";");
+                     Put_Tabs (1); Put_Line ("type " & To_String (Derived_Type_Name) & " is new " & To_String (Original_Type_Name) & ";");
                      Put_Line ("");
                   end;
                else
-                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event copy " & Error_Copy.Name.Value.To_String & " with no ref!?");
+                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event copy " & To_String (Error_Copy.Name.Value) & " with no ref!?");
                end if;
             else
                Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event copy exists without a name!?");
@@ -2027,8 +2027,8 @@ package body XCB_Package_Creator is
          procedure Handle_Type_Definition (Type_Def : X_Proto.Type_Definition.T) is
          begin
             if Type_Def.New_Name.Exists then
-               Generate_Code_For_Next_Procedure (Type_Def.New_Name.Value.To_String);
-               Generate_Code_For_End_Function (Type_Def.New_Name.Value.To_String);
+               Generate_Code_For_Next_Procedure (To_String (Type_Def.New_Name.Value));
+               Generate_Code_For_End_Function (To_String (Type_Def.New_Name.Value));
             else
                Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Type definition exists without new name!?");
             end if;
@@ -2082,11 +2082,11 @@ package body XCB_Package_Creator is
                                        declare
                                           Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                                        begin
-                                          Generate_Classic_Array_Type_Name (Prefix_Name => Reply_Name.To_String,
+                                          Generate_Classic_Array_Type_Name (Prefix_Name => To_String (Reply_Name),
                                                                             Field_Name  => "Padding" & To_String (Padding_Number),
                                                                             New_Name    => Variable_Type_Name);
 
-                                          Put_Tabs (1); Put_Line ("type " & Variable_Type_Name.To_String & " is array (0.." &
+                                          Put_Tabs (1); Put_Line ("type " & To_String (Variable_Type_Name) & " is array (0.." &
                                                                     To_String (Aida.Int32.T (Child.P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
                                        end;
                                     end if;
@@ -2099,7 +2099,7 @@ package body XCB_Package_Creator is
                            end Handle_Child;
 
                         begin
-                           Reply_Name.Initialize (Request.Name.Value.To_String & "Reply");
+                           Initialize (Reply_Name, To_String (Request.Name.Value) & "Reply");
 
                            for I in 1..Last_Index (Request_Child.R.Children.all) loop
                               Handle_Child (Element (Request_Child.R.Children.all, I).all);
@@ -2124,7 +2124,7 @@ package body XCB_Package_Creator is
                                           Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                                           Is_Success : Boolean;
                                        begin
-                                          Translate_Variable_Type_Name (Variable_Type_Name => Reply_Child.F.Kind.Value.To_String,
+                                          Translate_Variable_Type_Name (Variable_Type_Name => To_String (Reply_Child.F.Kind.Value),
                                                                         Is_Success         => Is_Success,
                                                                         Translated_Name    => Variable_Type_Name);
 
@@ -2132,7 +2132,7 @@ package body XCB_Package_Creator is
                                              declare
                                                 Field_Name : X_Proto.Large_Bounded_String.T;
                                              begin
-                                                Generate_Struct_Name (Old_Name => Reply_Child.F.Name.Value.To_String,
+                                                Generate_Struct_Name (Old_Name => To_String (Reply_Child.F.Name.Value),
                                                                       New_Name => Field_Name);
 
                                                 if Is_First then
@@ -2140,31 +2140,31 @@ package body XCB_Package_Creator is
                                                      Contains (Eight_Bit_Variable_Type_Names.all, Reply_Child.F.Kind.Value)
                                                    then
                                                       if Reply_Child.F.Enum.Exists then
-                                                         Translate_Variable_Type_Name (Variable_Type_Name => Reply_Child.F.Enum.Value.To_String,
+                                                         Translate_Variable_Type_Name (Variable_Type_Name => To_String (Reply_Child.F.Enum.Value),
                                                                                        Is_Success         => Is_Success,
                                                                                        Translated_Name    => Variable_Type_Name);
                                                       end if;
 
                                                       Put_Tabs (2); Put_Line ("Response_Kind : aliased Interfaces.Unsigned_8;");
-                                                      Put_Tabs (2); Put_Line (Field_Name.To_String & " : aliased " & Variable_Type_Name.To_String & ";");
+                                                      Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_Type_Name) & ";");
                                                       Put_Tabs (2); Put_Line ("Sequence : aliased Interfaces.Unsigned_16;");
                                                       Put_Tabs (2); Put_Line ("Length : aliased Interfaces.Unsigned_32;");
-                                                   elsif Reply_Child.F.Kind.Value.To_String = "BOOL" then
+                                                   elsif To_String (Reply_Child.F.Kind.Value) = "BOOL" then
                                                       Put_Tabs (2); Put_Line ("Response_Kind : aliased Interfaces.Unsigned_8;");
-                                                      Put_Tabs (2); Put_Line (Field_Name.To_String & " : aliased Interfaces.Unsigned_8;");
+                                                      Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased Interfaces.Unsigned_8;");
                                                       Put_Tabs (2); Put_Line ("Sequence : aliased Interfaces.Unsigned_16;");
                                                       Put_Tabs (2); Put_Line ("Length : aliased Interfaces.Unsigned_32;");
                                                    else
-                                                      Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", Request " & Request.Name.Value.To_String &
-                                                                              ", reply " & Reply_Child.F.Name.Value.To_String & " has first field " &
-                                                                              Reply_Child.F.Kind.Value.To_String & ", which is non-8-bits.");
+                                                      Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", Request " & To_String (Request.Name.Value) &
+                                                                              ", reply " & To_String (Reply_Child.F.Name.Value) & " has first field " &
+                                                                              To_String (Reply_Child.F.Kind.Value) & ", which is non-8-bits.");
                                                    end if;
                                                 else
-                                                   Put_Tabs (2); Put_Line (Field_Name.To_String & " : aliased " & Variable_Type_Name.To_String & ";");
+                                                   Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_Type_Name) & ";");
                                                 end if;
                                              end;
                                           else
-                                             Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & Reply_Child.F.Kind.Value.To_String);
+                                             Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & To_String (Reply_Child.F.Kind.Value));
                                           end if;
                                        end;
                                     else
@@ -2184,11 +2184,11 @@ package body XCB_Package_Creator is
                                        declare
                                           New_Variable_Type_Name : X_Proto.Large_Bounded_String.T;
                                        begin
-                                          Generate_Classic_Array_Type_Name (Prefix_Name => Reply_Name.To_String,
+                                          Generate_Classic_Array_Type_Name (Prefix_Name => To_String (Reply_Name),
                                                                             Field_Name  => "Padding" & To_String (Padding_Number),
                                                                             New_Name    => New_Variable_Type_Name);
 
-                                          Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased " & New_Variable_Type_Name.To_String & ";");
+                                          Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased " & To_String (New_Variable_Type_Name) & ";");
                                        end;
                                     end if;
                                     Padding_Number := Padding_Number + 1;
@@ -2200,18 +2200,18 @@ package body XCB_Package_Creator is
                            end Process_Reply_Child;
 
                         begin
-                           Reply_Name.Initialize (Request.Name.Value.To_String & "Reply");
+                           Initialize (Reply_Name, To_String (Request.Name.Value) & "Reply");
 
-                           Generate_Struct_Name (Old_Name => Reply_Name.To_String,
+                           Generate_Struct_Name (Old_Name => To_String (Reply_Name),
                                                  New_Name => New_Variable_Name);
 
-                           Generate_Classic_Type_Name (Old_Name => Reply_Name.To_String,
+                           Generate_Classic_Type_Name (Old_Name => To_String (Reply_Name),
                                                        New_Name => New_Variable_Type_Name);
 
-                           Generate_Classic_Access_Type_Name (Old_Name => Reply_Name.To_String,
+                           Generate_Classic_Access_Type_Name (Old_Name => To_String (Reply_Name),
                                                               New_Name => Request_Reply_Access_Type_Name);
 
-                           Put_Tabs (1); Put_Line ("type " & New_Variable_Type_Name.To_String & " is record");
+                           Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is record");
 
                            for I in X_Proto.Reply.Fs.Child_Vector.Index_T range 1..Last_Index (Request_Child.R.Children.all) loop
                               Process_Reply_Child (Element (Request_Child.R.Children.all, I),
@@ -2219,11 +2219,11 @@ package body XCB_Package_Creator is
                            end loop;
 
                            Put_Tabs (1); Put_Line ("end record;");
-                           Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & New_Variable_Type_Name.To_String & ");");
+                           Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & To_String (New_Variable_Type_Name) & ");");
                            Put_Line ("");
-                           Put_Tabs (1); Put_Line ("type " & Request_Reply_Access_Type_Name.To_String & " is access all " & New_Variable_Type_Name.To_String & ";");
-                           Put_Tabs (1); Put_Line ("for " & Request_Reply_Access_Type_Name.To_String & "'Storage_Size use 0;");
-                           Put_Tabs (1); Put_Line ("pragma Convention (C, " & Request_Reply_Access_Type_Name.To_String & ");");
+                           Put_Tabs (1); Put_Line ("type " & To_String (Request_Reply_Access_Type_Name) & " is access all " & To_String (New_Variable_Type_Name) & ";");
+                           Put_Tabs (1); Put_Line ("for " & To_String (Request_Reply_Access_Type_Name) & "'Storage_Size use 0;");
+                           Put_Tabs (1); Put_Line ("pragma Convention (C, " & To_String (Request_Reply_Access_Type_Name) & ");");
                            Put_Line ("");
                         end;
                      when X_Proto.Request.Fs.Child_List =>
@@ -2240,17 +2240,17 @@ package body XCB_Package_Creator is
                      C_Function_Name : X_Proto.Large_Bounded_String.T;
                      Function_Name   : X_Proto.Large_Bounded_String.T;
                   begin
-                     Generate_Struct_Name (Old_Name => Request.Name.Value.To_String,
+                     Generate_Struct_Name (Old_Name => To_String (Request.Name.Value),
                                            New_Name => Name); -- There is risk here of erroneous Name
 
-                     Function_Name.Initialize (Name.To_String & Suffix);
+                     Initialize (Function_Name, To_String (Name) & Suffix);
 
-                     C_Function_Name.Initialize ("xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (Name.To_String & Suffix));
+                     Initialize (C_Function_Name, "xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (To_String (Name) & Suffix));
 
                      Generate_Request_With_Reply_Code (Function_Name,
                                                        C_Function_Name,
                                                        Request.Children.all,
-                                                       Request.Name.Value.To_String,
+                                                       To_String (Request.Name.Value),
                                                        Reply_Type_Name);
                   end Generate_Checked_Or_Unchecked_Function;
 
@@ -2265,14 +2265,14 @@ package body XCB_Package_Creator is
                         C_Function_Name : X_Proto.Large_Bounded_String.T;
                         Function_Name   : X_Proto.Large_Bounded_String.T;
                      begin
-                        Generate_Struct_Name (Old_Name => Request.Name.Value.To_String,
+                        Generate_Struct_Name (Old_Name => To_String (Request.Name.Value),
                                               New_Name => Name); -- There is risk here of erroneous Name
 
-                        Function_Name.Initialize (Name.To_String & "_Size_Of");
+                        Initialize (Function_Name, To_String (Name) & "_Size_Of");
 
-                        C_Function_Name.Initialize ("xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (Name.To_String) & "_sizeof");
-                        Put_Tabs (1); Put_Line ("function " & Function_Name.To_String & " (Buffer : System.Address) return Interfaces.C.int;");
-                        Put_Tabs (1); Put_Line ("pragma Import (C, " & Function_Name.To_String & ", """ & C_Function_Name.To_String & """);");
+                        Initialize (C_Function_Name, "xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (To_String (Name)) & "_sizeof");
+                        Put_Tabs (1); Put_Line ("function " & To_String (Function_Name) & " (Buffer : System.Address) return Interfaces.C.int;");
+                        Put_Tabs (1); Put_Line ("pragma Import (C, " & To_String (Function_Name) & ", """ & To_String (C_Function_Name) & """);");
                         Put_Line ("");
                      end;
                   end if;
@@ -2282,15 +2282,15 @@ package body XCB_Package_Creator is
                         Name      : X_Proto.Large_Bounded_String.T;
                         Type_Name : X_Proto.Large_Bounded_String.T;
                      begin
-                        Generate_Struct_Name (Old_Name => Request.Name.Value.To_String,
+                        Generate_Struct_Name (Old_Name => To_String (Request.Name.Value),
                                               New_Name => Name);
 
-                        Type_Name.Initialize (Name.To_String & "_Cookie_Type");
+                        Initialize (Type_Name, To_String (Name) & "_Cookie_Type");
 
-                        Put_Tabs (1); Put_Line ("type " & Type_Name.To_String & " is record");
+                        Put_Tabs (1); Put_Line ("type " & To_String (Type_Name) & " is record");
                         Put_Tabs (2); Put_Line ("Sequence : aliased Interfaces.C.unsigned;");
                         Put_Tabs (1); Put_Line ("end record;");
-                        Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & Type_Name.To_String & ");");
+                        Put_Tabs (1); Put_Line ("pragma Convention (C_Pass_By_Copy, " & To_String (Type_Name) & ");");
                         Put_Line ("");
 
                         Reply_Type_Name := Type_Name;
@@ -2301,26 +2301,26 @@ package body XCB_Package_Creator is
                         C_Function_Name : X_Proto.Large_Bounded_String.T;
                         Function_Name   : X_Proto.Large_Bounded_String.T;
                      begin
-                        Generate_Struct_Name (Old_Name => Request.Name.Value.To_String,
+                        Generate_Struct_Name (Old_Name => To_String (Request.Name.Value),
                                               New_Name => Name); -- There is risk here of erroneous Name
 
-                        Function_Name.Initialize (Name.To_String & "_Reply");
+                        Initialize (Function_Name, To_String (Name) & "_Reply");
 
-                        C_Function_Name.Initialize ("xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (Name.To_String) & "_reply");
+                        Initialize (C_Function_Name, "xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (To_String (Name)) & "_reply");
 
-                        Put_Tabs (1); Put_Line ("function " & Function_Name.To_String);
+                        Put_Tabs (1); Put_Line ("function " & To_String (Function_Name));
                         Put_Tabs (2); Put_Line ("(");
                         Put_Tabs (2); Put_Line (" C : Connection_Access_Type;");
-                        Put_Tabs (2); Put_Line (" Cookie : " & Reply_Type_Name.To_String & ";");
+                        Put_Tabs (2); Put_Line (" Cookie : " & To_String (Reply_Type_Name) & ";");
                         Put_Tabs (2); Put_Line (" Error  : System.Address");
-                        Put_Tabs (2); Put_Line (") return " & Request_Reply_Access_Type_Name.To_String & ";");
-                        Put_Tabs (1); Put_Line ("pragma Import (C, " &  Function_Name.To_String & ", """ & C_Function_Name.To_String & """);");
+                        Put_Tabs (2); Put_Line (") return " & To_String (Request_Reply_Access_Type_Name) & ";");
+                        Put_Tabs (1); Put_Line ("pragma Import (C, " &  To_String (Function_Name) & ", """ & To_String (C_Function_Name) & """);");
                         Put_Line ("");
                      end;
 
                      Generate_Checked_Or_Unchecked_Function ("_Unchecked");
                   else
-                     Reply_Type_Name.Initialize ("Void_Cookie_Type");
+                     Initialize (Reply_Type_Name, "Void_Cookie_Type");
 
                      Generate_Checked_Or_Unchecked_Function ("_Checked");
                   end if;
@@ -2330,17 +2330,17 @@ package body XCB_Package_Creator is
                      C_Function_Name : X_Proto.Large_Bounded_String.T;
                      Function_Name   : X_Proto.Large_Bounded_String.T;
                   begin
-                     Generate_Struct_Name (Old_Name => Request.Name.Value.To_String,
+                     Generate_Struct_Name (Old_Name => To_String (Request.Name.Value),
                                            New_Name => Name); -- There is risk here of erroneous Name
 
-                     Function_Name.Initialize (Name.To_String);
+                     Initialize (Function_Name, To_String (Name));
 
-                     C_Function_Name.Initialize ("xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (Name.To_String));
+                     Initialize (C_Function_Name, "xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (To_String (Name)));
 
                      Generate_Request_With_Reply_Code (Function_Name,
                                                        C_Function_Name,
                                                        Request.Children.all,
-                                                       Request.Name.Value.To_String,
+                                                       To_String (Request.Name.Value),
                                                        Reply_Type_Name);
                   end;
                end;
@@ -2361,9 +2361,9 @@ package body XCB_Package_Creator is
       declare
          Ada_Name : X_Proto.Large_Bounded_String.T;
       begin
-         Ada_Name.Initialize ("CARD8");
+         Initialize (Ada_Name, "CARD8");
          Append (Eight_Bit_Variable_Type_Names.all, Ada_Name);
-         Ada_Name.Initialize ("BYTE");
+         Initialize (Ada_Name, "BYTE");
          Append (Eight_Bit_Variable_Type_Names.all, Ada_Name);
       end;
 
@@ -2445,19 +2445,19 @@ package body XCB_Package_Creator is
             Variable_Array_Type_Name : X_Proto.Large_Bounded_String.T;
             Is_Success : Boolean;
          begin
-            Translate_Variable_Type_Name (Variable_Type_Name => Text.To_String,
+            Translate_Variable_Type_Name (Variable_Type_Name => To_String (Text),
                                           Is_Success         => Is_Success,
                                           Translated_Name    => Variable_Type_Name);
 
             if Is_Success then
-               Generate_Classic_Array_Type_Name (Prefix_Name => Text.To_String,
+               Generate_Classic_Array_Type_Name (Prefix_Name => To_String (Text),
                                                  Field_Name  => "",
                                                  New_Name    => Variable_Array_Type_Name);
-               Put_Tabs (1); Put_Line ("type " & Variable_Array_Type_Name.To_String & " is array (Natural range <>) of " & Variable_Type_Name.To_String & ";");
-               Put_Tabs (1); Put_Line ("pragma Convention (C, " & Variable_Array_Type_Name.To_String & ");");
+               Put_Tabs (1); Put_Line ("type " & To_String (Variable_Array_Type_Name) & " is array (Natural range <>) of " & To_String (Variable_Type_Name) & ";");
+               Put_Tabs (1); Put_Line ("pragma Convention (C, " & To_String (Variable_Array_Type_Name) & ");");
                Put_Line ("");
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", Could not translate type " & Text.To_String);
+               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", Could not translate type " & To_String (Text));
             end if;
          end;
       end loop;
@@ -2703,8 +2703,8 @@ package body XCB_Package_Creator is
 
       for I in 1..Last_Index (XCB.Structs.all) loop
          if Element (XCB.Structs.all, I).Name.Exists then
-            Generate_Code_For_Next_Procedure (Element (XCB.Structs.all, I).Name.Value.To_String);
-            Generate_Code_For_End_Function (Element (XCB.Structs.all, I).Name.Value.To_String);
+            Generate_Code_For_Next_Procedure (To_String (Element (XCB.Structs.all, I).Name.Value));
+            Generate_Code_For_End_Function (To_String (Element (XCB.Structs.all, I).Name.Value));
          else
             Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Struct exists without a name!?");
          end if;
@@ -2715,8 +2715,8 @@ package body XCB_Package_Creator is
             X_Id : X_Proto.X_Id.Ptr renames Element (Xcb.X_Ids.all, X_Id_Index);
          begin
             if X_Id.Name.Exists then
-               Generate_Code_For_Next_Procedure (X_Id.Name.Value.To_String);
-               Generate_Code_For_End_Function (X_Id.Name.Value.To_String);
+               Generate_Code_For_Next_Procedure (To_String (X_Id.Name.Value));
+               Generate_Code_For_End_Function (To_String (X_Id.Name.Value));
             else
                Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "X_Id exists without a name!?");
             end if;

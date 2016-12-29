@@ -8,7 +8,7 @@ package Aida.Bounded_String is
 
    Out_Of_Bounds_Exception : exception;
 
-   type T is tagged private;
+   type T is private;
 
    procedure Initialize (This : out T;
                          Text : Standard.String);
@@ -33,7 +33,7 @@ package Aida.Bounded_String is
 
 private
 
-   type T is tagged
+   type T is
       record
          Text        : Standard.String (1 .. Maximum_Length_Of_Bounded_String);
          Text_Length : Length_Type := 0;

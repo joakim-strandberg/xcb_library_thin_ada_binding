@@ -56,7 +56,7 @@ package body Aida.Bounded_String is
    function Equals (This   : T;
                     Object : Standard.String) return Boolean is
    begin
-      return This.To_String = Object;
+      return To_String (This) = Object;
    end Equals;
 
    function "="(Left, Right : T) return Boolean is
@@ -66,7 +66,7 @@ package body Aida.Bounded_String is
             return True;
          end if;
 
-         return Left.To_String = Right.To_String;
+         return To_String (Left) = To_String (Right);
       end if;
 
       return False;
@@ -79,7 +79,7 @@ package body Aida.Bounded_String is
 
    function Hash32 (This : T) return Hash32_T is
    begin
-      return Hash32 (String_T (This.Text (1..This.Length)));
+      return Hash32 (String_T (This.Text (1..Length (This))));
    end Hash32;
 
 end Aida.Bounded_String;

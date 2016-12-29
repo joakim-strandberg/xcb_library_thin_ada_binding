@@ -14,6 +14,8 @@ with XCB_Package_Creator;
 
 procedure Main is
 
+   use SXML.Error_Message_P;
+
    File_Name : constant String  := "xproto.xml";
 
    procedure Main_Internal is
@@ -45,7 +47,7 @@ procedure Main is
          Ada.Text_IO.Put_Line ("Successfully parsed " & File_Name & "! Will create xcb.ads");
          XCB_Package_Creator.Create_XCB_Package (Xcb.all);
       else
-         Ada.Text_IO.Put_Line (Error_Message.To_String);
+         Ada.Text_IO.Put_Line (To_String (Error_Message));
       end if;
    end Main_Internal;
 

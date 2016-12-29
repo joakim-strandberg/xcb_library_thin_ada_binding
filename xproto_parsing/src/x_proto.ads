@@ -146,7 +146,7 @@ package X_Proto is
 
    end Pad;
 
-   type Field_Reference_Type is new Large_Bounded_String.T with null record;
+   type Field_Reference_Type is new Large_Bounded_String.T;
 
    type Field_Reference_Access_Type is access all Field_Reference_Type;
 
