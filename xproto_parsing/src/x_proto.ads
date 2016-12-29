@@ -1,4 +1,3 @@
-with Ada.Containers.Vectors;
 with Aida.Containers.Bounded_Vector;
 with Aida.Bounded_String;
 
@@ -188,10 +187,11 @@ package X_Proto is
 
          type Member_Ptr is access Member_Type;
 
-         package Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                               Element_Type => Member_Ptr);
+         package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
+                                                                       "="        => "=",
+                                                                       MAX_LENGTH => 50);
 
-         type Members_Const_Ptr is access constant Member_Vectors.Vector;
+         type Members_Const_Ptr is access constant Member_Vector.T;
 
       end Fs;
 
@@ -249,10 +249,11 @@ package X_Proto is
 
          type Member_Ptr is access all Member_Type;
 
-         package Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                               Element_Type => Member_Ptr);
+         package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
+                                                                       "="        => "=",
+                                                                       MAX_LENGTH => 50);
 
-         type Members_Const_Ptr is access constant Member_Vectors.Vector;
+         type Members_Const_Ptr is access constant Member_Vector.T;
 
       end Fs;
 
@@ -280,7 +281,7 @@ package X_Proto is
          record
             My_Kind    : aliased Fs.Kind_Type;
             My_Name    : aliased Fs.Name_Type;
-            My_Members : aliased Fs.Member_Vectors.Vector;
+            My_Members : aliased Fs.Member_Vector.T;
          end record;
 
    end List;
@@ -379,10 +380,11 @@ package X_Proto is
 
          type Child_Ptr is access all Child_Type;
 
-         package Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => Child_Ptr);
+         package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
+                                                                      "="        => "=",
+                                                                      MAX_LENGTH => 30);
 
-         type Children_Const_Ptr is access constant Child_Vectors.Vector;
+         type Children_Const_Ptr is access constant Child_Vector.T;
 
       end Fs;
 
@@ -411,7 +413,7 @@ package X_Proto is
          record
             My_Kind     : aliased Fs.Kind_Type;
             My_Name     : aliased Fs.Name_Type;
-            My_Children : aliased Fs.Child_Vectors.Vector;
+            My_Children : aliased Fs.Child_Vector.T;
          end record;
 
    end Expression_Field;
@@ -470,10 +472,11 @@ package X_Proto is
 
          type Child_Ptr is access all Child_Type;
 
-         package Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => Child_Ptr);
+         package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
+                                                                     "="        => "=",
+                                                                     MAX_LENGTH => 30);
 
-         type Children_Const_Ptr is access constant Child_Vectors.Vector;
+         type Children_Const_Ptr is access constant Child_Vector.T;
 
       end Fs;
 
@@ -513,7 +516,7 @@ package X_Proto is
             My_Number   : aliased Fs.Number_Type;
             My_Kind     : aliased Fs.Kind_Type;
             My_Value    : aliased Fs.Value_Type;
-            My_Children : aliased Fs.Child_Vectors.Vector;
+            My_Children : aliased Fs.Child_Vector.T;
          end record;
 
    end Error;
@@ -702,10 +705,11 @@ package X_Proto is
 
          type Member_Ptr is access all Member_Type;
 
-         package Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                               Element_Type => Member_Ptr);
+         package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
+                                                                      "="        => "=",
+                                                                      MAX_LENGTH => 30);
 
-         type Members_Const_Ptr is access constant Member_Vectors.Vector;
+         type Members_Const_Ptr is access constant Member_Vector.T;
 
       end Fs;
 
@@ -734,7 +738,7 @@ package X_Proto is
          record
             My_Brief_Description : aliased Fs.Brief_Description_Type;
             My_Description       : aliased Fs.Description_Type;
-            My_Members           : aliased Fs.Member_Vectors.Vector;
+            My_Members           : aliased Fs.Member_Vector.T;
          end record;
 
    end Documentation;
@@ -881,11 +885,11 @@ package X_Proto is
 
          type Name_Const_Ptr is access constant Name_Type;
 
-         package Type_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                             Element_Type => Type_P.Ptr,
-                                                             "="          => Type_P."=");
+         package Type_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Type_P.Ptr,
+                                                                    "="        => Type_P."=",
+                                                                    MAX_LENGTH => 30);
 
-         type Type_Vector_Const_Ptr is access constant Type_Vectors.Vector;
+         type Type_Vector_Const_Ptr is access constant Type_Vector.T;
 
       end Fs;
 
@@ -907,7 +911,7 @@ package X_Proto is
       type T is tagged limited
          record
             My_Name  : aliased Fs.Name_Type;
-            My_Kinds : aliased Fs.Type_Vectors.Vector;
+            My_Kinds : aliased Fs.Type_Vector.T;
          end record;
 
    end X_Id_Union;
@@ -973,17 +977,17 @@ package X_Proto is
 
          type Name_Const_Ptr is access constant Name_Type;
 
-         package Item_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                             Element_Type => Item.Ptr,
-                                                             "="          => Item."=");
+         package Item_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Item.Ptr,
+                                                                     "="        => Item."=",
+                                                                     MAX_LENGTH => 100);
 
-         type Items_Const_Ptr is access constant Item_Vectors.Vector;
+         type Items_Const_Ptr is access constant Item_Vector.T;
 
-         package Documentation_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                      Element_Type => Documentation.Ptr,
-                                                                      "="          => Documentation."=");
+         package Documentation_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Documentation.Ptr,
+                                                                             "="        => Documentation."=",
+                                                                             MAX_LENGTH => 30);
 
-         type Documentations_Const_Ptr is access constant Documentation_Vectors.Vector;
+         type Documentations_Const_Ptr is access constant Documentation_Vector.T;
 
       end Fs;
 
@@ -1011,8 +1015,8 @@ package X_Proto is
       type T is tagged limited
          record
             My_Name           : aliased Fs.Name_Type;
-            My_Items          : aliased Fs.Item_Vectors.Vector;
-            My_Documentations : aliased Fs.Documentation_Vectors.Vector;
+            My_Items          : aliased Fs.Item_Vector.T;
+            My_Documentations : aliased Fs.Documentation_Vector.T;
          end record;
 
    end Enum;
@@ -1042,10 +1046,11 @@ package X_Proto is
 
          type Child_Ptr is access all Child_Type;
 
-         package Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => Child_Ptr);
+         package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
+                                                                     "="        => "=",
+                                                                     MAX_LENGTH => 10);
 
-         type Children_Const_Ptr is access constant Child_Vectors.Vector;
+         type Children_Const_Ptr is access constant Child_Vector.T;
 
       end Fs;
 
@@ -1068,7 +1073,7 @@ package X_Proto is
       type T is tagged limited
          record
             My_Name     : aliased Fs.Name_Type;
-            My_Children : aliased Fs.Child_Vectors.Vector;
+            My_Children : aliased Fs.Child_Vector.T;
          end record;
 
    end Union;
@@ -1106,8 +1111,11 @@ package X_Proto is
 
          type Member_Ptr is access Member_Type;
 
-         package Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                               Element_Type => Member_Ptr);
+         package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
+                                                                      "="        => "=",
+                                                                      MAX_LENGTH => 30);
+
+         type Members_Const_Ptr is access constant Member_Vector.T;
 
       end Fs;
 
@@ -1115,7 +1123,7 @@ package X_Proto is
 
       function Name (This : T) return Fs.Const_Name_Ptr;
 
-      function Members (This : T) return Fs.Member_Vectors.Vector;
+      function Members (This : T) return Fs.Members_Const_Ptr;
 
       procedure Set_Name (This : in out T;
                           Name : Large_Bounded_String.T);
@@ -1130,7 +1138,7 @@ package X_Proto is
       type T is tagged limited
          record
             Name    : aliased Fs.Name_Type;
-            Members : Fs.Member_Vectors.Vector;
+            Members : aliased Fs.Member_Vector.T;
          end record;
 
    end Struct;
@@ -1193,10 +1201,11 @@ package X_Proto is
 
          type Member_Ptr is access all Member_Type;
 
-         package Member_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                               Element_Type => Member_Ptr);
+         package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
+                                                                      "="        => "=",
+                                                                      MAX_LENGTH => 30);
 
-         type Members_Const_Ptr is access constant Member_Vectors.Vector;
+         type Members_Const_Ptr is access constant Member_Vector.T;
 
       end Fs;
 
@@ -1236,7 +1245,7 @@ package X_Proto is
             My_Name               : aliased Fs.Name_Type;
             My_Number             : aliased Fs.Number_Type;
             My_No_Sequence_Number : aliased Fs.No_Sequence_Number_Type;
-            My_Members            : aliased Fs.Member_Vectors.Vector;
+            My_Members            : aliased Fs.Member_Vector.T;
             My_XGE                : aliased Fs.XGE_Type;
          end record;
 
@@ -1327,10 +1336,11 @@ package X_Proto is
 
          type Child_Ptr is access all Child_Type;
 
-         package Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => Child_Ptr);
+         package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
+                                                                     "="        => "=",
+                                                                     MAX_LENGTH => 30);
 
-         type Children_Const_Ptr is access constant Child_Vectors.Vector;
+         type Children_Const_Ptr is access constant Child_Vector.T;
 
       end Fs;
 
@@ -1347,7 +1357,7 @@ package X_Proto is
 
       type T is tagged limited
          record
-            My_Children : aliased Fs.Child_Vectors.Vector;
+            My_Children : aliased Fs.Child_Vector.T;
          end record;
 
    end Reply;
@@ -1407,10 +1417,11 @@ package X_Proto is
 
          type Child_Ptr is access all Child_Type;
 
-         package Child_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => Child_Ptr);
+         package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
+                                                                     "="        => "=",
+                                                                     MAX_LENGTH => 30);
 
-         type Children_Const_Ptr is access constant Child_Vectors.Vector;
+         type Children_Const_Ptr is access constant Child_Vector.T;
 
       end Fs;
 
@@ -1445,7 +1456,7 @@ package X_Proto is
             My_Name                   : aliased Fs.Name_Type;
             My_Op_Code                : aliased Fs.Op_Code_Type;
             My_Shall_Combine_Adjacent : aliased Fs.Shall_Combine_Adjacent_Type;
-            My_Children               : aliased Fs.Child_Vectors.Vector;
+            My_Children               : aliased Fs.Child_Vector.T;
          end record;
 
    end Request;
@@ -1481,52 +1492,53 @@ package X_Proto is
 
          type X_Id_Unions_Const_Ptr is access constant X_Id_Union_Vector.T;
 
-         package Type_Definition_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                        Element_Type => Type_Definition.Ptr,
-                                                                        "="          => Type_Definition."=");
+         package Type_Definition_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Type_Definition.Ptr,
+                                                                               "="        => Type_Definition."=",
+                                                                               MAX_LENGTH => 100);
 
-         type Type_Definitions_Const_Ptr is access constant Type_Definition_Vectors.Vector;
+         type Type_Definitions_Const_Ptr is access constant Type_Definition_Vector.T;
 
-         package Enum_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                             Element_Type => Enum.Ptr,
-                                                             "="          => Enum."=");
-         type Enums_Const_Ptr is access constant Enum_Vectors.Vector;
+         package Enum_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Enum.Ptr,
+                                                                    "="        => Enum."=",
+                                                                    MAX_LENGTH => 100);
 
-         package Event_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => Event.Ptr,
-                                                              "="          => Event."=");
+         type Enums_Const_Ptr is access constant Enum_Vector.T;
 
-         type Events_Const_Ptr is access constant Event_Vectors.Vector;
+         package Event_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Event.Ptr,
+                                                                     "="        => Event."=",
+                                                                     MAX_LENGTH => 100);
 
-         package Event_Copy_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                   Element_Type => Event_Copy.Ptr,
-                                                                   "="          => Event_Copy."=");
+         type Events_Const_Ptr is access constant Event_Vector.T;
 
-         type Event_Copies_Const_Ptr is access constant Event_Copy_Vectors.Vector;
+         package Event_Copy_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Event_Copy.Ptr,
+                                                                          "="        => Event_Copy."=",
+                                                                          MAX_LENGTH => 100);
 
-         package Union_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => Union.Ptr,
-                                                              "="          => Union."=");
+         type Event_Copies_Const_Ptr is access constant Event_Copy_Vector.T;
 
-         type Unions_Const_Ptr is access constant Union_Vectors.Vector;
+         package Union_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Union.Ptr,
+                                                                     "="        => Union."=",
+                                                                     MAX_LENGTH => 100);
 
-         package Error_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                              Element_Type => Error.Ptr,
-                                                              "="          => Error."=");
+         type Unions_Const_Ptr is access constant Union_Vector.T;
 
-         type Errors_Const_Ptr is access constant Error_Vectors.Vector;
+         package Error_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Error.Ptr,
+                                                                     "="        => Error."=",
+                                                                     MAX_LENGTH => 100);
 
-         package Error_Copy_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                   Element_Type => Error_Copy.Ptr,
-                                                                   "="          => Error_Copy."=");
+         type Errors_Const_Ptr is access constant Error_Vector.T;
 
-         type Error_Copies_Const_Ptr is access constant Error_Copy_Vectors.Vector;
+         package Error_Copy_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Error_Copy.Ptr,
+                                                                          "="        => Error_Copy."=",
+                                                                          MAX_LENGTH => 100);
 
-         package Request_Vectors is new Ada.Containers.Vectors (Index_Type   => Positive,
-                                                                Element_Type => Request.Ptr,
-                                                                "="          => Request."=");
+         type Error_Copies_Const_Ptr is access constant Error_Copy_Vector.T;
 
-         type Requests_Const_Ptr is access constant Request_Vectors.Vector;
+         package Request_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Request.Ptr,
+                                                                       "="        => Request."=",
+                                                                       MAX_LENGTH => 150);
+
+         type Requests_Const_Ptr is access constant Request_Vector.T;
 
       end Fs;
 
@@ -1602,14 +1614,14 @@ package X_Proto is
             My_Structs          : aliased Fs.Struct_Vector.T;
             My_X_Ids            : aliased Fs.X_Id_Vector.T;
             My_X_Id_Unions      : aliased Fs.X_Id_Union_Vector.T;
-            My_Type_Definitions : aliased Fs.Type_Definition_Vectors.Vector;
-            My_Enums            : aliased Fs.Enum_Vectors.Vector;
-            My_Events           : aliased Fs.Event_Vectors.Vector;
-            My_Event_Copies     : aliased Fs.Event_Copy_Vectors.Vector;
-            My_Unions           : aliased Fs.Union_Vectors.Vector;
-            My_Errors           : aliased Fs.Error_Vectors.Vector;
-            My_Error_Copies     : aliased Fs.Error_Copy_Vectors.Vector;
-            My_Requests         : aliased Fs.Request_Vectors.Vector;
+            My_Type_Definitions : aliased Fs.Type_Definition_Vector.T;
+            My_Enums            : aliased Fs.Enum_Vector.T;
+            My_Events           : aliased Fs.Event_Vector.T;
+            My_Event_Copies     : aliased Fs.Event_Copy_Vector.T;
+            My_Unions           : aliased Fs.Union_Vector.T;
+            My_Errors           : aliased Fs.Error_Vector.T;
+            My_Error_Copies     : aliased Fs.Error_Copy_Vector.T;
+            My_Requests         : aliased Fs.Request_Vector.T;
          end record;
 
    end Xcb;
@@ -1619,7 +1631,7 @@ private
    type Operation_T is tagged limited
       record
          My_Op      : aliased Operation.Fs.Op_Type;
-         My_Members : aliased Operation.Fs.Member_Vectors.Vector;
+         My_Members : aliased Operation.Fs.Member_Vector.T;
       end record;
 
 end X_Proto;

@@ -2,14 +2,16 @@ package body X_Proto is
 
    package body Struct is
 
+      use Fs.Member_Vector;
+
       function Name (This : T) return Fs.Const_Name_Ptr is
       begin
          return This.Name'Unchecked_Access;
       end Name;
 
-      function Members (This : T) return Fs.Member_Vectors.Vector is
+      function Members (This : T) return Fs.Members_Const_Ptr is
       begin
-         return (This.Members);
+         return This.Members'Unchecked_Access;
       end Members;
 
       procedure Set_Name (This : in out T;
@@ -22,7 +24,7 @@ package body X_Proto is
       procedure Append_Member (This   : in out T;
                                Member : Fs.Member_Ptr) is
       begin
-         This.Members.Append (Member);
+         Append (This.Members, Member);
       end Append_Member;
 
    end Struct;
@@ -61,6 +63,8 @@ package body X_Proto is
 
    package body X_Id_Union is
 
+      use Fs.Type_Vector;
+
       function Name (This : T) return Fs.Name_Const_Ptr is
       begin
          return This.My_Name'Unchecked_Access;
@@ -81,7 +85,7 @@ package body X_Proto is
       procedure Append_Kind (This : in out T;
                              Kind : Type_P.Ptr) is
       begin
-         This.My_Kinds.Append (Kind);
+         Append (This.My_Kinds, Kind);
       end Append_Kind;
 
    end X_Id_Union;
@@ -180,6 +184,9 @@ package body X_Proto is
 
    package body Enum is
 
+      use Fs.Item_Vector;
+      use Fs.Documentation_Vector;
+
       function Name (This : T) return Fs.Name_Const_Ptr is
       begin
          return This.My_Name'Unchecked_Access;
@@ -205,15 +212,15 @@ package body X_Proto is
       procedure Append_Item (This   : in out T;
                              Item_V : Item.Ptr) is
       begin
-         Fs.Item_Vectors.Append (Container => This.My_Items,
-                                 New_Item  => Item_V);
+         Append (This      => This.My_Items,
+                 New_Item  => Item_V);
       end Append_Item;
 
       procedure Append_Documentation (This            : in out T;
                                       Documentation_V : Documentation.Ptr) is
       begin
-         Fs.Documentation_Vectors.Append (Container => This.My_Documentations,
-                                          New_Item  => Documentation_V);
+         Append (This     => This.My_Documentations,
+                 New_Item => Documentation_V);
       end Append_Documentation;
 
    end Enum;
@@ -270,6 +277,8 @@ package body X_Proto is
 
    package body List is
 
+      use Fs.Member_Vector;
+
       function Kind (This : T) return Fs.Kind_Const_Ptr is
       begin
          return This.My_Kind'Unchecked_Access;
@@ -302,13 +311,15 @@ package body X_Proto is
       procedure Append_Member (This   : in out T;
                                Member : Fs.Member_Ptr) is
       begin
-         Fs.Member_Vectors.Append (Container => This.My_Members,
-                                   New_Item  => Member);
+         Append (This     => This.My_Members,
+                 New_Item => Member);
       end Append_Member;
 
    end List;
 
    package body Operation is
+
+      use Fs.Member_Vector;
 
       function Op (This : T) return Fs.Op_Const_Ptr is
       begin
@@ -330,8 +341,8 @@ package body X_Proto is
       procedure Append_Member (This   : in out T;
                                Member : Fs.Member_Ptr) is
       begin
-         Fs.Member_Vectors.Append (Container => This.My_Members,
-                                   New_Item  => Member);
+         Append (This     => This.My_Members,
+                 New_Item => Member);
       end Append_Member;
 
    end Operation;
@@ -365,6 +376,15 @@ package body X_Proto is
    end Type_Definition;
 
    package body Xcb is
+
+      use Fs.Type_Definition_Vector;
+      use Fs.Enum_Vector;
+      use Fs.Event_Vector;
+      use Fs.Event_Copy_Vector;
+      use Fs.Union_Vector;
+      use Fs.Error_Vector;
+      use Fs.Error_Copy_Vector;
+      use Fs.Request_Vector;
 
       function Header (This : T) return Fs.Header_Const_Ptr is
       begin
@@ -457,62 +477,59 @@ package body X_Proto is
       procedure Append_Type_Definition (This : in out T;
                                         Item : Type_Definition.Ptr) is
       begin
-         Fs.Type_Definition_Vectors.Append (Container => This.My_Type_Definitions,
-                                            New_Item  => Item);
+         Append (This     => This.My_Type_Definitions,
+                 New_Item => Item);
       end Append_Type_Definition;
 
       procedure Append_Enum (This : in out T;
                              Item : Enum.Ptr) is
       begin
-         Fs.Enum_Vectors.Append (Container => This.My_Enums,
-                                 New_Item  => Item);
+         Append (This     => This.My_Enums,
+                 New_Item => Item);
       end Append_Enum;
 
       procedure Append_Event (This : in out T;
                               Item : Event.Ptr) is
       begin
-         Fs.Event_Vectors.Append (Container => This.My_Events,
-                                  New_Item  => Item);
+         Append (This     => This.My_Events,
+                 New_Item => Item);
       end Append_Event;
 
       procedure Append_Event_Copy (This : in out T;
                                    Item : Event_Copy.Ptr) is
       begin
-         Fs.Event_Copy_Vectors.Append (Container => This.My_Event_Copies,
-                                       New_Item  => Item);
+         Append (This.My_Event_Copies, Item);
       end Append_Event_Copy;
 
       procedure Append_Union (This : in out T;
                               Item : Union.Ptr) is
       begin
-         Fs.Union_Vectors.Append (Container => This.My_Unions,
-                                  New_Item  => Item);
+         Append (This.My_Unions, Item);
       end Append_Union;
 
       procedure Append_Error (This : in out T;
                               Item : Error.Ptr) is
       begin
-         Fs.Error_Vectors.Append (Container => This.My_Errors,
-                                  New_Item  => Item);
+         Append (This.My_Errors, Item);
       end Append_Error;
 
       procedure Append_Error_Copy (This : in out T;
                                    Item : Error_Copy.Ptr) is
       begin
-         Fs.Error_Copy_Vectors.Append (Container => This.My_Error_Copies,
-                                       New_Item  => Item);
+         Append (This.My_Error_Copies, Item);
       end Append_Error_Copy;
 
       procedure Append_Request (This : in out T;
                                 Item : Request.Ptr) is
       begin
-         Fs.Request_Vectors.Append (Container => This.My_Requests,
-                                    New_Item  => Item);
+         Append (This.My_Requests, Item);
       end Append_Request;
 
    end Xcb;
 
    package body Event is
+
+      use Fs.Member_Vector;
 
       function Name (This : T) return Fs.Name_Const_Ptr is
       begin
@@ -570,8 +587,7 @@ package body X_Proto is
       procedure Append_Member (This   : in out T;
                                Member : Fs.Member_Ptr) is
       begin
-         Fs.Member_Vectors.Append (Container => This.My_Members,
-                                   New_Item  => Member);
+         Append (This.My_Members, Member);
       end Append_Member;
 
    end Event;
@@ -618,6 +634,8 @@ package body X_Proto is
 
    package body Union is
 
+      use Fs.Child_Vector;
+
       function Name (This : T) return Fs.Name_Const_Ptr is
       begin
          return This.My_Name'Unchecked_Access;
@@ -638,13 +656,14 @@ package body X_Proto is
       procedure Append_Child (This  : in out T;
                               Child : Fs.Child_Ptr) is
       begin
-         Fs.Child_Vectors.Append (Container => This.My_Children,
-                                  New_Item  => Child);
+         Append (This.My_Children, Child);
       end Append_Child;
 
    end Union;
 
    package body Error is
+
+      use Fs.Child_Vector;
 
       function Name (This : T) return Fs.Name_Const_Ptr is
       begin
@@ -702,8 +721,7 @@ package body X_Proto is
       procedure Append_Child (This  : in out T;
                               Child : Fs.Child_Ptr) is
       begin
-         Fs.Child_Vectors.Append (Container => This.My_Children,
-                                  New_Item  => Child);
+         Append (This.My_Children, Child);
       end Append_Child;
 
    end Error;
@@ -750,6 +768,8 @@ package body X_Proto is
 
    package body Request is
 
+      use Fs.Child_Vector;
+
       function Name (This : T) return Fs.Name_Const_Ptr is
       begin
          return This.My_Name'Unchecked_Access;
@@ -794,13 +814,14 @@ package body X_Proto is
       procedure Append_Child (This  : in out T;
                               Child : Fs.Child_Ptr) is
       begin
-         Fs.Child_Vectors.Append (Container => This.My_Children,
-                                  New_Item  => Child);
+         Append (This.My_Children, Child);
       end Append_Child;
 
    end Request;
 
    package body Expression_Field is
+
+      use Fs.Child_Vector;
 
       function Kind (This : T) return Fs.Kind_Const_Ptr is
       begin
@@ -834,13 +855,14 @@ package body X_Proto is
       procedure Append_Child (This  : in out T;
                               Child : Fs.Child_Ptr) is
       begin
-         Fs.Child_Vectors.Append (Container => This.My_Children,
-                                  New_Item  => Child);
+         Append (This.My_Children, Child);
       end Append_Child;
 
    end Expression_Field;
 
    package body Documentation is
+
+      use Fs.Member_Vector;
 
       function Brief_Description (This : T) return Fs.Brief_Description_Const_Ptr is
       begin
@@ -874,8 +896,7 @@ package body X_Proto is
       procedure Append_Member (This   : in out T;
                                Member : Fs.Member_Ptr) is
       begin
-         Fs.Member_Vectors.Append (Container => This.My_Members,
-                                   New_Item  => Member);
+         Append (This.My_Members, Member);
       end Append_Member;
 
    end Documentation;
@@ -966,6 +987,8 @@ package body X_Proto is
 
    package body Reply is
 
+      use Fs.Child_Vector;
+
       function Children (This : T) return Fs.Children_Const_Ptr is
       begin
          return This.My_Children'Unchecked_Access;
@@ -974,8 +997,7 @@ package body X_Proto is
       procedure Append_Child (This  : in out T;
                               Child : Fs.Child_Ptr) is
       begin
-         Fs.Child_Vectors.Append (Container => This.My_Children,
-                                  New_Item  => Child);
+         Append (This.My_Children, Child);
       end Append_Child;
 
    end Reply;

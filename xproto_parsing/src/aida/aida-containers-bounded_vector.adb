@@ -18,6 +18,17 @@ package body Aida.Containers.Bounded_Vector is
       end if;
    end Append;
 
+   function Contains (This    : T;
+                      Element : Element_T) return Boolean is
+   begin
+      for I in Extended_Index_T range 1..This.Last_Index loop
+         if This.Items (I) = Element then
+            return True;
+         end if;
+      end loop;
+      return False;
+   end Contains;
+
    function Element (This  : T;
                      Index : Index_T) return Element_T is
    begin

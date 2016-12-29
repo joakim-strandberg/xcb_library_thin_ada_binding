@@ -23,6 +23,9 @@ package Aida.Containers.Bounded_Vector is
    procedure Append (This     : in out T;
                      New_Item : Element_T);
 
+   function Contains (This    : T;
+                      Element : Element_T) return Boolean;
+
    function Last_Index (This : T) return Extended_Index_T;
 
    function Element (This  : T;
@@ -46,6 +49,8 @@ package Aida.Containers.Bounded_Vector is
 
    function Const_Ref (This  : T;
                        Index : Index_T) return Element_Const_Ptr;
+
+   type Ptr is access all T;
 
 private
 
