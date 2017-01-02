@@ -30,8 +30,6 @@ procedure Main is
 
          C := DIO.Size (File);
 
-         Ada.Text_IO.Put_Line (C'Img);
-
          DIO.Close (File);
          return Natural (C);
       end Determine_File_Size;
