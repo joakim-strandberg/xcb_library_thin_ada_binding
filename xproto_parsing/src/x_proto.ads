@@ -9,56 +9,44 @@ package X_Proto is
 
       package Fs is
 
-         type Kind_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Kind_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Kind_Const_Ptr is access constant Kind_Type;
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Name_Const_Ptr is access constant Name_Type;
 
-         type Enum_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Enum_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Enum_Const_Ptr is access constant Enum_Type;
 
-         type Mask_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Mask_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Mask_Const_Ptr is access constant Mask_Type;
 
-         type Value_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Value_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Value_Const_Ptr is access constant Value_Type;
 
-         type Alt_Enum_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Alt_Enum_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Alt_Enum_Const_Ptr is access constant Alt_Enum_Type;
@@ -117,11 +105,9 @@ package X_Proto is
 
       package Fs is
 
-         type Bytes_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Positive;
-               when False => null;
-            end case;
+         type Bytes_Type is record
+            Exists : Boolean := False;
+            Value  : Positive;
          end record;
 
          type Bytes_Const_Ptr is access constant Bytes_Type;
@@ -160,11 +146,9 @@ package X_Proto is
 
       package Fs is
 
-         type Op_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Op_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Op_Const_Ptr is access constant Op_Type;
@@ -215,20 +199,16 @@ package X_Proto is
 
       package Fs is
 
-         type Kind_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Kind_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Kind_Const_Ptr is access constant Kind_Type;
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Name_Const_Ptr is access constant Name_Type;
@@ -300,11 +280,9 @@ package X_Proto is
 
          type Bit_Ptr is access all Bit_Type;
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Name_Const_Ptr is access constant Name_Type;
@@ -350,20 +328,16 @@ package X_Proto is
 
       package Fs is
 
-         type Kind_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Kind_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Kind_Const_Ptr is access constant Kind_Type;
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Name_Const_Ptr is access constant Name_Type;
@@ -422,38 +396,30 @@ package X_Proto is
 
       package Fs is
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Name_Const_Ptr is access constant Name_Type;
 
-         type Number_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Natural;
-               when False => null;
-            end case;
+         type Number_Type is record
+            Exists : Boolean := False;
+            Value  : Natural;
          end record;
 
          type Number_Const_Ptr is access constant Number_Type;
 
-         type Kind_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Kind_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Kind_Const_Ptr is access constant Kind_Type;
 
-         type Value_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Value_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Value_Const_Ptr is access constant Value_Type;
@@ -525,29 +491,23 @@ package X_Proto is
 
       package Fs is
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Name_Const_Ptr is access constant Name_Type;
 
-         type Number_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Natural;
-               when False => null;
-            end case;
+         type Number_Type is record
+            Exists : Boolean := False;
+            Value  : Natural;
          end record;
 
          type Number_Const_Ptr is access constant Number_Type;
 
-         type Ref_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Ref_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Ref_Const_Ptr is access constant Ref_Type;
@@ -588,11 +548,9 @@ package X_Proto is
 
       package Fs is
 
-         type Value_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Value_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Value_Const_Ptr is access constant Value_Type;
@@ -621,20 +579,16 @@ package X_Proto is
 
       package Fs is
 
-         type Kind_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Kind_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Kind_Const_Ptr is access constant Kind_Type;
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Name_Const_Ptr is access constant Name_Type;
@@ -669,20 +623,16 @@ package X_Proto is
 
       package Fs is
 
-         type Brief_Description_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Brief_Description_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Brief_Description_Const_Ptr is access constant Brief_Description_Type;
 
-         type Description_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Description_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Description_Const_Ptr is access constant Description_Type;
@@ -747,29 +697,23 @@ package X_Proto is
 
       package Fs is
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Name_Const_Ptr is access constant Name_Type;
 
-         type Number_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Natural;
-               when False => null;
-            end case;
+         type Number_Type is record
+            Exists : Boolean := False;
+            Value  : Natural;
          end record;
 
          type Number_Const_Ptr is access constant Number_Type;
 
-         type Ref_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Ref_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Ref_Const_Ptr is access constant Ref_Type;
@@ -810,11 +754,9 @@ package X_Proto is
 
       package Fs is
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Name_Const_Ptr is access constant Name_Type;
@@ -843,11 +785,9 @@ package X_Proto is
 
       package Fs is
 
-         type Value_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Value_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Value_Const_Ptr is access constant Value_Type;
@@ -876,11 +816,9 @@ package X_Proto is
 
       package Fs is
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Name_Const_Ptr is access constant Name_Type;
@@ -920,20 +858,16 @@ package X_Proto is
 
       package Fs is
 
-         type Old_Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Old_Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Old_Name_Const_Ptr is access constant Old_Name_Type;
 
-         type New_Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type New_Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type New_Name_Const_Ptr is access constant New_Name_Type;
@@ -968,11 +902,9 @@ package X_Proto is
 
       package Fs is
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Name_Const_Ptr is access constant Name_Type;
@@ -1025,11 +957,9 @@ package X_Proto is
 
       package Fs is
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Name_Const_Ptr is access constant Name_Type;
@@ -1082,11 +1012,9 @@ package X_Proto is
 
       package Fs is
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Const_Name_Ptr is access constant Name_Type;
@@ -1147,38 +1075,30 @@ package X_Proto is
 
       package Fs is
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Name_Const_Ptr is access constant Name_Type;
 
-         type Number_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Natural;
-               when False => null;
-            end case;
+         type Number_Type is record
+            Exists : Boolean := False;
+            Value  : Natural;
          end record;
 
          type Number_Const_Ptr is access constant Number_Type;
 
-         type No_Sequence_Number_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Boolean;
-               when False => null;
-            end case;
+         type No_Sequence_Number_Type is record
+            Exists : Boolean := False;
+            Value  : Boolean;
          end record;
 
          type No_Sequence_Number_Const_Ptr is access constant No_Sequence_Number_Type;
 
-         type XGE_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Boolean;
-               when False => null;
-            end case;
+         type XGE_Type is record
+            Exists : Boolean := False;
+            Value  : Boolean;
          end record;
 
          type XGE_Const_Ptr is access constant XGE_Type;
@@ -1255,29 +1175,23 @@ package X_Proto is
 
       package Fs is
 
-         type Mask_Kind_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Mask_Kind_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Mask_Kind_Const_Ptr is access constant Mask_Kind_Type;
 
-         type Mask_Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Mask_Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Mask_Name_Const_Ptr is access constant Mask_Name_Type;
 
-         type List_Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type List_Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type List_Name_Const_Ptr is access constant List_Name_Type;
@@ -1366,29 +1280,23 @@ package X_Proto is
 
       package Fs is
 
-         type Name_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Name_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Name_Const_Ptr is access constant Name_Type;
 
-         type Op_Code_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Natural;
-               when False => null;
-            end case;
+         type Op_Code_Type is record
+            Exists : Boolean := False;
+            Value  : Natural;
          end record;
 
          type Op_Code_Const_Ptr is access constant Op_Code_Type;
 
-         type Shall_Combine_Adjacent_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Boolean;
-               when False => null;
-            end case;
+         type Shall_Combine_Adjacent_Type is record
+            Exists : Boolean := False;
+            Value  : Boolean;
          end record;
 
          type Shall_Combine_Adjacent_Const_Ptr is access constant Shall_Combine_Adjacent_Type;
@@ -1465,11 +1373,9 @@ package X_Proto is
 
       package Fs is
 
-         type Header_Type (Exists : Boolean := False) is record
-            case Exists is
-               when True  => Value : Large_Bounded_String.T;
-               when False => null;
-            end case;
+         type Header_Type is record
+            Exists : Boolean := False;
+            Value  : Large_Bounded_String.T;
          end record;
 
          type Header_Const_Ptr is access constant Header_Type;
