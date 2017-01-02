@@ -1,7 +1,6 @@
 with Strings_Edit.UTF8;
 with Ada.Characters.Latin_1;
 --  with Ada.Text_IO;
-with BC.Containers.Collections.Unmanaged;
 
 procedure SXML.Generic_Parse_XML_File (Contents      : String;
                                        Error_Message : out Error_Message_P.T;
@@ -54,13 +53,13 @@ is
 
    F : constant Natural := Contents'First;
 
-   package Abstract_Boolean_List is new BC.Containers (Item => Boolean);
+   package Boolean_List is new Aida.Containers.Bounded_Vector (Element_T  => Boolean,
+                                                               "="        => "=",
+                                                               MAX_LENGTH => 20);
 
-   package Boolean_List_Collection is new Abstract_Boolean_List.Collections;
+   use Boolean_List;
 
-   package Boolean_List is new Boolean_List_Collection.Unmanaged;
-
-   Shall_Ignore_Tag_Value_List : Boolean_List.Collection;
+   Shall_Ignore_Tag_Value_List : Boolean_List.T;
 
    function Is_Special_Symbol (CP : Strings_Edit.UTF8.Code_Point) return Boolean is
    begin
@@ -203,8 +202,8 @@ begin
                              New_Item => S);
                   end;
 
-                  Boolean_List.Append (C    => Shall_Ignore_Tag_Value_List,
-                                       Elem => Shall_Ignore_Tag_Value);
+                  Append (This     => Shall_Ignore_Tag_Value_List,
+                          New_Item => Shall_Ignore_Tag_Value);
 
                   Shall_Ignore_Tag_Value := False;
 
@@ -229,8 +228,8 @@ begin
                              New_Item => S);
                   end;
 
-                  Boolean_List.Append (C    => Shall_Ignore_Tag_Value_List,
-                                       Elem => Shall_Ignore_Tag_Value);
+                  Append (This     => Shall_Ignore_Tag_Value_List,
+                          New_Item => Shall_Ignore_Tag_Value);
 
                   Shall_Ignore_Tag_Value := False;
                   Tag_Value_First_Index := P;
@@ -270,6 +269,7 @@ begin
                      end if;
                   end;
                   Shall_Ignore_Tag_Value := True;
+                  Delete_Last (Shall_Ignore_Tag_Value_List);
                else
                   Initialize (Error_Message, "Expected '>', state " & State_Id'Img & " " & Contents (F..P));
                   Is_Success := False;
@@ -451,9 +451,8 @@ begin
                         end if;
                      end if;
 
-                     Shall_Ignore_Tag_Value := Boolean_List.Last (Shall_Ignore_Tag_Value_List);
-                     Boolean_List.Remove (C        => Shall_Ignore_Tag_Value_List,
-                                          At_Index => Boolean_List.Length (Shall_Ignore_Tag_Value_List));
+                     Shall_Ignore_Tag_Value := Last_Element (Shall_Ignore_Tag_Value_List);
+                     Delete_Last (Shall_Ignore_Tag_Value_List);
                   end;
 
                   State_Id := Expecting_NL_Sign_Or_Space_Or_Less_Sign;

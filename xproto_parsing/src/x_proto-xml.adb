@@ -13,8 +13,29 @@ package body X_Proto.XML is
    use SXML.DL;
    use SXML.Bounded_String;
    use Large_Bounded_String;
-
-   use type Xcb.Ptr;
+   use X_Proto.Xcb;
+   use X_Proto.Struct;
+   use X_Proto.Union;
+   use X_Proto.Enum;
+   use X_Proto.X_Id_Union;
+   use X_Proto.List;
+   use X_Proto.Event;
+   use X_Proto.Event_Copy;
+   use X_Proto.Documentation;
+   use X_Proto.Error;
+   use X_Proto.Error_Copy;
+   use X_Proto.Request;
+   use X_Proto.Reply;
+   use X_Proto.Expression_Field;
+   use X_Proto.Field;
+   use X_Proto.X_Id;
+   use X_Proto.Type_Definition;
+   use X_Proto.Pad;
+   use X_Proto.Item;
+   use X_Proto.See;
+   use X_Proto.Value_Param;
+   use X_Proto.Type_P;
+   use X_Proto.Example;
 
    Tag_Xcb                                    : constant String := "xcb";
    Tag_Xcb_Attribute_Header                   : constant String := "header";
@@ -280,7 +301,7 @@ package body X_Proto.XML is
                   begin
                      case Prev_Tag.Kind_Id is
                         when Tag_Id.Xcb_Type_Id =>
-                           Prev_Tag.Xcb_V.Append_Struct (Struct_V);
+                           Append_Struct (Prev_Tag.Xcb_V.all, Struct_V);
                            Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Enum_Struct,
                                                          Find_Tag             => Prev_Tag,
                                                          Struct_V             => Struct_V));
@@ -294,7 +315,7 @@ package body X_Proto.XML is
                   declare
                      X_Id_Type_V : constant X_Id.Ptr := new X_Id.T;
                   begin
-                     Prev_Tag.Xcb_V.Append_X_Id (X_Id_Type_V);
+                     Append_X_Id (Prev_Tag.Xcb_V.all, X_Id_Type_V);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id     => Tag_Id.X_Id_Kind_Type_Id,
                                                    Find_Tag    => Prev_Tag,
@@ -304,7 +325,7 @@ package body X_Proto.XML is
                   declare
                      X_Id_Union_V : constant X_Id_Union.Ptr := new X_Id_Union.T;
                   begin
-                     Prev_Tag.Xcb_V.Append_X_Id_Union (X_Id_Union_V);
+                     Append_X_Id_Union (Prev_Tag.Xcb_V.all, X_Id_Union_V);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id      => Tag_Id.Enum_X_Id_Union,
                                                    Find_Tag     => Prev_Tag,
@@ -314,7 +335,7 @@ package body X_Proto.XML is
                   declare
                      TD : constant Type_Definition.Ptr := new Type_Definition.T;
                   begin
-                     Prev_Tag.Xcb_V.Append_Type_Definition (TD);
+                     Append_Type_Definition (Prev_Tag.Xcb_V.all, TD);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id           => Tag_Id.Type_Definition_Type_Id,
                                                    Find_Tag          => Prev_Tag,
@@ -324,7 +345,7 @@ package body X_Proto.XML is
                   declare
                      Enum_V : constant Enum.Ptr := new Enum.T;
                   begin
-                     Prev_Tag.Xcb_V.Append_Enum (Enum_V);
+                     Append_Enum (Prev_Tag.Xcb_V.all, Enum_V);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Enum,
                                                    Find_Tag => Prev_Tag,
@@ -334,7 +355,7 @@ package body X_Proto.XML is
                   declare
                      E : constant Event.Ptr := new Event.T;
                   begin
-                     Prev_Tag.Xcb_V.Append_Event (E);
+                     Append_Event (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Event_Type_Id,
                                                    Find_Tag => Prev_Tag,
@@ -344,7 +365,7 @@ package body X_Proto.XML is
                   declare
                      EC : constant Event_Copy.Ptr := new Event_Copy.T;
                   begin
-                     Prev_Tag.Xcb_V.Append_Event_Copy (EC);
+                     Append_Event_Copy (Prev_Tag.Xcb_V.all, EC);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id      => Tag_Id.Event_Copy_Type_Id,
                                                    Find_Tag     => Prev_Tag,
@@ -354,7 +375,7 @@ package body X_Proto.XML is
                   declare
                      U : constant Union.Ptr := new Union.T;
                   begin
-                     Prev_Tag.Xcb_V.Append_Union (U);
+                     Append_Union (Prev_Tag.Xcb_V.all, U);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Union_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -364,7 +385,7 @@ package body X_Proto.XML is
                   declare
                      E : constant Error.Ptr := new Error.T;
                   begin
-                     Prev_Tag.Xcb_V.Append_Error (E);
+                     Append_Error (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -374,7 +395,7 @@ package body X_Proto.XML is
                   declare
                      E : constant Error_Copy.Ptr := new Error_Copy.T;
                   begin
-                     Prev_Tag.Xcb_V.Append_Error_Copy (E);
+                     Append_Error_Copy (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Copy_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -384,7 +405,7 @@ package body X_Proto.XML is
                   declare
                      R : constant Request.Ptr := new Request.T;
                   begin
-                     Prev_Tag.Xcb_V.Append_Request (R);
+                     Append_Request (Prev_Tag.Xcb_V.all, R);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Request_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -399,7 +420,7 @@ package body X_Proto.XML is
                   declare
                      F : Struct.Fs.Member_Ptr := new Struct.Fs.Member_Type (Field_Member);
                   begin
-                     Prev_Tag.Struct_V.Append_Member (F);
+                     Append_Member (Prev_Tag.Struct_V.all, F);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
                                                    Find_Tag => Prev_Tag,
@@ -409,7 +430,7 @@ package body X_Proto.XML is
                   declare
                      P : Struct.Fs.Member_Ptr := new Struct.Fs.Member_Type (Pad_Member);
                   begin
-                     Prev_Tag.Struct_V.Append_Member (P);
+                     Append_Member (Prev_Tag.Struct_V.all, P);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
                                                    Find_Tag => Prev_Tag,
@@ -419,7 +440,7 @@ package body X_Proto.XML is
                   declare
                      L : Struct.Fs.Member_Ptr := new Struct.Fs.Member_Type (List_Member);
                   begin
-                     Prev_Tag.Struct_V.Append_Member (L);
+                     Append_Member (Prev_Tag.Struct_V.all, L);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.List_Type_Id,
                                                    Find_Tag => Prev_Tag,
@@ -434,7 +455,7 @@ package body X_Proto.XML is
                   declare
                      Kind : constant Type_P.Ptr := new Type_P.T;
                   begin
-                     Prev_Tag.X_Id_Union_V.Append_Kind (Kind);
+                     Append_Kind (Prev_Tag.X_Id_Union_V.all, Kind);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Kind,
                                                    Find_Tag => Prev_Tag,
@@ -449,7 +470,7 @@ package body X_Proto.XML is
                   declare
                      Item_V : constant Item.Ptr := new Item.T;
                   begin
-                     Prev_Tag.Enum_V.Append_Item (Item_V);
+                     Append_Item (Prev_Tag.Enum_V.all, Item_V);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Item_Type_Id,
                                                    Find_Tag => Prev_Tag,
@@ -459,7 +480,7 @@ package body X_Proto.XML is
                   declare
                      D : constant Documentation.Ptr := new Documentation.T;
                   begin
-                     Prev_Tag.Enum_V.Append_Documentation (D);
+                     Append_Documentation (Prev_Tag.Enum_V.all, D);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id         => Tag_Id.Documentation_Type_Id,
                                                    Find_Tag        => Prev_Tag,
@@ -485,7 +506,7 @@ package body X_Proto.XML is
                   declare
                      Operation : List.Fs.Member_Ptr := new List.Fs.Member_Type (List.Fs.List_Member_Kind_Operation);
                   begin
-                     Prev_Tag.List_V.Append_Member (Operation);
+                     Append_Member (Prev_Tag.List_V.all, Operation);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Op_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -495,7 +516,7 @@ package body X_Proto.XML is
                   declare
                      V : List.Fs.Member_Ptr := new List.Fs.Member_Type (List.Fs.List_Member_Kind_Value);
                   begin
-                     Prev_Tag.List_V.Append_Member (V);
+                     Append_Member (Prev_Tag.List_V.all, V);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Value_Type_Id,
                                                    Find_Tag => Prev_Tag,
@@ -546,7 +567,7 @@ package body X_Proto.XML is
                   declare
                      F : Event.Fs.Member_Ptr := new Event.Fs.Member_Type (Event.Fs.Event_Member_Field);
                   begin
-                     Prev_Tag.Event_V.Append_Member (F);
+                     Append_Member (Prev_Tag.Event_V.all, F);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Enum_Field,
                                                    Find_Tag             => Prev_Tag,
@@ -556,7 +577,7 @@ package body X_Proto.XML is
                   declare
                      P : Event.Fs.Member_Ptr := new Event.Fs.Member_Type (Event.Fs.Event_Member_Pad);
                   begin
-                     Prev_Tag.Event_V.Append_Member (P);
+                     Append_Member (Prev_Tag.Event_V.all, P);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
                                                    Find_Tag => Prev_Tag,
@@ -566,7 +587,7 @@ package body X_Proto.XML is
                   declare
                      D : Event.Fs.Member_Ptr := new Event.Fs.Member_Type (Event.Fs.Event_Member_Doc);
                   begin
-                     Prev_Tag.Event_V.Append_Member (D);
+                     Append_Member (Prev_Tag.Event_V.all, D);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -576,7 +597,7 @@ package body X_Proto.XML is
                   declare
                      L : Event.Fs.Member_Ptr := new Event.Fs.Member_Type (Event.Fs.Event_Member_List);
                   begin
-                     Prev_Tag.Event_V.Append_Member (L);
+                     Append_Member (Prev_Tag.Event_V.all, L);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -591,7 +612,7 @@ package body X_Proto.XML is
                   declare
                      D : Documentation.Fs.Member_Ptr := new Documentation.Fs.Member_Type (Documentation.Fs.Member_Field);
                   begin
-                     Prev_Tag.Documentation_V.Append_Member (D);
+                     Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
                                                    Find_Tag => Prev_Tag,
@@ -601,7 +622,7 @@ package body X_Proto.XML is
                   declare
                      D : Documentation.Fs.Member_Ptr := new Documentation.Fs.Member_Type (Documentation.Fs.Member_See);
                   begin
-                     Prev_Tag.Documentation_V.Append_Member (D);
+                     Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.See_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -611,7 +632,7 @@ package body X_Proto.XML is
                   declare
                      D : Documentation.Fs.Member_Ptr := new Documentation.Fs.Member_Type (Documentation.Fs.Member_Error);
                   begin
-                     Prev_Tag.Documentation_V.Append_Member (D);
+                     Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -621,7 +642,7 @@ package body X_Proto.XML is
                   declare
                      D : Documentation.Fs.Member_Ptr := new Documentation.Fs.Member_Type (Documentation.Fs.Member_Example);
                   begin
-                     Prev_Tag.Documentation_V.Append_Member (D);
+                     Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Example_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -640,7 +661,7 @@ package body X_Proto.XML is
                   declare
                      L : Union.Fs.Child_Ptr := new Union.Fs.Child_Type (Union.Fs.Child_List);
                   begin
-                     Prev_Tag.Union_V.Append_Child (L);
+                     Append_Child (Prev_Tag.Union_V.all, L);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.List_Type_Id,
                                                    Find_Tag => Prev_Tag,
@@ -655,7 +676,7 @@ package body X_Proto.XML is
                   declare
                      F : Error.Fs.Child_Ptr := new Error.Fs.Child_Type (Error.Fs.Child_Field);
                   begin
-                     Prev_Tag.Error_V.Append_Child (F);
+                     Append_Child (Prev_Tag.Error_V.all, F);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
                                                    Find_Tag => Prev_Tag,
@@ -665,7 +686,7 @@ package body X_Proto.XML is
                   declare
                      P : Error.Fs.Child_Ptr := new Error.Fs.Child_Type (Error.Fs.Child_Pad);
                   begin
-                     Prev_Tag.Error_V.Append_Child (P);
+                     Append_Child (Prev_Tag.Error_V.all, P);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
                                                    Find_Tag => Prev_Tag,
@@ -680,7 +701,7 @@ package body X_Proto.XML is
                   declare
                      F : Request.Fs.Child_Ptr := new Request.Fs.Child_Type (Request.Fs.Child_Field);
                   begin
-                     Prev_Tag.Request_V.Append_Child (F);
+                     Append_Child (Prev_Tag.Request_V.all, F);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
                                                    Find_Tag => Prev_Tag,
@@ -690,7 +711,7 @@ package body X_Proto.XML is
                   declare
                      P : Request.Fs.Child_Ptr := new Request.Fs.Child_Type (Request.Fs.Child_Pad);
                   begin
-                     Prev_Tag.Request_V.Append_Child (P);
+                     Append_Child (Prev_Tag.Request_V.all, P);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
                                                    Find_Tag => Prev_Tag,
@@ -700,7 +721,7 @@ package body X_Proto.XML is
                   declare
                      V : Request.Fs.Child_Ptr := new Request.Fs.Child_Type (Request.Fs.Child_Value_Param);
                   begin
-                     Prev_Tag.Request_V.Append_Child (V);
+                     Append_Child (Prev_Tag.Request_V.all, V);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Value_Param_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -710,7 +731,7 @@ package body X_Proto.XML is
                   declare
                      V : Request.Fs.Child_Ptr := new Request.Fs.Child_Type (Request.Fs.Child_Documentation);
                   begin
-                     Prev_Tag.Request_V.Append_Child (V);
+                     Append_Child (Prev_Tag.Request_V.all, V);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -720,7 +741,7 @@ package body X_Proto.XML is
                   declare
                      R : Request.Fs.Child_Ptr := new Request.Fs.Child_Type (Request.Fs.Child_Reply);
                   begin
-                     Prev_Tag.Request_V.Append_Child (R);
+                     Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Reply_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -730,7 +751,7 @@ package body X_Proto.XML is
                   declare
                      R : Request.Fs.Child_Ptr := new Request.Fs.Child_Type (Request.Fs.Child_List);
                   begin
-                     Prev_Tag.Request_V.Append_Child (R);
+                     Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -740,7 +761,7 @@ package body X_Proto.XML is
                   declare
                      R : Request.Fs.Child_Ptr := new Request.Fs.Child_Type (Request.Fs.Child_Expression_Field);
                   begin
-                     Prev_Tag.Request_V.Append_Child (R);
+                     Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Expression_Field_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -755,7 +776,7 @@ package body X_Proto.XML is
                   declare
                      F : Reply.Fs.Child_Ptr := new Reply.Fs.Child_Type (Reply.Fs.Child_Field);
                   begin
-                     Prev_Tag.Reply_V.Append_Child (F);
+                     Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
                                                    Find_Tag => Prev_Tag,
@@ -765,7 +786,7 @@ package body X_Proto.XML is
                   declare
                      F : Reply.Fs.Child_Ptr := new Reply.Fs.Child_Type (Reply.Fs.Child_Pad);
                   begin
-                     Prev_Tag.Reply_V.Append_Child (F);
+                     Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
                                                    Find_Tag => Prev_Tag,
@@ -775,7 +796,7 @@ package body X_Proto.XML is
                   declare
                      F : Reply.Fs.Child_Ptr := new Reply.Fs.Child_Type (Reply.Fs.Child_Documentation);
                   begin
-                     Prev_Tag.Reply_V.Append_Child (F);
+                     Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -785,7 +806,7 @@ package body X_Proto.XML is
                   declare
                      F : Reply.Fs.Child_Ptr := new Reply.Fs.Child_Type (Reply.Fs.Child_List);
                   begin
-                     Prev_Tag.Reply_V.Append_Child (F);
+                     Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -800,7 +821,7 @@ package body X_Proto.XML is
                   declare
                      C : Expression_Field.Fs.Child_Ptr := new Expression_Field.Fs.Child_Type (Expression_Field.Fs.Child_Operation);
                   begin
-                     Prev_Tag.Expression_Field_V.Append_Child (C);
+                     Append_Child (Prev_Tag.Expression_Field_V.all, C);
                      Is_Success := True;
                      Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Op_Type_Id,
                                                    Find_Tag             => Prev_Tag,
@@ -851,7 +872,7 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Xcb_V.Set_Header (V);
+                     Set_Header (Current_Tag.Xcb_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -863,7 +884,7 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Struct_V.Set_Name (V);
+                     Set_Name (Current_Tag.Struct_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -875,35 +896,35 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Field_V.Set_Kind (V);
+                     Set_Kind (Current_Tag.Field_V.all, V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Name then
                   declare
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Field_V.Set_Name (V);
+                     Set_Name (Current_Tag.Field_V.all, V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Enum then
                   declare
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Field_V.Set_Enum (V);
+                     Set_Enum (Current_Tag.Field_V.all, V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Mask then
                   declare
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Field_V.Set_Mask (V);
+                     Set_Mask (Current_Tag.Field_V.all, V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Alt_Enum then
                   declare
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Field_V.Set_Alt_Enum (V);
+                     Set_Alt_Enum (Current_Tag.Field_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -915,7 +936,7 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.X_Id_Kind_V.Set_Name (V);
+                     Set_Name (Current_Tag.X_Id_Kind_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -927,7 +948,7 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.X_Id_Union_V.Set_Name (V);
+                     Set_Name (Current_Tag.X_Id_Union_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -939,14 +960,14 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Type_Definition_V.Set_Old_Name (V);
+                     Set_Old_Name (Current_Tag.Type_Definition_V.all, V);
                   end;
                elsif Attribute_Name = Tag_Type_Definition_Attribute_New_Name then
                   declare
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Type_Definition_V.Set_New_Name (V);
+                     Set_New_Name (Current_Tag.Type_Definition_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -967,7 +988,7 @@ package body X_Proto.XML is
                         Is_Success := False;
                         Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Current_Tag.Pad_V.Set_Bytes (V);
+                        Set_Bytes (Current_Tag.Pad_V.all, V);
                      end if;
                   end;
                else
@@ -980,7 +1001,7 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Enum_V.Set_Name (V);
+                     Set_Name (Current_Tag.Enum_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -992,7 +1013,7 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Item_V.Set_Name (V);
+                     Set_Name (Current_Tag.Item_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -1004,14 +1025,14 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.List_V.Set_Kind (V);
+                     Set_Kind (Current_Tag.List_V.all, V);
                   end;
                elsif Attribute_Name = Tag_List_Attribute_Name then
                   declare
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.List_V.Set_Name (V);
+                     Set_Name (Current_Tag.List_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -1035,7 +1056,7 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Event_V.Set_Name (V);
+                     Set_Name (Current_Tag.Event_V.all, V);
                   end;
                elsif Attribute_Name = XML_Tag_Event_Attribute_Number then
                   declare
@@ -1050,23 +1071,23 @@ package body X_Proto.XML is
                         Is_Success := False;
                         Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Current_Tag.Event_V.Set_Number (V);
+                        Set_Number (Current_Tag.Event_V.all, V);
                      end if;
                   end;
                elsif Attribute_Name = XML_Tag_Event_Attribute_No_Sequence_Number then
                   if Attribute_Value = "true" then
-                     Current_Tag.Event_V.Set_No_Sequence_Number (True);
+                     Set_No_Sequence_Number (Current_Tag.Event_V.all, True);
                   elsif Attribute_Value = "false" then
-                     Current_Tag.Event_V.Set_No_Sequence_Number (False);
+                     Set_No_Sequence_Number (Current_Tag.Event_V.all, False);
                   else
                      Is_Success := False;
                      Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                   end if;
                elsif Attribute_Name = XML_Tag_Event_Attribute_XGE then
                   if Attribute_Value = "true" then
-                     Current_Tag.Event_V.Set_XGE (True);
+                     Set_XGE (Current_Tag.Event_V.all, True);
                   elsif Attribute_Value = "false" then
-                     Current_Tag.Event_V.Set_XGE (False);
+                     Set_XGE (Current_Tag.Event_V.all, False);
                   else
                      Is_Success := False;
                      Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
@@ -1081,14 +1102,14 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.See_V.Set_Name (V);
+                     Set_Name (Current_Tag.See_V.all, V);
                   end;
                elsif Attribute_Name = XML_Tag_See_Attribute_Kind then
                   declare
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.See_V.Set_Kind (V);
+                     Set_Kind (Current_Tag.See_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -1100,14 +1121,14 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Event_Copy_V.Set_Name (V);
+                     Set_Name (Current_Tag.Event_Copy_V.all, V);
                   end;
                elsif Attribute_Name = XML_Tag_Event_Copy_Attribute_Ref then
                   declare
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Event_Copy_V.Set_Ref (V);
+                     Set_Ref (Current_Tag.Event_Copy_V.all, V);
                   end;
                elsif Attribute_Name = XML_Tag_Event_Copy_Attribute_Number then
                   declare
@@ -1122,7 +1143,7 @@ package body X_Proto.XML is
                         Is_Success := False;
                         Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Current_Tag.Event_Copy_V.Set_Number (V);
+                        Set_Number (Current_Tag.Event_Copy_V.all, V);
                      end if;
                   end;
                else
@@ -1135,7 +1156,7 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Union_V.Set_Name (V);
+                     Set_Name (Current_Tag.Union_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -1147,7 +1168,7 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Error_V.Set_Name (V);
+                     Set_Name (Current_Tag.Error_V.all, V);
                   end;
                elsif Attribute_Name = XML_Tag_Error_Attribute_Number then
                   declare
@@ -1162,7 +1183,7 @@ package body X_Proto.XML is
                         Is_Success := False;
                         Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Current_Tag.Error_V.Set_Number (V);
+                        Set_Number (Current_Tag.Error_V.all, V);
                      end if;
                   end;
                elsif Attribute_Name = XML_Tag_Error_Attribute_Kind then
@@ -1170,7 +1191,7 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Error_V.Set_Kind (V);
+                     Set_Kind (Current_Tag.Error_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -1182,7 +1203,7 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Error_Copy_V.Set_Name (V);
+                     Set_Name (Current_Tag.Error_Copy_V.all, V);
                   end;
                elsif Attribute_Name = XML_Tag_Error_Copy_Attribute_Number then
                   declare
@@ -1197,7 +1218,7 @@ package body X_Proto.XML is
                         Is_Success := False;
                         Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Current_Tag.Error_Copy_V.Set_Number (V);
+                        Set_Number (Current_Tag.Error_Copy_V.all, V);
                      end if;
                   end;
                elsif Attribute_Name = XML_Tag_Error_Copy_Attribute_Ref then
@@ -1205,7 +1226,7 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Error_Copy_V.Set_Ref (V);
+                     Set_Ref (Current_Tag.Error_Copy_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -1217,7 +1238,7 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Request_V.Set_Name (V);
+                     Set_Name (Current_Tag.Request_V.all, V);
                   end;
                elsif Attribute_Name = XML_Tag_Request_Attribute_Op_Code then
                   declare
@@ -1232,14 +1253,14 @@ package body X_Proto.XML is
                         Is_Success := False;
                         Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Current_Tag.Request_V.Set_Op_Code (V);
+                        Set_Op_Code (Current_Tag.Request_V.all, V);
                      end if;
                   end;
                elsif Attribute_Name = XML_Tag_Request_Attribute_Combine_Adjacent then
                   if Attribute_Value = "true" then
-                     Current_Tag.Request_V.Set_Shall_Combine_Adjacent (True);
+                     Set_Shall_Combine_Adjacent (Current_Tag.Request_V.all, True);
                   elsif Attribute_Value = "false" then
-                     Current_Tag.Request_V.Set_Shall_Combine_Adjacent (False);
+                     Set_Shall_Combine_Adjacent (Current_Tag.Request_V.all, False);
                   else
                      Is_Success := False;
                      Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
@@ -1254,21 +1275,21 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Value_Param_V.Set_Mask_Kind (V);
+                     Set_Mask_Kind (Current_Tag.Value_Param_V.all, V);
                   end;
                elsif Attribute_Name = XML_Tag_Value_Param_Attribute_Mask_Name then
                   declare
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Value_Param_V.Set_Mask_Name (V);
+                     Set_Mask_Name (Current_Tag.Value_Param_V.all, V);
                   end;
                elsif Attribute_Name = XML_Tag_Value_Param_Attribute_List_Name then
                   declare
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Value_Param_V.Set_List_Name (V);
+                     Set_List_Name (Current_Tag.Value_Param_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -1280,14 +1301,14 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Expression_Field_V.Set_Name (V);
+                     Set_Name (Current_Tag.Expression_Field_V.all, V);
                   end;
                elsif Attribute_Name = XML_Tag_Expression_Field_Attribute_Kind then
                   declare
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Current_Tag.Expression_Field_V.Set_Kind (V);
+                     Set_Kind (Current_Tag.Expression_Field_V.all, V);
                   end;
                else
                   Is_Success := False;
@@ -1369,14 +1390,14 @@ package body X_Proto.XML is
                            Is_Success := False;
                            Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", failed to interpret '" & Tag_Value & "' as a number for end tag " & Tag_Name);
                         else
-                           case Prev_Tag.Item_V.Kind_Id is
+                           case Kind_Id (Prev_Tag.Item_V.all) is
                               when Item.Fs.Not_Specified =>
                                  if Tag_Name = XML_Tag_Value then
-                                    Prev_Tag.Item_V.Set_Kind_Id (Item.Fs.Specified_As_Value);
-                                    Prev_Tag.Item_V.Set_Value (V);
+                                    Set_Kind_Id (Prev_Tag.Item_V.all, Item.Fs.Specified_As_Value);
+                                    Set_Value (Prev_Tag.Item_V.all, V);
                                  elsif Tag_Name = Tag_Bit then
-                                    Prev_Tag.Item_V.Set_Kind_Id (Item.Fs.Specified_As_Bit);
-                                    Prev_Tag.Item_V.Set_Bit (Item.Fs.Bit_Type (V));
+                                    Set_Kind_Id (Prev_Tag.Item_V.all, Item.Fs.Specified_As_Bit);
+                                    Set_Bit (Prev_Tag.Item_V.all, Item.Fs.Bit_Type (V));
                                  else
                                     Is_Success := False;
                                     Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", unknown end tag '" & Tag_Name & "'");
@@ -1384,18 +1405,17 @@ package body X_Proto.XML is
                               when Item.Fs.Specified_As_Value |
                                    Item.Fs.Specified_As_Bit =>
                                  Is_Success := False;
-                                 Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", value already initialized for end tag " & Tag_Name & ", kind id " & Prev_Tag.Item_V.Kind_Id'Img);
+                                 Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", value already initialized for end tag " & Tag_Name & ", kind id " & Kind_Id (Prev_Tag.Item_V.all)'Img);
                            end case;
                         end if;
                      end;
                   when Tag_Id.List_Type_Id =>
                      if Tag_Name = Tag_Field_Reference then
                         declare
-                           V : Large_Bounded_String.T;
+                           L : constant List.Fs.Member_Ptr := new List.Fs.Member_Type (List.Fs.List_Member_Kind_Field_Reference);
                         begin
-                           Initialize (V, Tag_Value);
-                           Prev_Tag.List_V.Append_Member (new List.Fs.Member_Type'(Kind_Id         => List.Fs.List_Member_Kind_Field_Reference,
-                                                                                   Field_Reference => V));
+                           Initialize (L.Field_Reference, Tag_Value);
+                           Append_Member (Prev_Tag.List_V.all, L);
                         end;
                      else
                         Is_Success := False;
@@ -1407,14 +1427,14 @@ package body X_Proto.XML is
                            V : Large_Bounded_String.T;
                         begin
                            Initialize (V, Tag_Value);
-                           Prev_Tag.Documentation_V.Set_Brief_Description (V);
+                           Set_Brief_Description (Prev_Tag.Documentation_V.all, V);
                         end;
                      elsif Tag_Name = XML_Tag_Description then
                         declare
                            V : Large_Bounded_String.T;
                         begin
                            Initialize (V, Tag_Value);
-                           Prev_Tag.Documentation_V.Set_Description (V);
+                           Set_Description (Prev_Tag.Documentation_V.all, V);
                         end;
                      else
                         Is_Success := False;
@@ -1442,14 +1462,14 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Tag_Value);
-                     Current_Tag.Kind.Set_Value (V);
+                     Set_Value (Current_Tag.Kind.all, V);
                   end;
                when Tag_Id.Enum_Field =>
                   declare
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Tag_Value);
-                     Current_Tag.Field_V.Set_Value (V);
+                     Set_Value (Current_Tag.Field_V.all, V);
                   end;
                when Tag_Id.Value_Type_Id =>
                   declare
@@ -1472,14 +1492,14 @@ package body X_Proto.XML is
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Tag_Value);
-                     Current_Tag.Error_V.Set_Value (V);
+                     Set_Value (Current_Tag.Error_V.all, V);
                   end;
                when Tag_Id.Example_Type_Id =>
                   declare
                      V : Large_Bounded_String.T;
                   begin
                      Initialize (V, Tag_Value);
-                     Current_Tag.Example_V.Set_Value (V);
+                     Set_Value (Current_Tag.Example_V.all, V);
                   end;
                when Tag_Id.Op_Type_Id =>
                   if Tag_Name = Tag_Field_Reference then

@@ -65,7 +65,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Kind (This : T) return Fs.Kind_Const_Ptr;
 
@@ -101,7 +101,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Kind     : aliased Fs.Kind_Type;
             My_Name     : aliased Fs.Name_Type;
@@ -128,7 +128,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Bytes (This : T) return Fs.Bytes_Const_Ptr;
 
@@ -139,7 +139,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Bytes : aliased Fs.Bytes_Type;
          end record;
@@ -239,7 +239,7 @@ package X_Proto is
                                       List_Member_Kind_Operation
                                      );
 
-         type Member_Type (Kind_Id : Member_Kind_Id_Type) is record
+         type Member_Type (Kind_Id : Member_Kind_Id_Type) is limited record
             case Kind_Id is
             when List_Member_Kind_Field_Reference => Field_Reference : Large_Bounded_String.T;
             when List_Member_Kind_Value           => Value           : aliased Value_Type;
@@ -257,7 +257,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Kind (This : T) return Fs.Kind_Const_Ptr;
 
@@ -277,7 +277,7 @@ package X_Proto is
       type Ptr is access all T;
 
    private
-      type T is tagged limited
+      type T is limited
          record
             My_Kind    : aliased Fs.Kind_Type;
             My_Name    : aliased Fs.Name_Type;
@@ -311,7 +311,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Kind_Id (This : T) return Fs.Kind_Id_Type;
 
@@ -337,7 +337,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited record
+      type T is limited record
          My_Kind_Id : aliased Fs.Kind_Id_Type := Fs.Not_Specified;
          My_Name    : aliased Fs.Name_Type;
          My_Value   : aliased Value_Type;
@@ -388,7 +388,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Kind (This : T) return Fs.Kind_Const_Ptr;
 
@@ -409,7 +409,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Kind     : aliased Fs.Kind_Type;
             My_Name     : aliased Fs.Name_Type;
@@ -480,7 +480,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Name (This : T) return Fs.Name_Const_Ptr;
 
@@ -510,7 +510,7 @@ package X_Proto is
       type Ptr is access all T;
 
    private
-      type T is tagged limited
+      type T is limited
          record
             My_Name     : aliased Fs.Name_Type;
             My_Number   : aliased Fs.Number_Type;
@@ -554,7 +554,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Name (This : T) return Fs.Name_Const_Ptr;
 
@@ -575,7 +575,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Name   : aliased Fs.Name_Type;
             My_Number : aliased Fs.Number_Type;
@@ -599,7 +599,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Value (This : T) return Fs.Value_Const_Ptr;
 
@@ -610,7 +610,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Value : aliased Fs.Value_Type;
          end record;
@@ -641,7 +641,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Kind (This : T) return Fs.Kind_Const_Ptr;
 
@@ -657,7 +657,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Kind : aliased Fs.Kind_Type;
             My_Name : aliased Fs.Name_Type;
@@ -713,7 +713,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Brief_Description (This : T) return Fs.Brief_Description_Const_Ptr;
 
@@ -734,7 +734,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Brief_Description : aliased Fs.Brief_Description_Type;
             My_Description       : aliased Fs.Description_Type;
@@ -776,7 +776,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Name (This : T) return Fs.Name_Const_Ptr;
 
@@ -797,7 +797,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Name   : aliased Fs.Name_Type;
             My_Number : aliased Fs.Number_Type;
@@ -821,7 +821,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Name (This : T) return Fs.Name_Const_Ptr;
 
@@ -832,7 +832,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Name : aliased Fs.Name_Type;
          end record;
@@ -854,7 +854,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Value (This : T) return Fs.Value_Const_Ptr;
 
@@ -865,7 +865,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Value : aliased Fs.Value_Type;
          end record;
@@ -893,7 +893,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Name (This : T) return Fs.Name_Const_Ptr;
 
@@ -908,7 +908,7 @@ package X_Proto is
       type Ptr is access T;
 
    private
-      type T is tagged limited
+      type T is limited
          record
             My_Name  : aliased Fs.Name_Type;
             My_Kinds : aliased Fs.Type_Vector.T;
@@ -940,7 +940,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Old_Name (This : T) return Fs.Old_Name_Const_Ptr;
 
@@ -956,7 +956,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Old_Name : aliased Fs.Old_Name_Type;
             My_New_Name : aliased Fs.New_Name_Type;
@@ -991,7 +991,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Name (This : T) return Fs.Name_Const_Ptr;
 
@@ -1012,7 +1012,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Name           : aliased Fs.Name_Type;
             My_Items          : aliased Fs.Item_Vector.T;
@@ -1054,7 +1054,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Name (This : T) return Fs.Name_Const_Ptr;
 
@@ -1070,7 +1070,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Name     : aliased Fs.Name_Type;
             My_Children : aliased Fs.Child_Vector.T;
@@ -1119,7 +1119,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Name (This : T) return Fs.Const_Name_Ptr;
 
@@ -1135,7 +1135,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             Name    : aliased Fs.Name_Type;
             Members : aliased Fs.Member_Vector.T;
@@ -1209,7 +1209,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Name (This : T) return Fs.Name_Const_Ptr;
 
@@ -1240,7 +1240,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Name               : aliased Fs.Name_Type;
             My_Number             : aliased Fs.Number_Type;
@@ -1284,7 +1284,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Mask_Kind (This : T) return Fs.Mask_Kind_Const_Ptr;
 
@@ -1305,7 +1305,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Mask_Kind : aliased Fs.Mask_Kind_Type;
             My_Mask_Name : aliased Fs.Mask_Name_Type;
@@ -1344,7 +1344,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Children (This : T) return Fs.Children_Const_Ptr;
 
@@ -1355,7 +1355,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Children : aliased Fs.Child_Vector.T;
          end record;
@@ -1425,7 +1425,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Name (This : T) return Fs.Name_Const_Ptr;
 
@@ -1451,7 +1451,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Name                   : aliased Fs.Name_Type;
             My_Op_Code                : aliased Fs.Op_Code_Type;
@@ -1542,7 +1542,7 @@ package X_Proto is
 
       end Fs;
 
-      type T is tagged limited private;
+      type T is limited private;
 
       function Header (This : T) return Fs.Header_Const_Ptr;
 
@@ -1608,7 +1608,7 @@ package X_Proto is
 
    private
 
-      type T is tagged limited
+      type T is limited
          record
             My_Header           : aliased Fs.Header_Type;
             My_Structs          : aliased Fs.Struct_Vector.T;
