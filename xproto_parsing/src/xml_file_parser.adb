@@ -112,33 +112,33 @@ package body XML_File_Parser is
    package Tag_Id is
 
       type Enumeration_Type is (
-                                Xcb_Type_Id,
-                                Enum_Struct,
-                                Enum_Field,
-                                X_Id_Kind_Type_Id,
-                                Enum_X_Id_Union,
+                                Xcb,
+                                Struct,
+                                Field,
+                                X_Id_Kind,
+                                X_Id_Union,
                                 Kind,
-                                Type_Definition_Type_Id,
-                                Enum_Pad,
-                                Enum_Enum,
-                                Item_Type_Id,
-                                Value_Type_Id,
-                                Bit_Type_Id,
-                                List_Type_Id,
+                                Type_Definition,
+                                Pad,
+                                Enum,
+                                Item,
+                                Value,
+                                Bit,
+                                List,
                                 Field_Reference,
-                                Op_Type_Id,
-                                Event_Type_Id,
-                                Documentation_Type_Id,
-                                See_Type_Id,
-                                Event_Copy_Type_Id,
-                                Union_Type_Id,
-                                Error_Type_Id,
-                                Error_Copy_Type_Id,
-                                Request_Type_Id,
-                                Value_Param_Type_Id,
-                                Reply_Type_Id,
-                                Example_Type_Id,
-                                Expression_Field_Type_Id
+                                Op,
+                                Event,
+                                Documentation,
+                                See,
+                                Event_Copy,
+                                Union,
+                                Error,
+                                Error_Copy,
+                                Request,
+                                Value_Param,
+                                Reply,
+                                Example,
+                                Expression_Field
                                );
 
    end Tag_Id;
@@ -152,33 +152,33 @@ package body XML_File_Parser is
    type Current_Tag_Type (Kind_Id : Tag_Id.Enumeration_Type) is record
       Find_Tag : Current_Tag_Access_Type := null;
       case Kind_Id is
-         when Xcb_Type_Id              => Xcb_V              : X_Proto.Xcb.Ptr;
-         when Enum_Struct              => Struct_V           : X_Proto.Struct.Ptr;
-         when Enum_Field               => Field_V            : X_Proto.Field.Ptr;
-         when X_Id_Kind_Type_Id        => X_Id_Kind_V        : X_Proto.X_Id.Ptr;
-         when Enum_X_Id_Union          => X_Id_Union_V       : X_Proto.X_Id_Union.Ptr;
-         when Kind                     => Kind               : X_Proto.Type_P.Ptr;
-         when Type_Definition_Type_Id  => Type_Definition_V  : X_Proto.Type_Definition.Ptr;
-         when Enum_Pad                 => Pad_V              : X_Proto.Pad.Ptr;
-         when Enum_Enum                => Enum_V             : X_Proto.Enum.Ptr;
-         when Item_Type_Id             => Item_V             : X_Proto.Item.Ptr;
-         when Value_Type_Id            => Value_V            : X_Proto.Value_Access_Type;
-         when Bit_Type_Id              => Bit_V              : X_Proto.Item.Fs.Bit_Ptr;
-         when List_Type_Id             => List_V             : X_Proto.List.Ptr;
-         when Field_Reference          => Field_Reference    : X_Proto.Field_Reference_Access_Type;
-         when Op_Type_Id               => Op_V               : X_Proto.Operation.Ptr;
-         when Event_Type_Id            => Event_V            : X_Proto.Event.Ptr;
-         when Documentation_Type_Id    => Documentation_V    : X_Proto.Documentation.Ptr;
-         when See_Type_Id              => See_V              : X_Proto.See.Ptr;
-         when Event_Copy_Type_Id       => Event_Copy_V       : X_Proto.Event_Copy.Ptr;
-         when Union_Type_Id            => Union_V            : X_Proto.Union.Ptr;
-         when Error_Type_Id            => Error_V            : X_Proto.Error.Ptr;
-         when Error_Copy_Type_Id       => Error_Copy_V       : X_Proto.Error_Copy.Ptr;
-         when Request_Type_Id          => Request_V          : X_Proto.Request.Ptr;
-         when Value_Param_Type_Id      => Value_Param_V      : X_Proto.Value_Param.Ptr;
-         when Reply_Type_Id            => Reply_V            : X_Proto.Reply.Ptr;
-         when Example_Type_Id          => Example_V          : X_Proto.Example.Ptr;
-         when Expression_Field_Type_Id => Expression_Field_V : X_Proto.Expression_Field.Ptr;
+         when Xcb              => Xcb_V              : X_Proto.Xcb.Ptr;
+         when Struct           => Struct_V           : X_Proto.Struct.Ptr;
+         when Field            => Field_V            : X_Proto.Field.Ptr;
+         when X_Id_Kind        => X_Id_Kind_V        : X_Proto.X_Id.Ptr;
+         when X_Id_Union       => X_Id_Union_V       : X_Proto.X_Id_Union.Ptr;
+         when Kind             => Kind               : X_Proto.Type_P.Ptr;
+         when Type_Definition  => Type_Definition_V  : X_Proto.Type_Definition.Ptr;
+         when Pad              => Pad_V              : X_Proto.Pad.Ptr;
+         when Enum             => Enum_V             : X_Proto.Enum.Ptr;
+         when Item             => Item_V             : X_Proto.Item.Ptr;
+         when Value            => Value_V            : X_Proto.Value_Access_Type;
+         when Bit              => Bit_V              : X_Proto.Item.Fs.Bit_Ptr;
+         when List             => List_V             : X_Proto.List.Ptr;
+         when Field_Reference  => Field_Reference    : X_Proto.Field_Reference_Access_Type;
+         when Op               => Op_V               : X_Proto.Operation.Ptr;
+         when Event            => Event_V            : X_Proto.Event.Ptr;
+         when Documentation    => Documentation_V    : X_Proto.Documentation.Ptr;
+         when See              => See_V              : X_Proto.See.Ptr;
+         when Event_Copy       => Event_Copy_V       : X_Proto.Event_Copy.Ptr;
+         when Union            => Union_V            : X_Proto.Union.Ptr;
+         when Error            => Error_V            : X_Proto.Error.Ptr;
+         when Error_Copy       => Error_Copy_V       : X_Proto.Error_Copy.Ptr;
+         when Request          => Request_V          : X_Proto.Request.Ptr;
+         when Value_Param      => Value_Param_V      : X_Proto.Value_Param.Ptr;
+         when Reply            => Reply_V            : X_Proto.Reply.Ptr;
+         when Example          => Example_V          : X_Proto.Example.Ptr;
+         when Expression_Field => Expression_Field_V : X_Proto.Expression_Field.Ptr;
       end case;
    end record;
 
@@ -283,7 +283,7 @@ package body XML_File_Parser is
                Xcb_V := new X_Proto.Xcb.T;
                Insert (This        => Parents_Including_Self_To_Current_Tag_Map,
                        Key         => Parents_Including_Self,
-                       New_Element => new Current_Tag_Type'(Kind_Id  => Tag_Id.Xcb_Type_Id,
+                       New_Element => new Current_Tag_Type'(Kind_Id  => Tag_Id.Xcb,
                                                             Find_Tag => Find_Tag (Parent_Tags),
                                                         Xcb_V    => Xcb_V));
                Is_Success := True;
@@ -295,15 +295,15 @@ package body XML_File_Parser is
          end if;
 
          case Prev_Tag.Kind_Id is
-            when Tag_Id.Xcb_Type_Id =>
+            when Tag_Id.Xcb =>
                if Tag_Name = Tag_Struct then
                   declare
                      Struct_V : constant X_Proto.Struct.Ptr := new X_Proto.Struct.T;
                   begin
                      case Prev_Tag.Kind_Id is
-                        when Tag_Id.Xcb_Type_Id =>
+                        when Tag_Id.Xcb =>
                            Append_Struct (Prev_Tag.Xcb_V.all, Struct_V);
-                           Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Enum_Struct,
+                           Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Struct,
                                                          Find_Tag             => Prev_Tag,
                                                          Struct_V             => Struct_V));
                            Is_Success := True;
@@ -318,7 +318,7 @@ package body XML_File_Parser is
                   begin
                      Append_X_Id (Prev_Tag.Xcb_V.all, X_Id_Type_V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id     => Tag_Id.X_Id_Kind_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id     => Tag_Id.X_Id_Kind,
                                                    Find_Tag    => Prev_Tag,
                                                    X_Id_Kind_V => X_Id_Type_V));
                   end;
@@ -328,7 +328,7 @@ package body XML_File_Parser is
                   begin
                      Append_X_Id_Union (Prev_Tag.Xcb_V.all, X_Id_Union_V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id      => Tag_Id.Enum_X_Id_Union,
+                     Insert (new Current_Tag_Type'(Kind_Id      => Tag_Id.X_Id_Union,
                                                    Find_Tag     => Prev_Tag,
                                                    X_Id_Union_V => X_Id_Union_V));
                   end;
@@ -338,7 +338,7 @@ package body XML_File_Parser is
                   begin
                      Append_Type_Definition (Prev_Tag.Xcb_V.all, TD);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id           => Tag_Id.Type_Definition_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id           => Tag_Id.Type_Definition,
                                                    Find_Tag          => Prev_Tag,
                                                    Type_Definition_V => TD));
                   end;
@@ -348,7 +348,7 @@ package body XML_File_Parser is
                   begin
                      Append_Enum (Prev_Tag.Xcb_V.all, Enum_V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Enum,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum,
                                                    Find_Tag => Prev_Tag,
                                                    Enum_V   => Enum_V));
                   end;
@@ -358,7 +358,7 @@ package body XML_File_Parser is
                   begin
                      Append_Event (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Event_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Event,
                                                    Find_Tag => Prev_Tag,
                                                    Event_V  => E));
                   end;
@@ -368,7 +368,7 @@ package body XML_File_Parser is
                   begin
                      Append_Event_Copy (Prev_Tag.Xcb_V.all, EC);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id      => Tag_Id.Event_Copy_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id      => Tag_Id.Event_Copy,
                                                    Find_Tag     => Prev_Tag,
                                                    Event_Copy_V => EC));
                   end;
@@ -378,7 +378,7 @@ package body XML_File_Parser is
                   begin
                      Append_Union (Prev_Tag.Xcb_V.all, U);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Union_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Union,
                                                    Find_Tag             => Prev_Tag,
                                                    Union_V              => U));
                   end;
@@ -388,7 +388,7 @@ package body XML_File_Parser is
                   begin
                      Append_Error (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error,
                                                    Find_Tag             => Prev_Tag,
                                                    Error_V              => E));
                   end;
@@ -398,7 +398,7 @@ package body XML_File_Parser is
                   begin
                      Append_Error_Copy (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Copy_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Copy,
                                                    Find_Tag             => Prev_Tag,
                                                    Error_Copy_V         => E));
                   end;
@@ -408,7 +408,7 @@ package body XML_File_Parser is
                   begin
                      Append_Request (Prev_Tag.Xcb_V.all, R);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Request_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Request,
                                                    Find_Tag             => Prev_Tag,
                                                    Request_V            => R));
                   end;
@@ -416,14 +416,14 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & "Found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Enum_Struct =>
+            when Tag_Id.Struct =>
                if Tag_Name = Tag_Field then
                   declare
                      F : X_Proto.Struct.Fs.Member_Ptr := new X_Proto.Struct.Fs.Member_Type (Field_Member);
                   begin
                      Append_Member (Prev_Tag.Struct_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Field,
                                                    Find_Tag => Prev_Tag,
                                                    Field_V  => F.F'Access));
                   end;
@@ -433,7 +433,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Struct_V.all, P);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Pad,
                                                    Find_Tag => Prev_Tag,
                                                    Pad_V    => P.P'Access));
                   end;
@@ -443,7 +443,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Struct_V.all, L);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.List_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.List,
                                                    Find_Tag => Prev_Tag,
                                                    List_V   => L.L'Access));
                   end;
@@ -451,7 +451,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & "Found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Enum_X_Id_Union =>
+            when Tag_Id.X_Id_Union =>
                if Tag_Name = Tag_Kind then
                   declare
                      Kind : constant X_Proto.Type_P.Ptr := new X_Proto.Type_P.T;
@@ -466,14 +466,14 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Enum_Enum =>
+            when Tag_Id.Enum =>
                if Tag_Name = Tag_Item then
                   declare
                      Item_V : constant X_Proto.Item.Ptr := new X_Proto.Item.T;
                   begin
                      Append_Item (Prev_Tag.Enum_V.all, Item_V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Item_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Item,
                                                    Find_Tag => Prev_Tag,
                                                    Item_V   => Item_V));
                   end;
@@ -483,7 +483,7 @@ package body XML_File_Parser is
                   begin
                      Append_Documentation (Prev_Tag.Enum_V.all, D);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id         => Tag_Id.Documentation_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id         => Tag_Id.Documentation,
                                                    Find_Tag        => Prev_Tag,
                                                    Documentation_V => D));
                   end;
@@ -491,7 +491,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Item_Type_Id =>
+            when Tag_Id.Item =>
                if Tag_Name = XML_Tag_Value then
                   Is_Success := True;
                elsif Tag_Name = Tag_Bit then
@@ -500,7 +500,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.List_Type_Id =>
+            when Tag_Id.List =>
                if Tag_Name = Tag_Field_Reference then
                   Is_Success := True;
                elsif Tag_Name = XML_Tag_Operation then
@@ -509,7 +509,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.List_V.all, Operation);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Op_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Op,
                                                    Find_Tag             => Prev_Tag,
                                                    Op_V                 => Operation.Operation'Access));
                   end;
@@ -519,7 +519,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.List_V.all, V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Value_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Value,
                                                    Find_Tag => Prev_Tag,
                                                    Value_V  => V.Value'Access));
                   end;
@@ -527,7 +527,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Op_Type_Id =>
+            when Tag_Id.Op =>
                if Tag_Name = XML_Tag_Operation then
                   declare
                      V : constant X_Proto.Operation.Fs.Member_Ptr := new X_Proto.Operation.Fs.Member_Type (X_Proto.Operation.Fs.Member_Operation);
@@ -535,7 +535,7 @@ package body XML_File_Parser is
                      V.Operation := new X_Proto.Operation.T;
                      Append_Member (Prev_Tag.Op_V.all, V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Op_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Op,
                                                    Find_Tag             => Prev_Tag,
                                                    Op_V                 => V.Operation));
                   end;
@@ -555,7 +555,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Op_V.all, V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Value_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Value,
                                                    Find_Tag => Prev_Tag,
                                                    Value_V  => V.Value'Access));
                   end;
@@ -563,14 +563,14 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Event_Type_Id =>
+            when Tag_Id.Event =>
                if Tag_Name = Tag_Field then
                   declare
                      F : X_Proto.Event.Fs.Member_Ptr := new X_Proto.Event.Fs.Member_Type (X_Proto.Event.Fs.Event_Member_Field);
                   begin
                      Append_Member (Prev_Tag.Event_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Enum_Field,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Field,
                                                    Find_Tag             => Prev_Tag,
                                                    Field_V              => F.F'Access));
                   end;
@@ -580,7 +580,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Event_V.all, P);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Pad,
                                                    Find_Tag => Prev_Tag,
                                                    Pad_V    => P.P'Access));
                   end;
@@ -590,7 +590,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Event_V.all, D);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation,
                                                    Find_Tag             => Prev_Tag,
                                                    Documentation_V      => D.D'Access));
                   end;
@@ -600,7 +600,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Event_V.all, L);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List,
                                                    Find_Tag             => Prev_Tag,
                                                    List_V               => L.L'Access));
                   end;
@@ -608,14 +608,14 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Documentation_Type_Id =>
+            when Tag_Id.Documentation =>
                if Tag_Name = Tag_Field then
                   declare
                      D : X_Proto.Documentation.Fs.Member_Ptr := new X_Proto.Documentation.Fs.Member_Type (X_Proto.Documentation.Fs.Member_Field);
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Field,
                                                    Find_Tag => Prev_Tag,
                                                    Field_V  => D.F'Access));
                   end;
@@ -625,7 +625,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.See_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.See,
                                                    Find_Tag             => Prev_Tag,
                                                    See_V                => D.S'Access));
                   end;
@@ -635,7 +635,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error,
                                                    Find_Tag             => Prev_Tag,
                                                    Error_V              => D.E'Access));
                   end;
@@ -645,7 +645,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Example_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Example,
                                                    Find_Tag             => Prev_Tag,
                                                    Example_V            => D.Ex'Access));
                   end;
@@ -657,14 +657,14 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Union_Type_Id =>
+            when Tag_Id.Union =>
                if Tag_Name = Tag_List then
                   declare
                      L : X_Proto.Union.Fs.Child_Ptr := new X_Proto.Union.Fs.Child_Type (X_Proto.Union.Fs.Child_List);
                   begin
                      Append_Child (Prev_Tag.Union_V.all, L);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.List_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.List,
                                                    Find_Tag => Prev_Tag,
                                                    List_V   => L.L'Access));
                   end;
@@ -672,14 +672,14 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Error_Type_Id =>
+            when Tag_Id.Error =>
                if Tag_Name = Tag_Field then
                   declare
                      F : X_Proto.Error.Fs.Child_Ptr := new X_Proto.Error.Fs.Child_Type (X_Proto.Error.Fs.Child_Field);
                   begin
                      Append_Child (Prev_Tag.Error_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Field,
                                                    Find_Tag => Prev_Tag,
                                                    Field_V  => F.F'Access));
                   end;
@@ -689,7 +689,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Error_V.all, P);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Pad,
                                                    Find_Tag => Prev_Tag,
                                                    Pad_V    => P.P'Access));
                   end;
@@ -697,14 +697,14 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Request_Type_Id =>
+            when Tag_Id.Request =>
                if Tag_Name = Tag_Field then
                   declare
                      F : X_Proto.Request.Fs.Child_Ptr := new X_Proto.Request.Fs.Child_Type (X_Proto.Request.Fs.Child_Field);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Field,
                                                    Find_Tag => Prev_Tag,
                                                    Field_V  => F.F'Access));
                   end;
@@ -714,7 +714,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Request_V.all, P);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Pad,
                                                    Find_Tag => Prev_Tag,
                                                    Pad_V    => P.P'Access));
                   end;
@@ -724,7 +724,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Request_V.all, V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Value_Param_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Value_Param,
                                                    Find_Tag             => Prev_Tag,
                                                    Value_Param_V        => V.V'Access));
                   end;
@@ -734,7 +734,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Request_V.all, V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation,
                                                    Find_Tag             => Prev_Tag,
                                                    Documentation_V      => V.D'Access));
                   end;
@@ -744,7 +744,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Reply_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Reply,
                                                    Find_Tag             => Prev_Tag,
                                                    Reply_V              => R.R'Access));
                   end;
@@ -754,7 +754,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List,
                                                    Find_Tag             => Prev_Tag,
                                                    List_V               => R.L'Access));
                   end;
@@ -764,7 +764,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Expression_Field_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Expression_Field,
                                                    Find_Tag             => Prev_Tag,
                                                    Expression_Field_V   => R.EF'Access));
                   end;
@@ -772,14 +772,14 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Reply_Type_Id =>
+            when Tag_Id.Reply =>
                if Tag_Name = Tag_Field then
                   declare
                      F : X_Proto.Reply.Fs.Child_Ptr := new X_Proto.Reply.Fs.Child_Type (X_Proto.Reply.Fs.Child_Field);
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Field,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Field,
                                                    Find_Tag => Prev_Tag,
                                                    Field_V  => F.F'Access));
                   end;
@@ -789,7 +789,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum_Pad,
+                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Pad,
                                                    Find_Tag => Prev_Tag,
                                                    Pad_V    => F.P'Access));
                   end;
@@ -799,7 +799,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation,
                                                    Find_Tag             => Prev_Tag,
                                                    Documentation_V      => F.D'Access));
                   end;
@@ -809,7 +809,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List,
                                                    Find_Tag             => Prev_Tag,
                                                    List_V               => F.L'Access));
                   end;
@@ -817,14 +817,14 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Expression_Field_Type_Id =>
+            when Tag_Id.Expression_Field =>
                if Tag_Name = XML_Tag_Operation then
                   declare
                      C : X_Proto.Expression_Field.Fs.Child_Ptr := new X_Proto.Expression_Field.Fs.Child_Type (X_Proto.Expression_Field.Fs.Child_Operation);
                   begin
                      Append_Child (Prev_Tag.Expression_Field_V.all, C);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Op_Type_Id,
+                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Op,
                                                    Find_Tag             => Prev_Tag,
                                                    Op_V                 => C.Op'Access));
                   end;
@@ -832,19 +832,19 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
                end if;
-            when Tag_Id.Enum_Field |
-                 Tag_Id.X_Id_Kind_Type_Id |
+            when Tag_Id.Field |
+                 Tag_Id.X_Id_Kind |
                  Tag_Id.Kind |
-                 Tag_Id.Type_Definition_Type_Id |
-                 Tag_Id.Enum_Pad |
-                 Tag_Id.Value_Type_Id |
-                 Tag_Id.Bit_Type_Id |
+                 Tag_Id.Type_Definition |
+                 Tag_Id.Pad |
+                 Tag_Id.Value |
+                 Tag_Id.Bit |
                  Tag_Id.Field_Reference |
-                 Tag_Id.See_Type_Id |
-                 Tag_Id.Event_Copy_Type_Id |
-                 Tag_Id.Error_Copy_Type_Id |
-                 Tag_Id.Value_Param_Type_Id |
-                 Tag_Id.Example_Type_Id =>
+                 Tag_Id.See |
+                 Tag_Id.Event_Copy |
+                 Tag_Id.Error_Copy |
+                 Tag_Id.Value_Param |
+                 Tag_Id.Example =>
                Is_Success := False;
                Initialize (Error_Message, GNAT.Source_Info.Source_Location & "Error, tag name is " & Tag_Name);
          end case;
@@ -866,7 +866,7 @@ package body XML_File_Parser is
 
          Is_Success := True;
          case Current_Tag.Kind_Id is
-            when Tag_Id.Xcb_Type_Id =>
+            when Tag_Id.Xcb =>
                if Attribute_Name = Tag_Xcb_Attribute_Header then
                   Is_Success := True;
                   declare
@@ -879,7 +879,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Enum_Struct =>
+            when Tag_Id.Struct =>
                if Attribute_Name = Tag_Struct_Attribute_Name then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -891,7 +891,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Enum_Field =>
+            when Tag_Id.Field =>
                if Attribute_Name = Tag_Field_Attribute_Kind then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -931,7 +931,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.X_Id_Kind_Type_Id =>
+            when Tag_Id.X_Id_Kind =>
                if Attribute_Name = Tag_X_Id_Kind_Attribute_Name then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -943,7 +943,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Enum_X_Id_Union =>
+            when Tag_Id.X_Id_Union =>
                if Attribute_Name = Tag_X_Id_Union_Attribute_Name then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -955,7 +955,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Type_Definition_Type_Id =>
+            when Tag_Id.Type_Definition =>
                if Attribute_Name = Tag_Type_Definition_Attribute_Old_Name then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -974,7 +974,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Enum_Pad =>
+            when Tag_Id.Pad =>
                if Attribute_Name = Tag_Pad_Attribute_Bytes then
                   declare
                      V : Aida.Int32_T;
@@ -996,7 +996,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Enum_Enum =>
+            when Tag_Id.Enum =>
                if Attribute_Name = Tag_Enum_Attribute_Name then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -1008,7 +1008,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Item_Type_Id =>
+            when Tag_Id.Item =>
                if Attribute_Name = Tag_Item_Attribute_Name then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -1020,7 +1020,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.List_Type_Id =>
+            when Tag_Id.List =>
                if Attribute_Name = Tag_List_Attribute_Kind then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -1039,7 +1039,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Op_Type_Id =>
+            when Tag_Id.Op =>
                if Attribute_Name = Tag_Operation_Attribute_Op then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -1051,7 +1051,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Event_Type_Id =>
+            when Tag_Id.Event =>
                if Attribute_Name = XML_Tag_Event_Attribute_Name then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -1097,7 +1097,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.See_Type_Id =>
+            when Tag_Id.See =>
                if Attribute_Name = XML_Tag_See_Attribute_Name then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -1116,7 +1116,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Event_Copy_Type_Id =>
+            when Tag_Id.Event_Copy =>
                if Attribute_Name = XML_Tag_Event_Copy_Attribute_Name then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -1151,7 +1151,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Union_Type_Id =>
+            when Tag_Id.Union =>
                if Attribute_Name = XML_Tag_Union_Attribute_Name then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -1163,7 +1163,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Error_Type_Id =>
+            when Tag_Id.Error =>
                if Attribute_Name = XML_Tag_Error_Attribute_Name then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -1198,7 +1198,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Error_Copy_Type_Id =>
+            when Tag_Id.Error_Copy =>
                if Attribute_Name = XML_Tag_Error_Copy_Attribute_Name then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -1233,7 +1233,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Request_Type_Id =>
+            when Tag_Id.Request =>
                if Attribute_Name = XML_Tag_Request_Attribute_Name then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -1270,7 +1270,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Value_Param_Type_Id =>
+            when Tag_Id.Value_Param =>
                if Attribute_Name = XML_Tag_Value_Param_Attribute_Mask_Kind then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -1296,7 +1296,7 @@ package body XML_File_Parser is
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
-            when Tag_Id.Expression_Field_Type_Id =>
+            when Tag_Id.Expression_Field =>
                if Attribute_Name = XML_Tag_Expression_Field_Attribute_Name then
                   declare
                      V : X_Proto.Large_Bounded_String.T;
@@ -1316,12 +1316,12 @@ package body XML_File_Parser is
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Kind |
-                 Tag_Id.Value_Type_Id |
-                 Tag_Id.Bit_Type_Id |
+                 Tag_Id.Value |
+                 Tag_Id.Bit |
                  Tag_Id.Field_Reference |
-                 Tag_Id.Documentation_Type_Id |
-                 Tag_Id.Reply_Type_Id |
-                 Tag_Id.Example_Type_Id =>
+                 Tag_Id.Documentation |
+                 Tag_Id.Reply |
+                 Tag_Id.Example =>
                Is_Success := False;
                Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
          end case;
@@ -1378,7 +1378,7 @@ package body XML_File_Parser is
                end if;
 
                case Prev_Tag.Kind_Id is
-                  when Tag_Id.Item_Type_Id =>
+                  when Tag_Id.Item =>
                      declare
                         V : X_Proto.Value_Type;
                         Has_Failed : Boolean;
@@ -1410,7 +1410,7 @@ package body XML_File_Parser is
                            end case;
                         end if;
                      end;
-                  when Tag_Id.List_Type_Id =>
+                  when Tag_Id.List =>
                      if Tag_Name = Tag_Field_Reference then
                         declare
                            L : constant X_Proto.List.Fs.Member_Ptr := new X_Proto.List.Fs.Member_Type (X_Proto.List.Fs.List_Member_Kind_Field_Reference);
@@ -1422,7 +1422,7 @@ package body XML_File_Parser is
                         Is_Success := False;
                         Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected end tag '" & Tag_Name & "' and previous tag is " & Prev_Tag.Kind_Id'Img);
                      end if;
-                  when Tag_Id.Documentation_Type_Id =>
+                  when Tag_Id.Documentation =>
                      if Tag_Name = XML_Tag_Brief then
                         declare
                            V : X_Proto.Large_Bounded_String.T;
@@ -1465,14 +1465,14 @@ package body XML_File_Parser is
                      Initialize (V, Tag_Value);
                      Set_Value (Current_Tag.Kind.all, V);
                   end;
-               when Tag_Id.Enum_Field =>
+               when Tag_Id.Field =>
                   declare
                      V : X_Proto.Large_Bounded_String.T;
                   begin
                      Initialize (V, Tag_Value);
                      Set_Value (Current_Tag.Field_V.all, V);
                   end;
-               when Tag_Id.Value_Type_Id =>
+               when Tag_Id.Value =>
                   declare
                      V : X_Proto.Value_Type;
                      Has_Failed : Boolean;
@@ -1488,21 +1488,21 @@ package body XML_File_Parser is
                         Current_Tag.Value_V.all := V;
                      end if;
                   end;
-               when Tag_Id.Error_Type_Id =>
+               when Tag_Id.Error =>
                   declare
                      V : X_Proto.Large_Bounded_String.T;
                   begin
                      Initialize (V, Tag_Value);
                      Set_Value (Current_Tag.Error_V.all, V);
                   end;
-               when Tag_Id.Example_Type_Id =>
+               when Tag_Id.Example =>
                   declare
                      V : X_Proto.Large_Bounded_String.T;
                   begin
                      Initialize (V, Tag_Value);
                      Set_Value (Current_Tag.Example_V.all, V);
                   end;
-               when Tag_Id.Op_Type_Id =>
+               when Tag_Id.Op =>
                   if Tag_Name = Tag_Field_Reference then
                      declare
                         V : X_Proto.Field_Reference_Type;
@@ -1539,26 +1539,26 @@ package body XML_File_Parser is
                      Initialize (V, Tag_Value);
                      Current_Tag.Field_Reference.all := V;
                   end;
-               when Tag_Id.Xcb_Type_Id |
-                    Tag_Id.Enum_Struct |
-                    Tag_Id.Bit_Type_Id |
-                    Tag_Id.X_Id_Kind_Type_Id |
-                    Tag_Id.Enum_X_Id_Union |
-                    Tag_Id.Type_Definition_Type_Id |
-                    Tag_Id.Enum_Pad |
-                    Tag_Id.Enum_Enum |
-                    Tag_Id.Item_Type_Id |
-                    Tag_Id.List_Type_Id |
-                    Tag_Id.Event_Type_Id |
-                    Tag_id.Documentation_Type_Id |
-                    Tag_Id.See_Type_Id |
-                    Tag_Id.Event_Copy_Type_Id |
-                    Tag_Id.Union_Type_Id |
-                    Tag_Id.Error_Copy_Type_Id |
-                    Tag_Id.Request_Type_Id |
-                    Tag_Id.Value_Param_Type_Id |
-                    Tag_Id.Reply_Type_Id |
-                    Tag_Id.Expression_Field_Type_Id =>
+               when Tag_Id.Xcb |
+                    Tag_Id.Struct |
+                    Tag_Id.Bit |
+                    Tag_Id.X_Id_Kind |
+                    Tag_Id.X_Id_Union |
+                    Tag_Id.Type_Definition |
+                    Tag_Id.Pad |
+                    Tag_Id.Enum |
+                    Tag_Id.Item |
+                    Tag_Id.List |
+                    Tag_Id.Event |
+                    Tag_id.Documentation |
+                    Tag_Id.See |
+                    Tag_Id.Event_Copy |
+                    Tag_Id.Union |
+                    Tag_Id.Error_Copy |
+                    Tag_Id.Request |
+                    Tag_Id.Value_Param |
+                    Tag_Id.Reply |
+                    Tag_Id.Expression_Field =>
                   Is_Success := False;
                   Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", but found unexpected end tag " & Tag_Name);
             end case;
