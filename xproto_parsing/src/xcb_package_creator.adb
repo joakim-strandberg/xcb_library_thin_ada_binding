@@ -1,7 +1,5 @@
 with Aida;
 with Ada.Text_IO;
-with Strings_Edit.UTF8.Mapping;
-with Strings_Edit.UTF8.Categorization;
 with GNAT.Source_Info;
 with Aida.Containers.Bounded_Vector;
 with Aida.Containers.Bounded_Hash_Map;
@@ -23,6 +21,7 @@ package body XCB_Package_Creator is
    use X_Proto.Large_Bounded_String;
 
    use Aida.Int32;
+   use Aida.UTF8_Code_Point;
 
    use X_Proto.Xcb.Fs.Struct_Vector;
    use X_Proto.Xcb.Fs.X_Id_Vector;
@@ -114,7 +113,7 @@ package body XCB_Package_Creator is
    is
       P : Integer := Old_Name'First;
 
-      CP : Strings_Edit.UTF8.Code_Point := 0;
+      CP : Aida.Code_Point_T := 0;
 
       Is_Previous_Lowercase : Boolean := False;
       Is_Previous_A_Number  : Boolean := False;
@@ -191,46 +190,46 @@ package body XCB_Package_Creator is
       end if;
 
       Initialize (New_Name, "");
-      Strings_Edit.UTF8.Get (Source  => Old_Name,
-                             Pointer => P,
-                             Value   => CP);
+      Aida.UTF8.Get (Source  => Old_Name,
+                     Pointer => P,
+                     Value   => CP);
 
-      if Strings_Edit.UTF8.Mapping.Is_Uppercase (CP) then
-         Append (New_Name, Strings_Edit.UTF8.Image (CP));
+      if Is_Uppercase (CP) then
+         Append (New_Name, Image (CP));
       else
-         Append (New_Name, Strings_Edit.UTF8.Image (Strings_Edit.UTF8.Mapping.To_Uppercase (CP)));
+         Append (New_Name, Image (To_Uppercase (CP)));
       end if;
 
       while P <= Old_Name'Last loop
-         Strings_Edit.UTF8.Get (Source  => Old_Name,
-                                Pointer => P,
-                                Value   => CP);
+         Aida.UTF8.Get (Source  => Old_Name,
+                        Pointer => P,
+                        Value   => CP);
 
-         if Strings_Edit.UTF8.Image (CP) = "_" then
+         if Image (CP) = "_" then
             Append (New_Name, "_");
             Is_Previous_An_Undercase := True;
          else
-            if Strings_Edit.UTF8.Categorization.Is_Digit (CP) then
+            if Is_Digit (CP) then
                if Is_Previous_A_Number then
-                  Append (New_Name, Strings_Edit.UTF8.Image (CP));
+                  Append (New_Name, Image (CP));
                else
-                  Append (New_Name, "_" & Strings_Edit.UTF8.Image (CP));
+                  Append (New_Name, "_" & Image (CP));
                end if;
 
                Is_Previous_A_Number := True;
             else
-               if Strings_Edit.UTF8.Mapping.Is_Uppercase (CP) then
+               if Is_Uppercase (CP) then
                   if Is_Previous_Lowercase then
-                     Append (New_Name, "_" & Strings_Edit.UTF8.Image (CP));
+                     Append (New_Name, "_" & Image (CP));
                      Is_Previous_Lowercase := False;
                   else
-                     Append (New_Name, Strings_Edit.UTF8.Image (Strings_Edit.UTF8.Mapping.To_Lowercase (CP)));
+                     Append (New_Name, Image (To_Lowercase (CP)));
                   end if;
                else
                   if Is_Previous_An_Undercase then
-                     Append (New_Name, Strings_Edit.UTF8.Image (Strings_Edit.UTF8.Mapping.To_Uppercase (CP)));
+                     Append (New_Name, Image (To_Uppercase (CP)));
                   else
-                     Append (New_Name, Strings_Edit.UTF8.Image (CP));
+                     Append (New_Name, Image (CP));
                   end if;
                   Is_Previous_Lowercase := True;
                end if;
@@ -551,7 +550,7 @@ package body XCB_Package_Creator is
          C_Function_Name           : X_Proto.Large_Bounded_String.T;
          Is_Success : Boolean;
       begin
-         Initialize (C_Function_Name, "xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (Name) & "_next");
+         Initialize (C_Function_Name, "xcb_" & Aida.UTF8.To_Lowercase (Name) & "_next");
 
          Translate_To_Variable_Name (Variable_Type_Name => Name,
                                      Is_Success         => Is_Success,
@@ -583,7 +582,7 @@ package body XCB_Package_Creator is
          C_Function_Name    : X_Proto.Large_Bounded_String.T;
          Is_Success : Boolean;
       begin
-         Initialize (C_Function_Name, "xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (Name) & "_end");
+         Initialize (C_Function_Name, "xcb_" & Aida.UTF8.To_Lowercase (Name) & "_end");
 
          Translate_To_Variable_Name (Variable_Type_Name => Name,
                                      Is_Success         => Is_Success,
@@ -1137,7 +1136,7 @@ package body XCB_Package_Creator is
                begin
                   Generate_Struct_Name (Old_Name => To_String (Name (Event).Value),
                                         New_Name => Constant_Name);
-                  Initialize (Constant_Name, "XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (To_String (Constant_Name)));
+                  Initialize (Constant_Name, "XCB_" & Aida.UTF8.To_Uppercase (To_String (Constant_Name)));
                   Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Number (Event).Value'Img & ";");
                end;
             else
@@ -1168,7 +1167,7 @@ package body XCB_Package_Creator is
                begin
                   Generate_Struct_Name (Old_Name => To_String (Name (Event_Copy).Value),
                                         New_Name => Constant_Name);
-                  Initialize (Constant_Name, "XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (To_String (Constant_Name)));
+                  Initialize (Constant_Name, "XCB_" & Aida.UTF8.To_Uppercase (To_String (Constant_Name)));
                   Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Number (Event_Copy).Value'Img & ";");
                end;
             else
@@ -1197,7 +1196,7 @@ package body XCB_Package_Creator is
                begin
                   Generate_Struct_Name (Old_Name => To_String (Name (Error).Value),
                                         New_Name => Constant_Name);
-                  Initialize (Constant_Name, "XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (To_String (Constant_Name)));
+                  Initialize (Constant_Name, "XCB_" & Aida.UTF8.To_Uppercase (To_String (Constant_Name)));
                   Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Number (Error).Value'Img & ";");
                end;
             else
@@ -1226,7 +1225,7 @@ package body XCB_Package_Creator is
                begin
                   Generate_Struct_Name (Old_Name => To_String (Name (Error_Copy).Value),
                                         New_Name => Constant_Name);
-                  Initialize (Constant_Name, "XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (To_String (Constant_Name)));
+                  Initialize (Constant_Name, "XCB_" & Aida.UTF8.To_Uppercase (To_String (Constant_Name)));
                   Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Number (Error_Copy).Value'Img & ";");
                end;
             else
@@ -1257,7 +1256,7 @@ package body XCB_Package_Creator is
                begin
                   Generate_Struct_Name (Old_Name => To_String (Name (Request).Value),
                                         New_Name => Constant_Name);
-                  Initialize (Constant_Name, "XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (To_String (Constant_Name)));
+                  Initialize (Constant_Name, "XCB_" & Aida.UTF8.To_Uppercase (To_String (Constant_Name)));
                   Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Op_Code (Request).Value'Img & ";");
                end;
             else
@@ -1364,7 +1363,7 @@ package body XCB_Package_Creator is
                         Generate_Struct_Name (Old_Name => To_String (Name (Element (Items (Enum).all, I).all).Value),
                                               New_Name => Enum_Value_Name);
 
-                        Put_Tabs (1); Put ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (To_String (Enum_Prefix_Name) & "_" & To_String (Enum_Value_Name)) & " : constant Atom_Id_Type :=");
+                        Put_Tabs (1); Put ("XCB_" & Aida.UTF8.To_Uppercase (To_String (Enum_Prefix_Name) & "_" & To_String (Enum_Value_Name)) & " : constant Atom_Id_Type :=");
                         case Kind_Id (Element (Items (Enum).all, I).all) is
                            when X_Proto.Item.Fs.Not_Specified =>
                               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", should never happen");
@@ -1403,7 +1402,7 @@ package body XCB_Package_Creator is
                            Generate_Struct_Name (Old_Name => To_String (Name (Element (Items (Enum).all, I).all).Value),
                                                  New_Name => Enum_Value_Name);
 
-                           Put_Tabs (1); Put ("XCB_" & Strings_Edit.UTF8.Mapping.To_Uppercase (To_String (Enum_Prefix_Name) & "_" & To_String (Enum_Value_Name)) & " : constant " &
+                           Put_Tabs (1); Put ("XCB_" & Aida.UTF8.To_Uppercase (To_String (Enum_Prefix_Name) & "_" & To_String (Enum_Value_Name)) & " : constant " &
                                                 To_String (New_Variable_Type_Name) & " :=");
                            case Kind_Id (Element (Items (Enum).all, I).all) is
                               when X_Proto.Item.Fs.Not_Specified =>
@@ -2267,7 +2266,7 @@ package body XCB_Package_Creator is
 
                      Initialize (Function_Name, To_String (Name) & Suffix);
 
-                     Initialize (C_Function_Name, "xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (To_String (Name) & Suffix));
+                     Initialize (C_Function_Name, "xcb_" & Aida.UTF8.To_Lowercase (To_String (Name) & Suffix));
 
                      Generate_Request_With_Reply_Code (Function_Name,
                                                        C_Function_Name,
@@ -2292,7 +2291,7 @@ package body XCB_Package_Creator is
 
                         Initialize (Function_Name, To_String (Name) & "_Size_Of");
 
-                        Initialize (C_Function_Name, "xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (To_String (Name)) & "_sizeof");
+                        Initialize (C_Function_Name, "xcb_" & Aida.UTF8.To_Lowercase (To_String (Name)) & "_sizeof");
                         Put_Tabs (1); Put_Line ("function " & To_String (Function_Name) & " (Buffer : System.Address) return Interfaces.C.int;");
                         Put_Tabs (1); Put_Line ("pragma Import (C, " & To_String (Function_Name) & ", """ & To_String (C_Function_Name) & """);");
                         Put_Line ("");
@@ -2328,7 +2327,7 @@ package body XCB_Package_Creator is
 
                         Initialize (Function_Name, To_String (Name) & "_Reply");
 
-                        Initialize (C_Function_Name, "xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (To_String (Name)) & "_reply");
+                        Initialize (C_Function_Name, "xcb_" & Aida.UTF8.To_Lowercase (To_String (Name)) & "_reply");
 
                         Put_Tabs (1); Put_Line ("function " & To_String (Function_Name));
                         Put_Tabs (2); Put_Line ("(");
@@ -2357,7 +2356,7 @@ package body XCB_Package_Creator is
 
                      Initialize (Function_Name, To_String (Name));
 
-                     Initialize (C_Function_Name, "xcb_" & Strings_Edit.UTF8.Mapping.To_Lowercase (To_String (Name)));
+                     Initialize (C_Function_Name, "xcb_" & Aida.UTF8.To_Lowercase (To_String (Name)));
 
                      Generate_Request_With_Reply_Code (Function_Name,
                                                        C_Function_Name,
