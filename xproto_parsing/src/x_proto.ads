@@ -132,7 +132,9 @@ package X_Proto is
 
    end Pad;
 
-   type Field_Reference_Type is new Large_Bounded_String.T;
+   package Field_Reference is new Aida.Bounded_String (Maximum_Length_Of_Bounded_String => 1_00);
+
+   subtype Field_Reference_Type is Field_Reference.T;
 
    type Field_Reference_Access_Type is access all Field_Reference_Type;
 

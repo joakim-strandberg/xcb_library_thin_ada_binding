@@ -93,22 +93,22 @@ begin
 
       CP      : Aida.Code_Point_T := 0;
 
-      Start_Tag_Name_First_Index : Integer;
-      Start_Tag_Name_Last_Index  : Integer;
+      Start_Tag_Name_First_Index : Integer := -1;
+      Start_Tag_Name_Last_Index  : Integer := -1;
 
-      Tag_Value_First_Index : Integer;
-      Tag_Value_Last_Index  : Integer;
+      Tag_Value_First_Index : Integer := -1;
+      Tag_Value_Last_Index  : Integer := -1;
 
-      End_Tag_Name_First_Index : Integer;
-      End_Tag_Name_Last_Index  : Integer;
+      End_Tag_Name_First_Index : Integer := -1;
+      End_Tag_Name_Last_Index  : Integer := -1;
 
-      Attribute_First_Index : Integer;
-      Attribute_Last_Index  : Integer;
+      Attribute_First_Index : Integer := -1;
+      Attribute_Last_Index  : Integer := -1;
 
-      Attribute_Value_First_Index : Integer;
-      Attribute_Value_Last_Index  : Integer;
+      Attribute_Value_First_Index : Integer := -1;
+      Attribute_Value_Last_Index  : Integer := -1;
 
-      Shall_Ignore_Tag_Value : Boolean;
+      Shall_Ignore_Tag_Value : Boolean := False;
    begin
       while P < Contents'Last loop
          Prev_Prev_P := Prev_P;

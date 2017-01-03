@@ -2,7 +2,8 @@ with Ada.Direct_IO;
 with Ada.Text_IO;
 with GNAT.IO_Aux;
 with SXML;
-with X_Proto.XML;
+with X_Proto;
+with XML_File_Parser;
 with XCB_Package_Creator;
 
 procedure Main is
@@ -53,10 +54,10 @@ procedure Main is
       File_String_IO.Read  (File, Item => Contents);
       File_String_IO.Close (File);
 
-      X_Proto.XML.Parse (Contents,
-                         Xcb,
-                         Error_Message,
-                         Is_Success);
+      XML_File_Parser.Parse (Contents,
+                             Xcb,
+                             Error_Message,
+                             Is_Success);
 
       if Is_Success then
          Ada.Text_IO.Put_Line ("Successfully parsed " & File_Name & "! Will create xcb.ads");

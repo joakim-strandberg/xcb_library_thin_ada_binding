@@ -1,10 +1,11 @@
 with SXML;
+with X_Proto;
 
-package X_Proto.XML is
+package XML_File_Parser is
 
    procedure Parse (Contents      : String;
-                    Xcb_V         : in out Xcb.Ptr;
+                    Xcb_V         : in out X_Proto.Xcb.Ptr;
                     Error_Message : out SXML.Error_Message_T;
                     Is_Success    : out Boolean);
 
-end X_Proto.XML;
+end XML_File_Parser;
