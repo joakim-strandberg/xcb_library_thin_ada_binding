@@ -1,7 +1,7 @@
 with Aida.Containers.Bounded_Vector;
 with Aida.Bounded_String;
 
-package X_Proto is
+package X_Proto_XML is
 
    package Large_Bounded_String is new Aida.Bounded_String (Maximum_Length_Of_Bounded_String => 3_000);
 
@@ -1542,4 +1542,4 @@ private
          My_Members : aliased Operation.Fs.Member_Vector.T;
       end record;
 
-end X_Proto;
+end X_Proto_XML;

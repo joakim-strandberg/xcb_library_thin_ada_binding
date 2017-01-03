@@ -2,7 +2,7 @@ with Ada.Direct_IO;
 with Ada.Text_IO;
 with GNAT.IO_Aux;
 with Aida.XML;
-with X_Proto;
+with X_Proto_XML;
 with XML_File_Parser;
 with XCB_Package_Creator;
 
@@ -47,7 +47,7 @@ procedure Main is
 
       Error_Message : Aida.XML.Error_Message_P.T;
 
-      Xcb : X_Proto.Xcb.Ptr := null;
+      Xcb : X_Proto_XML.Xcb.Ptr := null;
    begin
       File_String_IO.Open  (File, Mode => File_String_IO.In_File,
                             Name => File_Name);

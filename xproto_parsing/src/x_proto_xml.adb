@@ -1,4 +1,4 @@
-package body X_Proto is
+package body X_Proto_XML is
 
    package body Struct is
 
@@ -1002,4 +1002,4 @@ package body X_Proto is
 
    end Reply;
 
-end X_Proto;
+end X_Proto_XML;
