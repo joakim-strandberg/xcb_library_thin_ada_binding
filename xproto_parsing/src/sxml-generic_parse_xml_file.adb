@@ -1,12 +1,12 @@
-with Strings_Edit.UTF8;
 with Ada.Characters.Latin_1;
 --  with Ada.Text_IO;
+with Aida;
 
 procedure SXML.Generic_Parse_XML_File (Contents      : String;
                                        Error_Message : out Error_Message_P.T;
                                        Is_Success    : out Boolean)
 is
-   use type Strings_Edit.UTF8.Code_Point;
+   use type Aida.Code_Point_T;
 
    use SXML.Bounded_String;
    use SXML.DL;
@@ -61,7 +61,7 @@ is
 
    Shall_Ignore_Tag_Value_List : Boolean_List.T;
 
-   function Is_Special_Symbol (CP : Strings_Edit.UTF8.Code_Point) return Boolean is
+   function Is_Special_Symbol (CP : Aida.Code_Point_T) return Boolean is
    begin
       if CP = Character'Pos ('<') then
          return True;
@@ -85,11 +85,11 @@ begin
    State_Id := Expecting_NL_Sign_Or_Space_Or_Less_Sign;
 
    declare
-      P           : Integer := Strings_Edit.UTF8.Length (XML_File_Start_String) + 1;
+      P           : Integer := Aida.UTF8.Length (XML_File_Start_String) + 1;
       Prev_P      : Integer := P;
       Prev_Prev_P : Integer := Prev_P;
 
-      CP      : Strings_Edit.UTF8.Code_Point := 0;
+      CP      : Aida.Code_Point_T := 0;
 
       Start_Tag_Name_First_Index : Integer;
       Start_Tag_Name_Last_Index  : Integer;
@@ -113,9 +113,9 @@ begin
 
          Prev_P := P;
 
-         Strings_Edit.UTF8.Get (Source  => Contents,
-                                Pointer => P,
-                                Value   => CP);
+         Aida.UTF8.Get (Source  => Contents,
+                        Pointer => P,
+                        Value   => CP);
 
 --                     Ada.Text_IO.Put_Line ("Extracted:" & Strings_Edit.UTF8.Image (CP) & ", state " & State_Id'Img);
 --                     Ada.Text_IO.Put (Strings_Edit.UTF8.Image (CP));
