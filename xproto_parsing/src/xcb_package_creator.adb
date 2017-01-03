@@ -71,12 +71,6 @@ package body XCB_Package_Creator is
 
    subtype Unbounded_String_Vector_Ptr is Unbounded_String_Vector_P.Ptr;
 
-   Processed_X_Ids : constant Unbounded_String_Vector_Ptr := new Unbounded_String_Vector_T;
-
-   Eight_Bit_Variable_Type_Names : constant Unbounded_String_Vector_Ptr := new Unbounded_String_Vector_T;
-
-   Thirty_Two_Bit_Variable_Type_Names : constant Unbounded_String_Vector_Ptr := new Unbounded_String_Vector_T;
-
    package Original_Name_To_Adaified_Name_P is new Aida.Containers.Bounded_Hash_Map (Key_T             => X_Proto_XML.Large_Bounded_String.T,
                                                                                      Element_T         => X_Proto_XML.Large_Bounded_String.T,
                                                                                      Hash              => X_Proto_XML.Large_Bounded_String.Hash32,
@@ -403,7 +397,23 @@ package body XCB_Package_Creator is
       end if;
    end Generate_Classic_Array_Type_Name;
 
-   procedure Create_XCB_Package (XCB : X_Proto_XML.Xcb.T) is
+   package Allocators is
+
+      function New_Unbounded_String_Vector is new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => Unbounded_String_Vector_T,
+                                                                                                   Allocation_Type_Access => Unbounded_String_Vector_Ptr);
+
+      function New_Original_Name_To_Adaified_Name is new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => Original_Name_To_Adaified_Name_T,
+                                                                                                          Allocation_Type_Access => Original_Name_To_Adaified_Name_Ptr);
+
+      function New_Enum_Name_To_Size_Identifier_Map is new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => Enum_Name_To_Size_Identifier_Map_T,
+                                                                                                        Allocation_Type_Access => Enum_Name_To_Size_Identifier_Map_Ptr);
+
+   end Allocators;
+
+   use Allocators;
+
+   procedure Create_XCB_Package (XCB     : X_Proto_XML.Xcb.T;
+                                 Subpool : in out Bounded_Dynamic_Pools.Scoped_Subpool) is
       File   : Ada.Text_IO.File_Type;
 
       procedure Put_Tabs (N : Natural) is
@@ -426,13 +436,19 @@ package body XCB_Package_Creator is
                           Item => Text);
       end Put;
 
-      Original_Variable_Name_To_Adaified_Name : constant Original_Name_To_Adaified_Name_Ptr := new Original_Name_To_Adaified_Name_T;
+      Processed_X_Ids : constant Unbounded_String_Vector_Ptr := New_Unbounded_String_Vector (Subpool);
 
-      Original_Name_To_Adaified_Name : constant Original_Name_To_Adaified_Name_Ptr := new Original_Name_To_Adaified_Name_T;
+      Eight_Bit_Variable_Type_Names : constant Unbounded_String_Vector_Ptr := New_Unbounded_String_Vector (Subpool);
 
-      Original_Name_To_Adaified_Iterator_Type_Name : constant Original_Name_To_Adaified_Name_Ptr := new Original_Name_To_Adaified_Name_T;
+      Thirty_Two_Bit_Variable_Type_Names : constant Unbounded_String_Vector_Ptr := New_Unbounded_String_Vector (Subpool);
 
-      Original_Name_To_Adaified_Iterator_Access_Type_Name : constant Original_Name_To_Adaified_Name_Ptr := new Original_Name_To_Adaified_Name_T;
+      Original_Variable_Name_To_Adaified_Name : constant Original_Name_To_Adaified_Name_Ptr := New_Original_Name_To_Adaified_Name (Subpool);
+
+      Original_Name_To_Adaified_Name : constant Original_Name_To_Adaified_Name_Ptr := New_Original_Name_To_Adaified_Name (Subpool);
+
+      Original_Name_To_Adaified_Iterator_Type_Name : constant Original_Name_To_Adaified_Name_Ptr := New_Original_Name_To_Adaified_Name (Subpool);
+
+      Original_Name_To_Adaified_Iterator_Access_Type_Name : constant Original_Name_To_Adaified_Name_Ptr := New_Original_Name_To_Adaified_Name (Subpool);
 
       procedure Translate_Variable_Type_Name (Variable_Type_Name : String;
                                               Is_Success         : out Boolean;
@@ -866,19 +882,9 @@ package body XCB_Package_Creator is
          Put_Line ("");
       end Generate_Request_With_Reply_Code;
 
-      package Unbounded_String_Vector_P is new Aida.Containers.Bounded_Vector (Element_T  => X_Proto_XML.Large_Bounded_String.T,
-                                                                               "="        => X_Proto_XML.Large_Bounded_String."=",
-                                                                               MAX_LENGTH => 1000);
+      Names_Of_Types_To_Make_Array_Types : constant Unbounded_String_Vector_Ptr := New_Unbounded_String_Vector (Subpool);
 
-      subtype Unbounded_String_Vector_T is Unbounded_String_Vector_P.T;
-
-      subtype Unbounded_String_Vector_Ptr is Unbounded_String_Vector_P.Ptr;
-
-      use Unbounded_String_Vector_P;
-
-      Names_Of_Types_To_Make_Array_Types : constant Unbounded_String_Vector_Ptr := new Unbounded_String_Vector_T;
-
-      Enum_Name_To_Size_Identifier_Map : constant Enum_Name_To_Size_Identifier_Map_Ptr := new Enum_Name_To_Size_Identifier_Map_T;
+      Enum_Name_To_Size_Identifier_Map : constant Enum_Name_To_Size_Identifier_Map_Ptr := New_Enum_Name_To_Size_Identifier_Map (Subpool);
 
       procedure Pre_Process_Requests is
 

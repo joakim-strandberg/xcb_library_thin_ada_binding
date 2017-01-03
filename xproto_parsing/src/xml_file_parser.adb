@@ -3,6 +3,7 @@ with Aida.XML.Parse_XML_File;
 with Aida.Containers.Bounded_Hash_Map;
 with GNAT.Source_Info;
 with Ada.Exceptions;
+with X_Proto_XML.Allocators;
 
 package body XML_File_Parser is
 
@@ -37,6 +38,7 @@ package body XML_File_Parser is
    use X_Proto_XML.Type_P;
    use X_Proto_XML.Example;
    use X_Proto_XML.Field_Reference;
+   use X_Proto_XML.Allocators;
 
    Tag_Xcb                                    : constant String := "xcb";
    Tag_Xcb_Attribute_Header                   : constant String := "header";
@@ -182,6 +184,315 @@ package body XML_File_Parser is
       end case;
    end record;
 
+   package Allocators is
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Xcb        : X_Proto_XML.Xcb.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Struct     : X_Proto_XML.Struct.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                X_Id       : X_Proto_XML.X_Id.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                X_Id_Union : X_Proto_XML.X_Id_Union.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+
+      function New_Current_Tag (Parent_Tag      : Current_Tag_Access_Type;
+                                Type_Definition : X_Proto_XML.Type_Definition.Ptr;
+                                Subpool         : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Enum       : X_Proto_XML.Enum.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Event      : X_Proto_XML.Event.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Event_Copy : X_Proto_XML.Event_Copy.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Union      : X_Proto_XML.Union.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Error      : X_Proto_XML.Error.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Error_Copy : X_Proto_XML.Error_Copy.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Request    : X_Proto_XML.Request.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Field      : X_Proto_XML.Field.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+
+   end Allocators;
+
+   package body Allocators is
+
+      subtype CT_Xcb_T is Current_Tag_T (Tag_Id.Xcb);
+
+      type CT_Xcb_Ptr is access all CT_Xcb_T;
+
+      function New_CT_Xcb is
+        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Xcb_T,
+                                                             Allocation_Type_Access => CT_Xcb_Ptr);
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Xcb        : X_Proto_XML.Xcb.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+      is
+         T : constant CT_Xcb_Ptr := New_CT_Xcb (Subpool);
+      begin
+         T.Find_Tag := Parent_Tag;
+         T.Xcb_V := Xcb;
+         return Current_Tag_Access_Type (T);
+      end New_Current_Tag;
+
+      subtype CT_Struct_T is Current_Tag_T (Tag_Id.Struct);
+
+      type CT_Struct_Ptr is access all CT_Struct_T;
+
+      function New_CT_Struct is
+        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Struct_T,
+                                                             Allocation_Type_Access => CT_Struct_Ptr);
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Struct     : X_Proto_XML.Struct.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+      is
+         T : constant CT_Struct_Ptr := New_CT_Struct (Subpool);
+      begin
+         T.Find_Tag := Parent_Tag;
+         T.Struct_V := Struct;
+         return Current_Tag_Access_Type (T);
+      end New_Current_Tag;
+
+      subtype CT_X_Id_T is Current_Tag_T (Tag_Id.X_Id_Kind);
+
+      type CT_X_Id_Ptr is access all CT_X_Id_T;
+
+      function New_CT_X_Id is
+        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_X_Id_T,
+                                                             Allocation_Type_Access => CT_X_Id_Ptr);
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                X_Id       : X_Proto_XML.X_Id.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+      is
+         T : constant CT_X_Id_Ptr := New_CT_X_Id (Subpool);
+      begin
+         T.Find_Tag := Parent_Tag;
+         T.X_Id_Kind_V := X_Id;
+         return Current_Tag_Access_Type (T);
+      end New_Current_Tag;
+
+      subtype CT_X_Id_Union_T is Current_Tag_T (Tag_Id.X_Id_Union);
+
+      type CT_X_Id_Union_Ptr is access all CT_X_Id_Union_T;
+
+      function New_CT_X_Id_Union is
+        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_X_Id_Union_T,
+                                                             Allocation_Type_Access => CT_X_Id_Union_Ptr);
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                X_Id_Union : X_Proto_XML.X_Id_Union.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+      is
+         T : constant CT_X_Id_Union_Ptr := New_CT_X_Id_Union (Subpool);
+      begin
+         T.Find_Tag := Parent_Tag;
+         T.X_Id_Union_V := X_Id_Union;
+         return Current_Tag_Access_Type (T);
+      end New_Current_Tag;
+
+      subtype CT_Type_Definition_T is Current_Tag_T (Tag_Id.Type_Definition);
+
+      type CT_Type_Definition_Ptr is access all CT_Type_Definition_T;
+
+      function New_CT_Type_Definition is
+        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Type_Definition_T,
+                                                             Allocation_Type_Access => CT_Type_Definition_Ptr);
+
+      function New_Current_Tag (Parent_Tag      : Current_Tag_Access_Type;
+                                Type_Definition : X_Proto_XML.Type_Definition.Ptr;
+                                Subpool         : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+      is
+         T : constant CT_Type_Definition_Ptr := New_CT_Type_Definition (Subpool);
+      begin
+         T.Find_Tag := Parent_Tag;
+         T.Type_Definition_V := Type_Definition;
+         return Current_Tag_Access_Type (T);
+      end New_Current_Tag;
+
+      subtype CT_Enum_T is Current_Tag_T (Tag_Id.Enum);
+
+      type CT_Enum_Ptr is access all CT_Enum_T;
+
+      function New_CT_Enum is
+        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Enum_T,
+                                                             Allocation_Type_Access => CT_Enum_Ptr);
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Enum       : X_Proto_XML.Enum.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+      is
+         T : constant CT_Enum_Ptr := New_CT_Enum (Subpool);
+      begin
+         T.Find_Tag := Parent_Tag;
+         T.Enum_V := Enum;
+         return Current_Tag_Access_Type (T);
+      end New_Current_Tag;
+
+      subtype CT_Event_T is Current_Tag_T (Tag_Id.Event);
+
+      type CT_Event_Ptr is access all CT_Event_T;
+
+      function New_CT_Event is
+        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Event_T,
+                                                             Allocation_Type_Access => CT_Event_Ptr);
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Event      : X_Proto_XML.Event.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+      is
+         T : constant CT_Event_Ptr := New_CT_Event (Subpool);
+      begin
+         T.Find_Tag := Parent_Tag;
+         T.Event_V := Event;
+         return Current_Tag_Access_Type (T);
+      end New_Current_Tag;
+
+      subtype CT_Event_Copy_T is Current_Tag_T (Tag_Id.Event_Copy);
+
+      type CT_Event_Copy_Ptr is access all CT_Event_Copy_T;
+
+      function New_CT_Event_Copy is
+        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Event_Copy_T,
+                                                             Allocation_Type_Access => CT_Event_Copy_Ptr);
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Event_Copy : X_Proto_XML.Event_Copy.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+      is
+         T : constant CT_Event_Copy_Ptr := New_CT_Event_Copy (Subpool);
+      begin
+         T.Find_Tag := Parent_Tag;
+         T.Event_Copy_V := Event_Copy;
+         return Current_Tag_Access_Type (T);
+      end New_Current_Tag;
+
+      subtype CT_Union_T is Current_Tag_T (Tag_Id.Union);
+
+      type CT_Union_Ptr is access all CT_Union_T;
+
+      function New_CT_Union is
+        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Union_T,
+                                                             Allocation_Type_Access => CT_Union_Ptr);
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Union      : X_Proto_XML.Union.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+      is
+         T : constant CT_Union_Ptr := New_CT_Union (Subpool);
+      begin
+         T.Find_Tag := Parent_Tag;
+         T.Union_V := Union;
+         return Current_Tag_Access_Type (T);
+      end New_Current_Tag;
+
+      subtype CT_Error_T is Current_Tag_T (Tag_Id.Error);
+
+      type CT_Error_Ptr is access all CT_Error_T;
+
+      function New_CT_Error is
+        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Error_T,
+                                                             Allocation_Type_Access => CT_Error_Ptr);
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Error      : X_Proto_XML.Error.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+      is
+         T : constant CT_Error_Ptr := New_CT_Error (Subpool);
+      begin
+         T.Find_Tag := Parent_Tag;
+         T.Error_V := Error;
+         return Current_Tag_Access_Type (T);
+      end New_Current_Tag;
+
+      subtype CT_Error_Copy_T is Current_Tag_T (Tag_Id.Error_Copy);
+
+      type CT_Error_Copy_Ptr is access all CT_Error_Copy_T;
+
+      function New_CT_Error_Copy is
+        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Error_Copy_T,
+                                                             Allocation_Type_Access => CT_Error_Copy_Ptr);
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Error_Copy : X_Proto_XML.Error_Copy.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+      is
+         T : constant CT_Error_Copy_Ptr := New_CT_Error_Copy (Subpool);
+      begin
+         T.Find_Tag := Parent_Tag;
+         T.Error_Copy_V := Error_Copy;
+         return Current_Tag_Access_Type (T);
+      end New_Current_Tag;
+
+      subtype CT_Request_T is Current_Tag_T (Tag_Id.Request);
+
+      type CT_Request_Ptr is access all CT_Request_T;
+
+      function New_CT_Request is
+        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Request_T,
+                                                             Allocation_Type_Access => CT_Request_Ptr);
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Request    : X_Proto_XML.Request.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+      is
+         T : constant CT_Request_Ptr := New_CT_Request (Subpool);
+      begin
+         T.Find_Tag := Parent_Tag;
+         T.Request_V := Request;
+         return Current_Tag_Access_Type (T);
+      end New_Current_Tag;
+
+      subtype CT_Field_T is Current_Tag_T (Tag_Id.Field);
+
+      type CT_Field_Ptr is access all CT_Field_T;
+
+      function New_CT_Field is
+        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Field_T,
+                                                             Allocation_Type_Access => CT_Field_Ptr);
+
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Field      : X_Proto_XML.Field.Ptr;
+                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+      is
+         T : constant CT_Field_Ptr := New_CT_Field (Subpool);
+      begin
+         T.Find_Tag := Parent_Tag;
+         T.Field_V := Field;
+         return Current_Tag_Access_Type (T);
+      end New_Current_Tag;
+
+   end Allocators;
+
+   use Allocators;
+
    function Hash (Parent_And_Self_Tags : Aida.XML.DL.T) return Aida.Hash32_T is
       R : Aida.Hash32_T := 0;
 
@@ -210,13 +521,11 @@ package body XML_File_Parser is
 
    procedure Parse (Contents      : String;
                     Xcb_V         : in out X_Proto_XML.Xcb.Ptr;
+                    Subpool       : in out Bounded_Dynamic_Pools.Scoped_Subpool;
                     Error_Message : out Aida.XML.Error_Message_T;
                     Is_Success    : out Boolean)
    is
---        Parents_Including_Self_To_Current_Tag_Map_Pointer : List_Of_Tag_Names_To_Current_Tag_Maps.Ptr :=
---          new List_Of_Tag_Names_To_Current_Tag_Maps.T;
---        Parents_Including_Self_To_Current_Tag_Map renames Parents_Including_Self_To_Current_Tag_Map_Pointer.all;
---
+
       procedure Populate_Parents_Including_Self (Parents_Including_Self : in out Aida.XML.DL.T;
                                                  Parents                : Aida.XML.DL.T;
                                                  Tag_Name               : String)
@@ -280,12 +589,12 @@ package body XML_File_Parser is
                   return;
                end if;
 
-               Xcb_V := new X_Proto_XML.Xcb.T;
+               Xcb_V := New_Xcb (Subpool);
                Insert (This        => Parents_Including_Self_To_Current_Tag_Map,
                        Key         => Parents_Including_Self,
-                       New_Element => new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Xcb,
-                                                            Find_Tag => Find_Tag (Parent_Tags),
-                                                        Xcb_V    => Xcb_V));
+                       New_Element => New_Current_Tag (Parent_Tag => Find_Tag (Parent_Tags),
+                                                       Xcb        => Xcb_V,
+                                                       Subpool    => Subpool));
                Is_Success := True;
             else
                Is_Success := False;
@@ -298,14 +607,14 @@ package body XML_File_Parser is
             when Tag_Id.Xcb =>
                if Tag_Name = Tag_Struct then
                   declare
-                     Struct_V : constant X_Proto_XML.Struct.Ptr := new X_Proto_XML.Struct.T;
+                     Struct_V : constant X_Proto_XML.Struct.Ptr := New_Struct (Subpool);
                   begin
                      case Prev_Tag.Kind_Id is
                         when Tag_Id.Xcb =>
                            Append_Struct (Prev_Tag.Xcb_V.all, Struct_V);
-                           Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Struct,
-                                                         Find_Tag             => Prev_Tag,
-                                                         Struct_V             => Struct_V));
+                           Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
+                                                    Struct     => Struct_V,
+                                                    Subpool    => Subpool));
                            Is_Success := True;
                         when others =>
                            Is_Success := False;
@@ -314,103 +623,103 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_X_Id_Kind then
                   declare
-                     X_Id_Type_V : constant X_Proto_XML.X_Id.Ptr := new X_Proto_XML.X_Id.T;
+                     X_Id_Type_V : constant X_Proto_XML.X_Id.Ptr := New_X_Id (Subpool);
                   begin
                      Append_X_Id (Prev_Tag.Xcb_V.all, X_Id_Type_V);
                      Is_Success := True;
-                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id     => Tag_Id.X_Id_Kind,
-                                                   Find_Tag    => Prev_Tag,
-                                                   X_Id_Kind_V => X_Id_Type_V));
+                     Insert (New_Current_Tag (Parent_Tag  => Prev_Tag,
+                                              X_Id        => X_Id_Type_V,
+                                              Subpool     => Subpool));
                   end;
                elsif Tag_Name = Tag_X_Id_Union then
                   declare
-                     X_Id_Union_V : constant X_Proto_XML.X_Id_Union.Ptr := new X_Proto_XML.X_Id_Union.T;
+                     X_Id_Union_V : constant X_Proto_XML.X_Id_Union.Ptr := New_X_Id_Union (Subpool);
                   begin
                      Append_X_Id_Union (Prev_Tag.Xcb_V.all, X_Id_Union_V);
                      Is_Success := True;
-                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id      => Tag_Id.X_Id_Union,
-                                                   Find_Tag     => Prev_Tag,
-                                                   X_Id_Union_V => X_Id_Union_V));
+                     Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
+                                              X_Id_Union => X_Id_Union_V,
+                                              Subpool    => Subpool));
                   end;
                elsif Tag_Name = Tag_Type_Definition then
                   declare
-                     TD : constant X_Proto_XML.Type_Definition.Ptr := new X_Proto_XML.Type_Definition.T;
+                     TD : constant X_Proto_XML.Type_Definition.Ptr := New_Type_Definition (Subpool);
                   begin
                      Append_Type_Definition (Prev_Tag.Xcb_V.all, TD);
                      Is_Success := True;
-                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id           => Tag_Id.Type_Definition,
-                                                   Find_Tag          => Prev_Tag,
-                                                   Type_Definition_V => TD));
+                     Insert (New_Current_Tag (Parent_Tag       => Prev_Tag,
+                                              Type_Definition  => TD,
+                                              Subpool          => Subpool));
                   end;
                elsif Tag_Name = Tag_Enum then
                   declare
-                     Enum_V : constant X_Proto_XML.Enum.Ptr := new X_Proto_XML.Enum.T;
+                     Enum_V : constant X_Proto_XML.Enum.Ptr := New_Enum (Subpool);
                   begin
                      Append_Enum (Prev_Tag.Xcb_V.all, Enum_V);
                      Is_Success := True;
-                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Enum,
-                                                   Find_Tag => Prev_Tag,
-                                                   Enum_V   => Enum_V));
+                     Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
+                                              Enum       => Enum_V,
+                                              Subpool    => Subpool));
                   end;
                elsif Tag_Name = XML_Tag_Event then
                   declare
-                     E : constant X_Proto_XML.Event.Ptr := new X_Proto_XML.Event.T;
+                     E : constant X_Proto_XML.Event.Ptr := New_Event (Subpool);
                   begin
                      Append_Event (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
-                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Event,
-                                                   Find_Tag => Prev_Tag,
-                                                   Event_V  => E));
+                     Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
+                                              Event      => E,
+                                              Subpool    => Subpool));
                   end;
                elsif Tag_Name = XML_Tag_Event_Copy then
                   declare
-                     EC : constant X_Proto_XML.Event_Copy.Ptr := new X_Proto_XML.Event_Copy.T;
+                     EC : constant X_Proto_XML.Event_Copy.Ptr := New_Event_Copy (Subpool);
                   begin
                      Append_Event_Copy (Prev_Tag.Xcb_V.all, EC);
                      Is_Success := True;
-                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id      => Tag_Id.Event_Copy,
-                                                   Find_Tag     => Prev_Tag,
-                                                   Event_Copy_V => EC));
+                     Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
+                                              Event_Copy => EC,
+                                              Subpool    => Subpool));
                   end;
                elsif Tag_Name = XML_Tag_Union then
                   declare
-                     U : constant X_Proto_XML.Union.Ptr := new X_Proto_XML.Union.T;
+                     U : constant X_Proto_XML.Union.Ptr := New_Union (Subpool);
                   begin
                      Append_Union (Prev_Tag.Xcb_V.all, U);
                      Is_Success := True;
-                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Union,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Union_V              => U));
+                     Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
+                                              Union      => U,
+                                              Subpool    => Subpool));
                   end;
                elsif Tag_Name = XML_Tag_Error then
                   declare
-                     E : constant X_Proto_XML.Error.Ptr := new X_Proto_XML.Error.T;
+                     E : constant X_Proto_XML.Error.Ptr := New_Error (Subpool);
                   begin
                      Append_Error (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
-                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Error,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Error_V              => E));
+                     Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
+                                              Error      => E,
+                                              Subpool    => Subpool));
                   end;
                elsif Tag_Name = XML_Tag_Error_Copy then
                   declare
-                     E : constant X_Proto_XML.Error_Copy.Ptr := new X_Proto_XML.Error_Copy.T;
+                     E : constant X_Proto_XML.Error_Copy.Ptr := New_Error_Copy (Subpool);
                   begin
                      Append_Error_Copy (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
-                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Error_Copy,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Error_Copy_V         => E));
+                     Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
+                                              Error_Copy => E,
+                                              Subpool    => Subpool));
                   end;
                elsif Tag_Name = XML_Tag_Request then
                   declare
-                     R : constant X_Proto_XML.Request.Ptr := new X_Proto_XML.Request.T;
+                     R : constant X_Proto_XML.Request.Ptr := New_Request (Subpool);
                   begin
                      Append_Request (Prev_Tag.Xcb_V.all, R);
                      Is_Success := True;
-                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Request,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Request_V            => R));
+                     Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
+                                              Request    => R,
+                                              Subpool    => Subpool));
                   end;
                else
                   Is_Success := False;
@@ -419,17 +728,17 @@ package body XML_File_Parser is
             when Tag_Id.Struct =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Struct.Fs.Member_Ptr := new X_Proto_XML.Struct.Fs.Member_Type (Field_Member);
+                     F : X_Proto_XML.Struct.Fs.Member_Ptr := New_Struct_Field (Subpool);
                   begin
                      Append_Member (Prev_Tag.Struct_V.all, F);
                      Is_Success := True;
-                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Field,
-                                                   Find_Tag => Prev_Tag,
-                                                   Field_V  => F.F'Access));
+                     Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
+                                              Field      => F.F'Access,
+                                              Subpool    => Subpool));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : X_Proto_XML.Struct.Fs.Member_Ptr := new X_Proto_XML.Struct.Fs.Member_Type (Pad_Member);
+                     P : X_Proto_XML.Struct.Fs.Member_Ptr := New_Struct_Pad (Subpool);
                   begin
                      Append_Member (Prev_Tag.Struct_V.all, P);
                      Is_Success := True;
