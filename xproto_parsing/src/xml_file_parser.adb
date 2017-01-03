@@ -145,11 +145,11 @@ package body XML_File_Parser is
 
    use Tag_Id;
 
-   type Current_Tag_Type;
+   type Current_Tag_T;
 
-   type Current_Tag_Access_Type is access all Current_Tag_Type;
+   type Current_Tag_Access_Type is access all XML_File_Parser.Current_Tag_T;
 
-   type Current_Tag_Type (Kind_Id : Tag_Id.Enumeration_Type) is record
+   type Current_Tag_T (Kind_Id : Tag_Id.Enumeration_Type) is record
       Find_Tag : Current_Tag_Access_Type := null;
       case Kind_Id is
          when Xcb              => Xcb_V              : X_Proto.Xcb.Ptr;
@@ -283,7 +283,7 @@ package body XML_File_Parser is
                Xcb_V := new X_Proto.Xcb.T;
                Insert (This        => Parents_Including_Self_To_Current_Tag_Map,
                        Key         => Parents_Including_Self,
-                       New_Element => new Current_Tag_Type'(Kind_Id  => Tag_Id.Xcb,
+                       New_Element => new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Xcb,
                                                             Find_Tag => Find_Tag (Parent_Tags),
                                                         Xcb_V    => Xcb_V));
                Is_Success := True;
@@ -303,7 +303,7 @@ package body XML_File_Parser is
                      case Prev_Tag.Kind_Id is
                         when Tag_Id.Xcb =>
                            Append_Struct (Prev_Tag.Xcb_V.all, Struct_V);
-                           Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Struct,
+                           Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Struct,
                                                          Find_Tag             => Prev_Tag,
                                                          Struct_V             => Struct_V));
                            Is_Success := True;
@@ -318,7 +318,7 @@ package body XML_File_Parser is
                   begin
                      Append_X_Id (Prev_Tag.Xcb_V.all, X_Id_Type_V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id     => Tag_Id.X_Id_Kind,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id     => Tag_Id.X_Id_Kind,
                                                    Find_Tag    => Prev_Tag,
                                                    X_Id_Kind_V => X_Id_Type_V));
                   end;
@@ -328,7 +328,7 @@ package body XML_File_Parser is
                   begin
                      Append_X_Id_Union (Prev_Tag.Xcb_V.all, X_Id_Union_V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id      => Tag_Id.X_Id_Union,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id      => Tag_Id.X_Id_Union,
                                                    Find_Tag     => Prev_Tag,
                                                    X_Id_Union_V => X_Id_Union_V));
                   end;
@@ -338,7 +338,7 @@ package body XML_File_Parser is
                   begin
                      Append_Type_Definition (Prev_Tag.Xcb_V.all, TD);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id           => Tag_Id.Type_Definition,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id           => Tag_Id.Type_Definition,
                                                    Find_Tag          => Prev_Tag,
                                                    Type_Definition_V => TD));
                   end;
@@ -348,7 +348,7 @@ package body XML_File_Parser is
                   begin
                      Append_Enum (Prev_Tag.Xcb_V.all, Enum_V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Enum,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Enum,
                                                    Find_Tag => Prev_Tag,
                                                    Enum_V   => Enum_V));
                   end;
@@ -358,7 +358,7 @@ package body XML_File_Parser is
                   begin
                      Append_Event (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Event,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Event,
                                                    Find_Tag => Prev_Tag,
                                                    Event_V  => E));
                   end;
@@ -368,7 +368,7 @@ package body XML_File_Parser is
                   begin
                      Append_Event_Copy (Prev_Tag.Xcb_V.all, EC);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id      => Tag_Id.Event_Copy,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id      => Tag_Id.Event_Copy,
                                                    Find_Tag     => Prev_Tag,
                                                    Event_Copy_V => EC));
                   end;
@@ -378,7 +378,7 @@ package body XML_File_Parser is
                   begin
                      Append_Union (Prev_Tag.Xcb_V.all, U);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Union,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Union,
                                                    Find_Tag             => Prev_Tag,
                                                    Union_V              => U));
                   end;
@@ -388,7 +388,7 @@ package body XML_File_Parser is
                   begin
                      Append_Error (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Error,
                                                    Find_Tag             => Prev_Tag,
                                                    Error_V              => E));
                   end;
@@ -398,7 +398,7 @@ package body XML_File_Parser is
                   begin
                      Append_Error_Copy (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error_Copy,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Error_Copy,
                                                    Find_Tag             => Prev_Tag,
                                                    Error_Copy_V         => E));
                   end;
@@ -408,7 +408,7 @@ package body XML_File_Parser is
                   begin
                      Append_Request (Prev_Tag.Xcb_V.all, R);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Request,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Request,
                                                    Find_Tag             => Prev_Tag,
                                                    Request_V            => R));
                   end;
@@ -423,7 +423,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Struct_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Field,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Field,
                                                    Find_Tag => Prev_Tag,
                                                    Field_V  => F.F'Access));
                   end;
@@ -433,7 +433,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Struct_V.all, P);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Pad,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Pad,
                                                    Find_Tag => Prev_Tag,
                                                    Pad_V    => P.P'Access));
                   end;
@@ -443,7 +443,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Struct_V.all, L);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.List,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.List,
                                                    Find_Tag => Prev_Tag,
                                                    List_V   => L.L'Access));
                   end;
@@ -458,7 +458,7 @@ package body XML_File_Parser is
                   begin
                      Append_Kind (Prev_Tag.X_Id_Union_V.all, Kind);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Kind,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Kind,
                                                    Find_Tag => Prev_Tag,
                                                    Kind     => Kind));
                   end;
@@ -473,7 +473,7 @@ package body XML_File_Parser is
                   begin
                      Append_Item (Prev_Tag.Enum_V.all, Item_V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Item,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Item,
                                                    Find_Tag => Prev_Tag,
                                                    Item_V   => Item_V));
                   end;
@@ -483,7 +483,7 @@ package body XML_File_Parser is
                   begin
                      Append_Documentation (Prev_Tag.Enum_V.all, D);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id         => Tag_Id.Documentation,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id         => Tag_Id.Documentation,
                                                    Find_Tag        => Prev_Tag,
                                                    Documentation_V => D));
                   end;
@@ -509,7 +509,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.List_V.all, Operation);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Op,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Op,
                                                    Find_Tag             => Prev_Tag,
                                                    Op_V                 => Operation.Operation'Access));
                   end;
@@ -519,7 +519,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.List_V.all, V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Value,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Value,
                                                    Find_Tag => Prev_Tag,
                                                    Value_V  => V.Value'Access));
                   end;
@@ -535,7 +535,7 @@ package body XML_File_Parser is
                      V.Operation := new X_Proto.Operation.T;
                      Append_Member (Prev_Tag.Op_V.all, V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Op,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Op,
                                                    Find_Tag             => Prev_Tag,
                                                    Op_V                 => V.Operation));
                   end;
@@ -545,7 +545,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Op_V.all, V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Field_Reference,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Field_Reference,
                                                    Find_Tag             => Prev_Tag,
                                                    Field_Reference      => V.Field_Reference'Access));
                   end;
@@ -555,7 +555,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Op_V.all, V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Value,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Value,
                                                    Find_Tag => Prev_Tag,
                                                    Value_V  => V.Value'Access));
                   end;
@@ -570,7 +570,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Event_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Field,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Field,
                                                    Find_Tag             => Prev_Tag,
                                                    Field_V              => F.F'Access));
                   end;
@@ -580,7 +580,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Event_V.all, P);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Pad,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Pad,
                                                    Find_Tag => Prev_Tag,
                                                    Pad_V    => P.P'Access));
                   end;
@@ -590,7 +590,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Event_V.all, D);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Documentation,
                                                    Find_Tag             => Prev_Tag,
                                                    Documentation_V      => D.D'Access));
                   end;
@@ -600,7 +600,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Event_V.all, L);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.List,
                                                    Find_Tag             => Prev_Tag,
                                                    List_V               => L.L'Access));
                   end;
@@ -615,7 +615,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Field,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Field,
                                                    Find_Tag => Prev_Tag,
                                                    Field_V  => D.F'Access));
                   end;
@@ -625,7 +625,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.See,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.See,
                                                    Find_Tag             => Prev_Tag,
                                                    See_V                => D.S'Access));
                   end;
@@ -635,7 +635,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Error,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Error,
                                                    Find_Tag             => Prev_Tag,
                                                    Error_V              => D.E'Access));
                   end;
@@ -645,7 +645,7 @@ package body XML_File_Parser is
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Example,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Example,
                                                    Find_Tag             => Prev_Tag,
                                                    Example_V            => D.Ex'Access));
                   end;
@@ -664,7 +664,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Union_V.all, L);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.List,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.List,
                                                    Find_Tag => Prev_Tag,
                                                    List_V   => L.L'Access));
                   end;
@@ -679,7 +679,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Error_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Field,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Field,
                                                    Find_Tag => Prev_Tag,
                                                    Field_V  => F.F'Access));
                   end;
@@ -689,7 +689,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Error_V.all, P);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Pad,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Pad,
                                                    Find_Tag => Prev_Tag,
                                                    Pad_V    => P.P'Access));
                   end;
@@ -704,7 +704,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Request_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Field,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Field,
                                                    Find_Tag => Prev_Tag,
                                                    Field_V  => F.F'Access));
                   end;
@@ -714,7 +714,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Request_V.all, P);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Pad,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Pad,
                                                    Find_Tag => Prev_Tag,
                                                    Pad_V    => P.P'Access));
                   end;
@@ -724,7 +724,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Request_V.all, V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Value_Param,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Value_Param,
                                                    Find_Tag             => Prev_Tag,
                                                    Value_Param_V        => V.V'Access));
                   end;
@@ -734,7 +734,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Request_V.all, V);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Documentation,
                                                    Find_Tag             => Prev_Tag,
                                                    Documentation_V      => V.D'Access));
                   end;
@@ -744,7 +744,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Reply,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Reply,
                                                    Find_Tag             => Prev_Tag,
                                                    Reply_V              => R.R'Access));
                   end;
@@ -754,7 +754,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.List,
                                                    Find_Tag             => Prev_Tag,
                                                    List_V               => R.L'Access));
                   end;
@@ -764,7 +764,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Expression_Field,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Expression_Field,
                                                    Find_Tag             => Prev_Tag,
                                                    Expression_Field_V   => R.EF'Access));
                   end;
@@ -779,7 +779,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Field,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Field,
                                                    Find_Tag => Prev_Tag,
                                                    Field_V  => F.F'Access));
                   end;
@@ -789,7 +789,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id  => Tag_Id.Pad,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Pad,
                                                    Find_Tag => Prev_Tag,
                                                    Pad_V    => F.P'Access));
                   end;
@@ -799,7 +799,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Documentation,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Documentation,
                                                    Find_Tag             => Prev_Tag,
                                                    Documentation_V      => F.D'Access));
                   end;
@@ -809,7 +809,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.List,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.List,
                                                    Find_Tag             => Prev_Tag,
                                                    List_V               => F.L'Access));
                   end;
@@ -824,7 +824,7 @@ package body XML_File_Parser is
                   begin
                      Append_Child (Prev_Tag.Expression_Field_V.all, C);
                      Is_Success := True;
-                     Insert (new Current_Tag_Type'(Kind_Id              => Tag_Id.Op,
+                     Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Op,
                                                    Find_Tag             => Prev_Tag,
                                                    Op_V                 => C.Op'Access));
                   end;
@@ -860,7 +860,8 @@ package body XML_File_Parser is
       begin
          if Current_Tag = null then
             Is_Success := False;
-            Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", attribute name " & Attribute_Name & " and value " & Attribute_Value & ", parents: " & To_String (Parent_Tags_And_Current_Tag));
+            Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", attribute name " & Attribute_Name & " and value " & Attribute_Value & ", parents: " & To_String (
+Parent_Tags_And_Current_Tag));
             return;
          end if;
 
@@ -1406,7 +1407,8 @@ package body XML_File_Parser is
                               when X_Proto.Item.Fs.Specified_As_Value |
                                    X_Proto.Item.Fs.Specified_As_Bit =>
                                  Is_Success := False;
-                                 Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", value already initialized for end tag " & Tag_Name & ", kind id " & Kind_Id (Prev_Tag.Item_V.all)'Img);
+                                 Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", value already initialized for end tag " & Tag_Name & ", kind id " & Kind_Id (Prev_Tag.Item_V.all)'Img)
+;
                            end case;
                         end if;
                      end;
