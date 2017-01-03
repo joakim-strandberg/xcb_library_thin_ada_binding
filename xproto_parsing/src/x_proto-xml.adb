@@ -1,12 +1,12 @@
 with Ada.Text_IO;
 with SXML.Generic_Parse_XML_File;
-with Std_String;
 with Aida.Containers.Bounded_Hash_Map;
 with GNAT.Source_Info;
 with Ada.Exceptions;
 
 package body X_Proto.XML is
 
+   use Aida.String;
    use Struct.Fs.Member_Kind_Id;
    use Operation;
    use SXML.Error_Message_P;
@@ -976,19 +976,19 @@ package body X_Proto.XML is
             when Tag_Id.Enum_Pad =>
                if Attribute_Name = Tag_Pad_Attribute_Bytes then
                   declare
-                     V : Positive;
+                     V : Aida.Int32_T;
 
                      Has_Failed : Boolean;
                   begin
-                     Std_String.To_Integer (Source     => Attribute_Value,
-                                            Target     => Integer (V),
-                                            Has_Failed => Has_Failed);
+                     To_Int32 (Source     => Aida.String_T (Attribute_Value),
+                               Target     => V,
+                               Has_Failed => Has_Failed);
 
                      if Has_Failed then
                         Is_Success := False;
                         Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Set_Bytes (Current_Tag.Pad_V.all, V);
+                        Set_Bytes (Current_Tag.Pad_V.all, Positive (V));
                      end if;
                   end;
                else
@@ -1060,18 +1060,18 @@ package body X_Proto.XML is
                   end;
                elsif Attribute_Name = XML_Tag_Event_Attribute_Number then
                   declare
-                     V : Positive;
+                     V : Aida.Int32_T;
                      Has_Failed : Boolean;
                   begin
-                     Std_String.To_Integer (Source     => Attribute_Value,
-                                            Target     => Integer (V),
-                                            Has_Failed => Has_Failed);
+                     To_Int32 (Source     => Aida.String_T (Attribute_Value),
+                               Target     => V,
+                               Has_Failed => Has_Failed);
 
                      if Has_Failed then
                         Is_Success := False;
                         Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Set_Number (Current_Tag.Event_V.all, V);
+                        Set_Number (Current_Tag.Event_V.all, Positive (V));
                      end if;
                   end;
                elsif Attribute_Name = XML_Tag_Event_Attribute_No_Sequence_Number then
@@ -1135,9 +1135,9 @@ package body X_Proto.XML is
                      V : Positive;
                      Has_Failed : Boolean;
                   begin
-                     Std_String.To_Integer (Source     => Attribute_Value,
-                                            Target     => Integer (V),
-                                            Has_Failed => Has_Failed);
+                     To_Int32 (Source     => Aida.String_T (Attribute_Value),
+                               Target     => Aida.Int32_T (V),
+                               Has_Failed => Has_Failed);
 
                      if Has_Failed then
                         Is_Success := False;
@@ -1175,9 +1175,9 @@ package body X_Proto.XML is
                      V : Natural;
                      Has_Failed : Boolean;
                   begin
-                     Std_String.To_Integer (Source     => Attribute_Value,
-                                            Target     => Integer (V),
-                                            Has_Failed => Has_Failed);
+                     To_Int32 (Source     => Aida.String_T (Attribute_Value),
+                               Target     => Aida.Int32_T (V),
+                               Has_Failed => Has_Failed);
 
                      if Has_Failed then
                         Is_Success := False;
@@ -1210,9 +1210,9 @@ package body X_Proto.XML is
                      V : Natural;
                      Has_Failed : Boolean;
                   begin
-                     Std_String.To_Integer (Source     => Attribute_Value,
-                                            Target     => Integer (V),
-                                            Has_Failed => Has_Failed);
+                     To_Int32 (Source     => Aida.String_T (Attribute_Value),
+                               Target     => Aida.Int32_T (V),
+                               Has_Failed => Has_Failed);
 
                      if Has_Failed then
                         Is_Success := False;
@@ -1245,9 +1245,9 @@ package body X_Proto.XML is
                      V : Natural;
                      Has_Failed : Boolean;
                   begin
-                     Std_String.To_Integer (Source     => Attribute_Value,
-                                            Target     => Integer (V),
-                                            Has_Failed => Has_Failed);
+                     To_Int32 (Source     => Aida.String_T (Attribute_Value),
+                               Target     => Aida.Int32_T (V),
+                               Has_Failed => Has_Failed);
 
                      if Has_Failed then
                         Is_Success := False;
@@ -1382,9 +1382,9 @@ package body X_Proto.XML is
                         V : Value_Type;
                         Has_Failed : Boolean;
                      begin
-                        Std_String.To_Integer (Source     => Tag_Value,
-                                               Target     => Integer (V),
-                                               Has_Failed => Has_Failed);
+                        To_Int32 (Source     => Aida.String_T (Tag_Value),
+                                  Target     => Aida.Int32_T (V),
+                                  Has_Failed => Has_Failed);
 
                         if Has_Failed then
                            Is_Success := False;
@@ -1476,9 +1476,9 @@ package body X_Proto.XML is
                      V : Value_Type;
                      Has_Failed : Boolean;
                   begin
-                     Std_String.To_Integer (Source     => Tag_Value,
-                                            Target     => Integer (V),
-                                            Has_Failed => Has_Failed);
+                     To_Int32 (Source     => Aida.String_T (Tag_Value),
+                               Target     => Aida.Int32_T (V),
+                               Has_Failed => Has_Failed);
 
                      if Has_Failed then
                         Is_Success := False;
@@ -1515,9 +1515,9 @@ package body X_Proto.XML is
                         V : Value_Type;
                         Has_Failed : Boolean;
                      begin
-                        Std_String.To_Integer (Source     => Tag_Value,
-                                               Target     => Integer (V),
-                                               Has_Failed => Has_Failed);
+                        To_Int32 (Source     => Aida.String_T (Tag_Value),
+                                  Target     => Aida.Int32_T (V),
+                                  Has_Failed => Has_Failed);
 
                         if Has_Failed then
                            Is_Success := False;

@@ -110,4 +110,9 @@ package body Aida.Containers.Bounded_Vector is
       end if;
    end "=";
 
+   procedure Clear (This : out T) is
+   begin
+      This.Last_Index := 0;
+   end Clear;
+
 end Aida.Containers.Bounded_Vector;

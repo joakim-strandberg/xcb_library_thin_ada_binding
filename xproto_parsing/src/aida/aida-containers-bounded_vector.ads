@@ -37,6 +37,8 @@ package Aida.Containers.Bounded_Vector is
 
    procedure Delete_Last (This : in out T);
 
+   procedure Clear (This : out T);
+
    generic
       with procedure Do_Something (Elements : Elements_Array_T);
    procedure Act_On_Immutable_Elements (This : in T);

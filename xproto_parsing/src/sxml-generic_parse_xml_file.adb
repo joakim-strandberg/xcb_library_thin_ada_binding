@@ -82,6 +82,8 @@ begin
       return;
    end if;
 
+   Clear (Tag_Names);
+
    State_Id := Expecting_NL_Sign_Or_Space_Or_Less_Sign;
 
    declare
