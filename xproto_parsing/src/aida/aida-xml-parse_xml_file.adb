@@ -2,14 +2,14 @@ with Ada.Characters.Latin_1;
 --  with Ada.Text_IO;
 with Aida;
 
-procedure SXML.Generic_Parse_XML_File (Contents      : String;
-                                       Error_Message : out Error_Message_P.T;
-                                       Is_Success    : out Boolean)
+procedure Aida.XML.Parse_XML_File (Contents      : Standard.String;
+                                   Error_Message : out Error_Message_P.T;
+                                   Is_Success    : out Boolean)
 is
    use type Aida.Code_Point_T;
 
-   use SXML.Bounded_String;
-   use SXML.DL;
+   use Aida.XML.Bounded_String;
+   use Aida.XML.DL;
    use Error_Message_P;
 
    Tag_Names : DL.T;
@@ -49,7 +49,7 @@ is
 
    State_Id : State_Id_Type := Searching_For_XML_Start_String;
 
-   XML_File_Start_String : constant String := "<?xml version=""1.0"" encoding=""utf-8""?>";
+   XML_File_Start_String : constant Standard.String := "<?xml version=""1.0"" encoding=""utf-8""?>";
 
    F : constant Natural := Contents'First;
 
@@ -63,13 +63,13 @@ is
 
    function Is_Special_Symbol (CP : Aida.Code_Point_T) return Boolean is
    begin
-      if CP = Character'Pos ('<') then
+      if CP = Standard.Character'Pos ('<') then
          return True;
-      elsif CP = Character'Pos ('>') then
+      elsif CP = Standard.Character'Pos ('>') then
          return True;
-      elsif CP = Character'Pos ('/') then
+      elsif CP = Standard.Character'Pos ('/') then
          return True;
-      elsif CP = Character'Pos ('"') then
+      elsif CP = Standard.Character'Pos ('"') then
          return True;
       else
          return False;
@@ -128,9 +128,9 @@ begin
                Is_Success := False;
                return;
             when Expecting_NL_Sign_Or_Space_Or_Less_Sign =>
-               if CP = Character'Pos (Ada.Characters.Latin_1.LF) or CP = Character'Pos (' ') then
+               if CP = Standard.Character'Pos (Ada.Characters.Latin_1.LF) or CP = Standard.Character'Pos (' ') then
                   null; -- Normal
-               elsif CP = Character'Pos ('<') then
+               elsif CP = Standard.Character'Pos ('<') then
                   State_Id := Found_Less_Sign;
                else
                   Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & CP'Img & "), state " & State_Id'Img & " " & Contents (F..P));
@@ -138,9 +138,9 @@ begin
                   return;
                end if;
             when Found_Less_Sign =>
-               if CP = Character'Pos ('!') then
+               if CP = Standard.Character'Pos ('!') then
                   State_Id := Found_Less_Followed_By_Exclamation_Sign;
-               elsif CP = Character'Pos ('/') then
+               elsif CP = Standard.Character'Pos ('/') then
                   State_Id := Extracting_End_Tag_Name;
                   End_Tag_Name_First_Index := P;
                elsif not Is_Special_Symbol (CP) then
@@ -152,7 +152,7 @@ begin
                   return;
                end if;
             when Found_Less_Followed_By_Exclamation_Sign =>
-               if CP = Character'Pos ('-') then
+               if CP = Standard.Character'Pos ('-') then
                   State_Id := Found_Less_Followed_By_Exclamation_And_Dash_Sign;
                else
                   Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & CP'Img & "), state " & State_Id'Img & " " & Contents (F..P));
@@ -160,7 +160,7 @@ begin
                   return;
                end if;
             when Found_Less_Followed_By_Exclamation_And_Dash_Sign =>
-               if CP = Character'Pos ('-') then
+               if CP = Standard.Character'Pos ('-') then
                   State_Id := Ignore_Comment;
                else
                   Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & CP'Img & "), state " & State_Id'Img & " " & Contents (F..P));
@@ -168,23 +168,23 @@ begin
                   return;
                end if;
             when Ignore_Comment =>
-               if CP = Character'Pos ('-') then
+               if CP = Standard.Character'Pos ('-') then
                   State_Id := Ignore_Comment_Followed_By_Dash_Sign;
                end if;
             when Ignore_Comment_Followed_By_Dash_Sign =>
-               if CP = Character'Pos ('-') then
+               if CP = Standard.Character'Pos ('-') then
                   State_Id := Ignore_Comment_Followed_By_Two_Dash_Signs;
                else
                   State_Id := Ignore_Comment;
                end if;
             when Ignore_Comment_Followed_By_Two_Dash_Signs =>
-               if CP = Character'Pos ('>') then
+               if CP = Standard.Character'Pos ('>') then
                   State_Id := Expecting_NL_Sign_Or_Space_Or_Less_Sign;
                else
                   State_Id := Ignore_Comment;
                end if;
             when Extracting_Start_Tag_Name =>
-               if CP = Character'Pos (' ') then
+               if CP = Standard.Character'Pos (' ') then
                   Start_Tag_Name_Last_Index := Prev_Prev_P;
                   Start_Tag (Contents (Start_Tag_Name_First_Index..Start_Tag_Name_Last_Index),
                              Tag_Names,
@@ -196,7 +196,7 @@ begin
                   end if;
 
                   declare
-                     S : SXML.Bounded_String_T;
+                     S : Aida.XML.Bounded_String_T;
                   begin
                      Initialize (This => S,
                                  Text => Contents (Start_Tag_Name_First_Index..Start_Tag_Name_Last_Index));
@@ -210,7 +210,7 @@ begin
                   Shall_Ignore_Tag_Value := False;
 
                   State_Id := Expecting_G_Sign_Or_Extracting_Attributes;
-               elsif CP = Character'Pos ('>') then
+               elsif CP = Standard.Character'Pos ('>') then
                   Start_Tag_Name_Last_Index := Prev_Prev_P;
                   Start_Tag (Contents (Start_Tag_Name_First_Index..Start_Tag_Name_Last_Index),
                              Tag_Names,
@@ -222,7 +222,7 @@ begin
                   end if;
 
                   declare
-                     S : SXML.Bounded_String_T;
+                     S : Aida.XML.Bounded_String_T;
                   begin
                      Initialize (This => S,
                                  Text => Contents (Start_Tag_Name_First_Index..Start_Tag_Name_Last_Index));
@@ -243,23 +243,23 @@ begin
                   return;
                end if;
             when Expecting_G_Sign_Or_Extracting_Attributes =>
-               if CP = Character'Pos (' ') or CP = Character'Pos (Ada.Characters.Latin_1.LF) then
+               if CP = Standard.Character'Pos (' ') or CP = Standard.Character'Pos (Ada.Characters.Latin_1.LF) then
                   null; -- Normal
-               elsif CP = Character'Pos ('>') then
+               elsif CP = Standard.Character'Pos ('>') then
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value;
                   Tag_Value_First_Index := P;
-               elsif CP = Character'Pos ('/') then
+               elsif CP = Standard.Character'Pos ('/') then
                   State_Id := Expecting_G_Sign_Or_Extracting_Attributes_And_Found_Slash;
                elsif not Is_Special_Symbol (CP) then
                   Attribute_First_Index := Prev_P;
                   State_Id := Extracting_Attribute_Name;
                end if;
             when Expecting_G_Sign_Or_Extracting_Attributes_And_Found_Slash =>
-               if CP = Character'Pos ('>') then
+               if CP = Standard.Character'Pos ('>') then
                   State_Id := Expecting_NL_Sign_Or_Space_Or_Less_Sign;
 
                   declare
-                     Tag_Name : constant String := To_String (Last_Element (Tag_Names));
+                     Tag_Name : constant Standard.String := To_String (Last_Element (Tag_Names));
                   begin
                      Delete_Last (Tag_Names);
                      End_Tag (Tag_Name,
@@ -278,11 +278,11 @@ begin
                   return;
                end if;
             when Extracting_Attribute_Name =>
-               if CP = Character'Pos ('=') then
+               if CP = Standard.Character'Pos ('=') then
                   Attribute_Last_Index := Prev_Prev_P;
                   State_Id := Expecting_Attribute_Value_Quotation_Mark;
 --                  Ada.Text_IO.Put_Line ("Extracted attribute name: '" & Contents (Attribute_First_Index..Attribute_Last_Index) & "'");
-               elsif CP = Character'Pos (Ada.Characters.Latin_1.LF) then
+               elsif CP = Standard.Character'Pos (Ada.Characters.Latin_1.LF) then
                   Initialize (Error_Message, "New line is forbidden inside attribute name, state " & State_Id'Img & " " & Contents (F..P));
                   Is_Success := False;
                   return;
@@ -290,7 +290,7 @@ begin
                   null; -- Normal
                end if;
             when Expecting_Attribute_Value_Quotation_Mark =>
-               if CP = Character'Pos ('"') or CP = Character'Pos (''') then
+               if CP = Standard.Character'Pos ('"') or CP = Standard.Character'Pos (''') then
                   Attribute_Value_First_Index := P;
                   State_Id := Extracting_Attribute_Value;
                else
@@ -299,7 +299,7 @@ begin
                   return;
                end if;
             when Extracting_Attribute_Value =>
-               if CP = Character'Pos ('"') or CP = Character'Pos (''') then
+               if CP = Standard.Character'Pos ('"') or CP = Standard.Character'Pos (''') then
                   Attribute_Value_Last_Index := Prev_Prev_P;
                   State_Id := Expecting_G_Sign_Or_Extracting_Attributes;
 --                  Ada.Text_IO.Put_Line ("Extracted attribute value: '" & Contents (Attribute_Value_First_Index..Attribute_Value_Last_Index) & "'");
@@ -313,20 +313,20 @@ begin
                      return;
                   end if;
 
-               elsif CP = Character'Pos (Ada.Characters.Latin_1.LF) then
+               elsif CP = Standard.Character'Pos (Ada.Characters.Latin_1.LF) then
                   Initialize (Error_Message, "New line is forbidden inside attribute value, state " & State_Id'Img & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                end if;
             when Expecting_New_Tag_Or_Extracting_Tag_Value =>
-               if CP = Character'Pos ('<') then
+               if CP = Standard.Character'Pos ('<') then
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value_And_Found_L;
                   Tag_Value_Last_Index := Prev_Prev_P;
                end if;
             when Expecting_New_Tag_Or_Extracting_Tag_Value_And_Found_L =>
-               if CP = Character'Pos ('!') then
+               if CP = Standard.Character'Pos ('!') then
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value_And_Found_L_And_Exclamation;
-               elsif CP = Character'Pos ('/') then
+               elsif CP = Standard.Character'Pos ('/') then
                   State_Id := Extracting_End_Tag_Name;
                   End_Tag_Name_First_Index := P;
                elsif Is_Special_Symbol (CP) then
@@ -340,67 +340,67 @@ begin
                   Start_Tag_Name_First_Index := Prev_P;
                end if;
             when Expecting_New_Tag_Or_Extracting_Tag_Value_And_Found_L_And_Exclamation =>
-               if CP = Character'Pos ('[') then
+               if CP = Standard.Character'Pos ('[') then
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value_But_Expecting_C;
                else
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value;
                end if;
             when Expecting_New_Tag_Or_Extracting_Tag_Value_But_Expecting_C =>
-               if CP = Character'Pos ('C') then
+               if CP = Standard.Character'Pos ('C') then
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value_But_Expecting_CD;
                else
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value;
                end if;
             when Expecting_New_Tag_Or_Extracting_Tag_Value_But_Expecting_CD =>
-               if CP = Character'Pos ('D') then
+               if CP = Standard.Character'Pos ('D') then
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value_But_Expecting_CDA;
                else
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value;
                end if;
             when Expecting_New_Tag_Or_Extracting_Tag_Value_But_Expecting_CDA =>
-               if CP = Character'Pos ('A') then
+               if CP = Standard.Character'Pos ('A') then
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value_But_Expecting_CDAT;
                else
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value;
                end if;
             when Expecting_New_Tag_Or_Extracting_Tag_Value_But_Expecting_CDAT =>
-               if CP = Character'Pos ('T') then
+               if CP = Standard.Character'Pos ('T') then
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value_But_Expecting_CDATA;
                else
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value;
                end if;
             when Expecting_New_Tag_Or_Extracting_Tag_Value_But_Expecting_CDATA =>
-               if CP = Character'Pos ('A') then
+               if CP = Standard.Character'Pos ('A') then
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value_But_Expecting_CDATA_And_Square_Bracket;
                else
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value;
                end if;
             when Expecting_New_Tag_Or_Extracting_Tag_Value_But_Expecting_CDATA_And_Square_Bracket =>
-               if CP = Character'Pos ('[') then
+               if CP = Standard.Character'Pos ('[') then
                   State_Id := Extracting_CDATA;
                   Tag_Value_First_Index := P;
                else
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value;
                end if;
             when Extracting_CDATA =>
-               if CP = Character'Pos (']') then
+               if CP = Standard.Character'Pos (']') then
                   Tag_Value_Last_Index := Prev_Prev_P;
                   State_Id := Extracting_CDATA_Found_Square_Bracket;
                end if;
             when Extracting_CDATA_Found_Square_Bracket =>
-               if CP = Character'Pos (']') then
+               if CP = Standard.Character'Pos (']') then
                   State_Id := Extracting_CDATA_Found_Two_Square_Brackets;
                else
                   State_Id := Extracting_CDATA;
                end if;
             when Extracting_CDATA_Found_Two_Square_Brackets =>
-               if CP = Character'Pos ('>') then
+               if CP = Standard.Character'Pos ('>') then
                   State_Id := Extracting_CDATA_Found_Two_Square_Brackets_And_G_Sign;
                else
                   State_Id := Extracting_CDATA;
                end if;
             when Extracting_CDATA_Found_Two_Square_Brackets_And_G_Sign =>
-               if CP = Character'Pos ('<') then
+               if CP = Standard.Character'Pos ('<') then
                   State_Id := Extracting_CDATA_Found_Two_Square_Brackets_And_G_Sign_And_L_Sign;
                else
                   Initialize (Error_Message, "Expecting '<' followed by end tag but was something else, state " & State_Id'Img & " " & Contents (F..P));
@@ -408,7 +408,7 @@ begin
                   return;
                end if;
             when Extracting_CDATA_Found_Two_Square_Brackets_And_G_Sign_And_L_Sign =>
-               if CP = Character'Pos ('/') then
+               if CP = Standard.Character'Pos ('/') then
                   State_Id := Extracting_End_Tag_Name;
                   End_Tag_Name_First_Index := P;
                else
@@ -417,11 +417,11 @@ begin
                   return;
                end if;
             when Extracting_End_Tag_Name =>
-               if CP = Character'Pos ('>') then
+               if CP = Standard.Character'Pos ('>') then
                   End_Tag_Name_Last_Index := Prev_Prev_P;
 
                   declare
-                     Tag_Name : constant String := To_String (Last_Element (Tag_Names));
+                     Tag_Name : constant Standard.String := To_String (Last_Element (Tag_Names));
                   begin
                      if Tag_Name /= Contents (End_Tag_Name_First_Index..End_Tag_Name_Last_Index) then
                         Initialize (Error_Message, "Tag names does not match! Start tag is '" & Tag_Name &
@@ -458,7 +458,7 @@ begin
                   end;
 
                   State_Id := Expecting_NL_Sign_Or_Space_Or_Less_Sign;
-               elsif CP = Character'Pos (Ada.Characters.Latin_1.LF) then
+               elsif CP = Standard.Character'Pos (Ada.Characters.Latin_1.LF) then
                   Initialize (Error_Message, "New line is forbidden inside attribute value, state " & State_Id'Img & " " & Contents (F..P));
                   Is_Success := False;
                   return;
@@ -472,5 +472,4 @@ begin
    end;
 
    Is_Success := True;
-   return;
-end SXML.Generic_Parse_XML_File;
+   return;end Aida.XML.Parse_XML_File;

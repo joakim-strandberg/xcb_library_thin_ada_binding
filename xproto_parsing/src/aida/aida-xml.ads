@@ -2,7 +2,7 @@ with Aida.Bounded_String;
 with Aida.Containers.Bounded_Vector;
 
 -- Package that contains types and subprograms for simple xml parsing.
-package SXML is
+package Aida.XML is
 
    package Bounded_String is new Aida.Bounded_String (Maximum_Length_Of_Bounded_String => 200);
 
@@ -16,4 +16,4 @@ package SXML is
 
    subtype Error_Message_T is Error_Message_P.T;
 
-end SXML;
+end Aida.XML;

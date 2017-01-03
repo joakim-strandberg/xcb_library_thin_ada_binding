@@ -1,5 +1,5 @@
 with Ada.Text_IO;
-with SXML.Generic_Parse_XML_File;
+with Aida.XML.Parse_XML_File;
 with Aida.Containers.Bounded_Hash_Map;
 with GNAT.Source_Info;
 with Ada.Exceptions;
@@ -9,9 +9,9 @@ package body XML_File_Parser is
    use Aida.String;
    use X_Proto.Struct.Fs.Member_Kind_Id;
    use X_Proto.Operation;
-   use SXML.Error_Message_P;
-   use SXML.DL;
-   use SXML.Bounded_String;
+   use Aida.XML.Error_Message_P;
+   use Aida.XML.DL;
+   use Aida.XML.Bounded_String;
    use X_Proto.Large_Bounded_String;
    use X_Proto.Xcb;
    use X_Proto.Struct;
@@ -182,7 +182,7 @@ package body XML_File_Parser is
       end case;
    end record;
 
-   function Hash (Parent_And_Self_Tags : SXML.DL.T) return Aida.Hash32_T is
+   function Hash (Parent_And_Self_Tags : Aida.XML.DL.T) return Aida.Hash32_T is
       R : Aida.Hash32_T := 0;
 
       use type Aida.Hash32_T;
@@ -191,16 +191,16 @@ package body XML_File_Parser is
          return 0;
       end if;
 
-      for I in SXML.DL.Index_T range 1..Last_Index (Parent_And_Self_Tags) loop
-         R := R + SXML.Bounded_String.Hash32 (Const_Ref (Parent_And_Self_Tags, I).all);
+      for I in Aida.XML.DL.Index_T range 1..Last_Index (Parent_And_Self_Tags) loop
+         R := R + Aida.XML.Bounded_String.Hash32 (Const_Ref (Parent_And_Self_Tags, I).all);
       end loop;
       return R;
    end Hash;
 
-   package List_Of_Tag_Names_To_Current_Tag_Maps is new Aida.Containers.Bounded_Hash_Map (Key_T             => SXML.DL.T,
+   package List_Of_Tag_Names_To_Current_Tag_Maps is new Aida.Containers.Bounded_Hash_Map (Key_T             => Aida.XML.DL.T,
                                                                                           Element_T         => Current_Tag_Access_Type,
                                                                                           Hash              => Hash,
-                                                                                          Equivalent_Keys   => SXML.DL."=",
+                                                                                          Equivalent_Keys   => Aida.XML.DL."=",
                                                                                           Max_Hash_Map_Size => 1001,
                                                                                           Max_Collisions    => 5);
 
@@ -210,20 +210,20 @@ package body XML_File_Parser is
 
    procedure Parse (Contents      : String;
                     Xcb_V         : in out X_Proto.Xcb.Ptr;
-                    Error_Message : out SXML.Error_Message_T;
+                    Error_Message : out Aida.XML.Error_Message_T;
                     Is_Success    : out Boolean)
    is
 --        Parents_Including_Self_To_Current_Tag_Map_Pointer : List_Of_Tag_Names_To_Current_Tag_Maps.Ptr :=
 --          new List_Of_Tag_Names_To_Current_Tag_Maps.T;
 --        Parents_Including_Self_To_Current_Tag_Map renames Parents_Including_Self_To_Current_Tag_Map_Pointer.all;
 --
-      procedure Populate_Parents_Including_Self (Parents_Including_Self : in out SXML.DL.T;
-                                                 Parents                : SXML.DL.T;
+      procedure Populate_Parents_Including_Self (Parents_Including_Self : in out Aida.XML.DL.T;
+                                                 Parents                : Aida.XML.DL.T;
                                                  Tag_Name               : String)
       is
-         TN : SXML.Bounded_String_T;
+         TN : Aida.XML.Bounded_String_T;
       begin
-         for I in SXML.DL.Index_T range 1..Last_Index (Parents) loop
+         for I in Aida.XML.DL.Index_T range 1..Last_Index (Parents) loop
             Append (This     => Parents_Including_Self,
                     New_Item => Const_Ref (Parents, I).all);
          end loop;
@@ -233,17 +233,17 @@ package body XML_File_Parser is
                  New_Item => TN);
       end Populate_Parents_Including_Self;
 
-      function To_String (Tags : SXML.DL.T) return String is
+      function To_String (Tags : Aida.XML.DL.T) return String is
          R : X_Proto.Large_Bounded_String.T;
       begin
-         for I in SXML.DL.Index_T range 1..Last_Index (Tags) loop
+         for I in Aida.XML.DL.Index_T range 1..Last_Index (Tags) loop
             Append (R, (To_String (Element (Tags, I)) & ", "));
          end loop;
 
          return To_String (R);
       end To_String;
 
-      function Find_Tag (Key : SXML.DL.T) return Current_Tag_Access_Type is
+      function Find_Tag (Key : Aida.XML.DL.T) return Current_Tag_Access_Type is
          R : constant List_Of_Tag_Names_To_Current_Tag_Maps.Find_Element_Result_T :=
            Find_Element (Parents_Including_Self_To_Current_Tag_Map, Key);
       begin
@@ -255,11 +255,11 @@ package body XML_File_Parser is
       end Find_Tag;
 
       procedure Start_Tag (Tag_Name      : String;
-                           Parent_Tags   : SXML.DL.T;
-                           Error_Message : out SXML.Error_Message_T;
+                           Parent_Tags   : Aida.XML.DL.T;
+                           Error_Message : out Aida.XML.Error_Message_T;
                            Is_Success    : out Boolean)
       is
-         Parents_Including_Self : SXML.DL.T;
+         Parents_Including_Self : Aida.XML.DL.T;
 
          procedure Insert (CT : Current_Tag_Access_Type) is
          begin
@@ -852,8 +852,8 @@ package body XML_File_Parser is
 
       procedure Attribute (Attribute_Name              : String;
                            Attribute_Value             : String;
-                           Parent_Tags_And_Current_Tag : SXML.DL.T;
-                           Error_Message               : out SXML.Error_Message_T;
+                           Parent_Tags_And_Current_Tag : Aida.XML.DL.T;
+                           Error_Message               : out Aida.XML.Error_Message_T;
                            Is_Success                  : out Boolean)
       is
          Current_Tag : constant Current_Tag_Access_Type := Find_Tag (Parent_Tags_And_Current_Tag);
@@ -1328,11 +1328,11 @@ package body XML_File_Parser is
       end Attribute;
 
       procedure End_Tag (Tag_Name      : String;
-                         Parent_Tags   : SXML.DL.T;
-                         Error_Message : out SXML.Error_Message_T;
+                         Parent_Tags   : Aida.XML.DL.T;
+                         Error_Message : out Aida.XML.Error_Message_T;
                          Is_Success    : out Boolean)
       is
-         Parents_Including_Self : SXML.DL.T;
+         Parents_Including_Self : Aida.XML.DL.T;
       begin
          Populate_Parents_Including_Self (Parents_Including_Self => Parents_Including_Self,
                                           Parents                => Parent_Tags,
@@ -1353,11 +1353,11 @@ package body XML_File_Parser is
 
       procedure End_Tag (Tag_Name      : String;
                          Tag_Value     : String;
-                         Parent_Tags   : SXML.DL.T;
-                         Error_Message : out SXML.Error_Message_T;
+                         Parent_Tags   : Aida.XML.DL.T;
+                         Error_Message : out Aida.XML.Error_Message_T;
                          Is_Success    : out Boolean)
       is
-         Parents_Including_Self : SXML.DL.T;
+         Parents_Including_Self : Aida.XML.DL.T;
 
          Current_Tag : Current_Tag_Access_Type;
       begin
@@ -1565,14 +1565,11 @@ package body XML_File_Parser is
          end if;
       end End_Tag;
 
-      procedure Parse_X_Proto_XML_File is new SXML.Generic_Parse_XML_File (Start_Tag,
-                                                                           Attribute,
-                                                                           End_Tag,
-                                                                           End_Tag);
+      procedure Parse_X_Proto_XML_File is new Aida.XML.Parse_XML_File (Start_Tag,
+                                                                       Attribute,
+                                                                       End_Tag,
+                                                                       End_Tag);
    begin
---        Is_Success := False;
---        return;
-
       Parse_X_Proto_XML_File (Contents,
                               Error_Message,
                               Is_Success);

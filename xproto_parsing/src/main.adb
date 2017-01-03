@@ -1,14 +1,14 @@
 with Ada.Direct_IO;
 with Ada.Text_IO;
 with GNAT.IO_Aux;
-with SXML;
+with Aida.XML;
 with X_Proto;
 with XML_File_Parser;
 with XCB_Package_Creator;
 
 procedure Main is
 
-   use SXML.Error_Message_P;
+   use Aida.XML.Error_Message_P;
 
    File_Name : constant String  := "xproto.xml";
 
@@ -45,7 +45,7 @@ procedure Main is
 
       Is_Success : Boolean;
 
-      Error_Message : SXML.Error_Message_P.T;
+      Error_Message : Aida.XML.Error_Message_P.T;
 
       Xcb : X_Proto.Xcb.Ptr := null;
    begin
