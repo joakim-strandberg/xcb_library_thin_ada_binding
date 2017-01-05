@@ -171,7 +171,7 @@ package X_Proto_XML is
             end case;
          end record;
 
-         type Member_Ptr is access Member_Type;
+         type Member_Ptr is access all Member_Type;
 
          package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
                                                                        "="        => "=",
