@@ -3,6 +3,8 @@ with Aida.Bounded_String;
 
 package X_Proto_XML is
 
+   pragma Default_Storage_Pool (null);
+
    package Large_Bounded_String is new Aida.Bounded_String (Maximum_Length_Of_Bounded_String => 3_000);
 
    package Field is

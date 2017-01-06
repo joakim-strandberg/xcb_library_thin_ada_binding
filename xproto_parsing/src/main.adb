@@ -7,7 +7,6 @@ with XML_File_Parser;
 with XCB_Package_Creator;
 with Bounded_Dynamic_Pools;
 
-
 procedure Main is
 
    Mega_Pool : aliased Bounded_Dynamic_Pools.Dynamic_Pool (Default_Subpool_Size => 10_000_000,
