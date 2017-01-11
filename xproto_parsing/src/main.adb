@@ -9,11 +9,11 @@ with Bounded_Dynamic_Pools;
 
 procedure Main is
 
-   Mega_Pool : aliased Bounded_Dynamic_Pools.Dynamic_Pool (Default_Subpool_Size => 10_000_000,
+   Mega_Pool : aliased Bounded_Dynamic_Pools.Dynamic_Pool (Default_Subpool_Size => 0,
                                                            Maximum_Subpools     => 2);
 
    Subpool : Bounded_Dynamic_Pools.Scoped_Subpool (Pool           => Mega_Pool'Unchecked_Access,
-                                                   Size           => 10_000_000,
+                                                   Size           => 120_000_000,
                                                    Heap_Allocated => True);
 
    use Aida.XML.Error_Message_P;

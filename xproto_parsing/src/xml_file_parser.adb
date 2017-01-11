@@ -325,12 +325,12 @@ package body XML_File_Parser is
                                 Struct     : X_Proto_XML.Struct.Ptr;
                                 Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
       is
-           T : constant Current_Tag_Access_Type := Current_Tag_Access_Type (New_CT_Struct (Subpool));
---            T : constant Current_Tag_Access_Type := new Current_Tag_T (Tag_Id.Struct);
---            T : constant Current_Tag_Access_Type := Current_Tag_Access_Type'(new CT_Struct_T);
+         T : constant Current_Tag_Access_Type := Current_Tag_Access_Type (New_CT_Struct (Subpool));
      begin
          T.Find_Tag := Parent_Tag;
-         Ada.Text_IO.Put_Line ("discriminant: " & Tag_Id.Enumeration_Type'Image (T.all.Kind_Id));
+         T.all := (Kind_Id => Tag_Id.Struct,
+                   Find_Tag => null,
+                   Struct_V => Struct);
          T.Struct_V := Struct;
          return T;
       end New_Current_Tag;

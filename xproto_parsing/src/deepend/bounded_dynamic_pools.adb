@@ -171,21 +171,76 @@ package body Bounded_Dynamic_Pools is
    is
       Location : System.Address;
 
+      pragma Warnings (Off, "variable ""Default_Item"" is read but never assigned");
+      Default_Item : Allocation_Type;
+      pragma Warnings (On, "variable ""Default_Item"" is read but never assigned");
+
+      type Char_Type is new Character;
+      for Char_Type'Size use 8;
+
+      type Char_Index_Type is new Positive range 1..(Allocation_Type'Size/Char_Type'Size);
+
+      type Char_Array_Type is array (Char_Index_Type) of Char_Type;
+      pragma Pack (Char_Array_Type);
+
+      type Char_Array_Ptr is access all Char_Array_Type;
+
+      pragma Assert (Char_Array_Type'Size = Allocation_Type'Size);
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => Allocation_Type,
+         Target => Char_Array_Type);
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => System.Address,
+         Target => Allocation_Type_Access);
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => System.Address,
+         Target => Char_Array_Ptr);
+   begin
+
+      Allocate_From_Subpool (Dynamic_Pool (Storage_Pools.Subpools.Pool_Of_Subpool (Subpool).all),
+                             Storage_Address          => Location,
+                             Size_In_Storage_Elements => Allocation_Type'Max_Size_In_Storage_Elements,
+                             Alignment                => Allocation_Type'Alignment,
+                             Subpool                  => Subpool);
+
+      declare
+         Char_Array : constant Char_Array_Ptr := Convert (Location);
+      begin
+         Char_Array.all := Convert (Default_Item);
+      end;
+
+      declare
+         L : constant Allocation_Type_Access := Convert (Location);
+      begin
+         return L;
+      end;
+   end Allocation;
+
+   function Allocate_Huge_Item
+     (Subpool : Subpool_Handle) return Allocation_Type_Access
+   is
+      Location : System.Address;
+
       function Convert is new Ada.Unchecked_Conversion
         (Source => System.Address,
          Target => Allocation_Type_Access);
    begin
 
-      Allocate_From_Subpool
-        (Dynamic_Pool (Storage_Pools.Subpools.Pool_Of_Subpool (Subpool).all),
-         Storage_Address => Location,
-         Size_In_Storage_Elements =>
-           Allocation_Type'Max_Size_In_Storage_Elements,
-         Alignment => Allocation_Type'Alignment,
-         Subpool => Subpool);
+      Allocate_From_Subpool (Dynamic_Pool (Storage_Pools.Subpools.Pool_Of_Subpool (Subpool).all),
+                             Storage_Address          => Location,
+                             Size_In_Storage_Elements => Allocation_Type'Max_Size_In_Storage_Elements,
+                             Alignment                => Allocation_Type'Alignment,
+                             Subpool                  => Subpool);
 
-      return Convert (Location);
-   end Allocation;
+      declare
+         L : constant Allocation_Type_Access := Convert (Location);
+      begin
+         return L;
+      end;
+   end Allocate_Huge_Item;
 
    function Allocation_Scoped_Subpool
      (Subpool : Scoped_Subpool) return Allocation_Type_Access
@@ -195,6 +250,27 @@ package body Bounded_Dynamic_Pools is
    begin
       return Allocate (Handle (Subpool));
    end Allocation_Scoped_Subpool;
+
+   function Allocate_Huge_Item_Scoped_Subpool
+     (Subpool : Scoped_Subpool) return Allocation_Type_Access
+   is
+      function Allocate is new Allocate_Huge_Item (Allocation_Type        => Allocation_Type,
+                                                   Allocation_Type_Access => Allocation_Type_Access);
+   begin
+      return Allocate (Handle (Subpool));
+   end Allocate_Huge_Item_Scoped_Subpool;
+
+   function Allocate_And_Initialize
+     (Subpool : Scoped_Subpool) return Allocation_Type_Access
+   is
+      function Allocate is new Allocation (Allocation_Type        => Allocation_Type,
+                                           Allocation_Type_Access => Allocation_Type_Access);
+
+      A : constant Allocation_Type_Access := Allocate (Handle (Subpool));
+   begin
+      Init (A.all, Subpool);
+      return A;
+   end Allocate_And_Initialize;
 
    --------------------------------------------------------------
 
@@ -391,14 +467,11 @@ package body Bounded_Dynamic_Pools is
          Target => Allocation_Type_Access);
    begin
 
-      Allocate_From_Subpool
-        (Dynamic_Pool (Storage_Pools.Subpools.Pool_Of_Subpool (Subpool).all),
-         Storage_Address => Location,
-         Size_In_Storage_Elements =>
-           Qualified_Expression'Size /
-             System.Storage_Elements.Storage_Element'Size,
-         Alignment => Allocation_Type'Alignment,
-         Subpool => Subpool);
+      Allocate_From_Subpool (Dynamic_Pool (Storage_Pools.Subpools.Pool_Of_Subpool (Subpool).all),
+                             Storage_Address          => Location,
+                             Size_In_Storage_Elements => Qualified_Expression'Size / System.Storage_Elements.Storage_Element'Size,
+                             Alignment                => Allocation_Type'Alignment,
+                             Subpool                  => Subpool);
 
       declare
          Result : constant Allocation_Type_Access := Convert (Location);

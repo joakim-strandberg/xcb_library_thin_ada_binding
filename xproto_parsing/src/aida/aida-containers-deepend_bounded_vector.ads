@@ -1,10 +1,12 @@
 pragma Ada_95;
 
+with Bounded_Dynamic_Pools;
+
 generic
    type Element_T is private;
    with function "=" (L, R : Element_T) return Boolean is <>;
    MAX_LENGTH : Positive := 100;
-package Aida.Containers.Bounded_Vector is
+package Aida.Containers.Deepend_Bounded_Vector is
 
    type Extended_Index_T is new Integer range 0..MAX_LENGTH;
 
@@ -16,6 +18,9 @@ package Aida.Containers.Bounded_Vector is
    type T is private;
    -- The vector type is limited because making copies would mean
    -- introducing reference counting to know when to deallocate the vector.
+
+   procedure Create (This    : out T;
+                     Subpool : Bounded_Dynamic_Pools.Scoped_Subpool);
 
    function "=" (L, R : T) return Boolean;
 
@@ -63,10 +68,12 @@ private
 
    subtype Items_T is Elements_Array_T (Index_T'Range);
 
+   type Items_Ptr is access all Items_T;
+
    type T is
       record
-         Items      : aliased Items_T;
-         Last_Index : Extended_Index_T := 0;
+         Items      : Items_Ptr;
+         Last_Index : Extended_Index_T;
       end record;
 
-end Aida.Containers.Bounded_Vector;
+end Aida.Containers.Deepend_Bounded_Vector;

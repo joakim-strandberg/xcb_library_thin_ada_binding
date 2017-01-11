@@ -326,6 +326,12 @@ package Bounded_Dynamic_Pools is
    --  a definite subtype from a specific subpool.
 
    generic
+      type Allocation_Type is limited private;
+      type Allocation_Type_Access is access Allocation_Type;
+   function Allocate_Huge_Item
+     (Subpool : Subpool_Handle) return Allocation_Type_Access;
+
+   generic
       type Allocation_Type is private;
       type Allocation_Type_Access is access Allocation_Type;
    function Initialized_Allocation
@@ -355,6 +361,19 @@ package Bounded_Dynamic_Pools is
    --  This generic routine provides a mechanism to allocate an object of
    --  a definite subtype from a specific subpool.
 
+   generic
+      type Allocation_Type is limited private;
+      type Allocation_Type_Access is access Allocation_Type;
+   function Allocate_Huge_Item_Scoped_Subpool
+     (Subpool : Scoped_Subpool) return Allocation_Type_Access;
+
+   generic
+      type Allocation_Type is limited private;
+      type Allocation_Type_Access is access Allocation_Type;
+      with procedure Init (This    : out Allocation_Type;
+                           Subpool : Scoped_Subpool);
+   function Allocate_And_Initialize
+     (Subpool : Scoped_Subpool) return Allocation_Type_Access;
 
 private
 
