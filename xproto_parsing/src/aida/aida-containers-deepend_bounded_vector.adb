@@ -3,8 +3,8 @@ with Ada.Exceptions;
 package body Aida.Containers.Deepend_Bounded_Vector is
 
    function New_Items is
-     new Bounded_Dynamic_Pools.Allocate_Huge_Item_Scoped_Subpool (Allocation_Type        => Items_T,
-                                                                  Allocation_Type_Access => Items_Ptr);
+     new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => Items_T,
+                                                                          Allocation_Type_Access => Items_Ptr);
 
    procedure Create (This    : out T;
                      Subpool : Bounded_Dynamic_Pools.Scoped_Subpool) is

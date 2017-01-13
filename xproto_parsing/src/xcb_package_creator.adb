@@ -270,7 +270,7 @@ package body XCB_Package_Creator is
    end Generate_Classic_Iterator_Access_Type_Name;
 
    procedure Generate_Classic_Variable_Id_Name (Old_Name : String;
-                                            New_Name : in out X_Proto_XML.Large_Bounded_String.T) is
+                                                New_Name : in out X_Proto_XML.Large_Bounded_String.T) is
    begin
       Generate_Struct_Name (Old_Name,
                             New_Name);
@@ -400,17 +400,17 @@ package body XCB_Package_Creator is
    package Allocators is
 
       function New_Unbounded_String_Vector is
-        new Bounded_Dynamic_Pools.Allocate_And_Initialize (Allocation_Type        => Unbounded_String_Vector_T,
-                                                           Allocation_Type_Access => Unbounded_String_Vector_Ptr,
-                                                           Init                   => Unbounded_String_Vector_P.Create);
+        new Bounded_Dynamic_Pools.Allocation_And_Init_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => Unbounded_String_Vector_T,
+                                                                                      Allocation_Type_Access => Unbounded_String_Vector_Ptr,
+                                                                                      Init                   => Unbounded_String_Vector_P.Create);
 
-      function New_Original_Name_To_Adaified_Name is new Bounded_Dynamic_Pools.Allocate_And_Initialize (Allocation_Type        => Original_Name_To_Adaified_Name_T,
-                                                                                                        Allocation_Type_Access => Original_Name_To_Adaified_Name_Ptr,
-                                                                                                        Init                   => Original_Name_To_Adaified_Name_P.Create);
+      function New_Original_Name_To_Adaified_Name is new Bounded_Dynamic_Pools.Allocation_And_Init_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => Original_Name_To_Adaified_Name_T,
+                                                                                                                                   Allocation_Type_Access => Original_Name_To_Adaified_Name_Ptr,
+                                                                                                                                   Init                   => Original_Name_To_Adaified_Name_P.Create);
 
-      function New_Enum_Name_To_Size_Identifier_Map is new Bounded_Dynamic_Pools.Allocate_And_Initialize (Allocation_Type        => Enum_Name_To_Size_Identifier_Map_T,
-                                                                                                          Allocation_Type_Access => Enum_Name_To_Size_Identifier_Map_Ptr,
-                                                                                                          Init                   => Enum_Name_To_Size_Identifier_Map_P.Create);
+      function New_Enum_Name_To_Size_Identifier_Map is new Bounded_Dynamic_Pools.Allocation_And_Init_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => Enum_Name_To_Size_Identifier_Map_T,
+                                                                                                                                     Allocation_Type_Access => Enum_Name_To_Size_Identifier_Map_Ptr,
+                                                                                                                                     Init                   => Enum_Name_To_Size_Identifier_Map_P.Create);
 
    end Allocators;
 

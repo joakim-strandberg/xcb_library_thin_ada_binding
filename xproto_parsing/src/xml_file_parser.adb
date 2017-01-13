@@ -299,8 +299,8 @@ package body XML_File_Parser is
       type CT_Xcb_Ptr is access all CT_Xcb_T;
 
       function New_CT_Xcb is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Xcb_T,
-                                                             Allocation_Type_Access => CT_Xcb_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Xcb_T,
+                                                                             Allocation_Type_Access => CT_Xcb_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Xcb        : X_Proto_XML.Xcb.Ptr;
@@ -318,15 +318,15 @@ package body XML_File_Parser is
       type CT_Struct_Ptr is access all CT_Struct_T;
 
       function New_CT_Struct is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Struct_T,
-                                                             Allocation_Type_Access => CT_Struct_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Struct_T,
+                                                                             Allocation_Type_Access => CT_Struct_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Struct     : X_Proto_XML.Struct.Ptr;
                                 Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
       is
          T : constant Current_Tag_Access_Type := Current_Tag_Access_Type (New_CT_Struct (Subpool));
-     begin
+      begin
          T.Find_Tag := Parent_Tag;
          T.all := (Kind_Id => Tag_Id.Struct,
                    Find_Tag => null,
@@ -340,8 +340,8 @@ package body XML_File_Parser is
       type CT_X_Id_Ptr is access all CT_X_Id_T;
 
       function New_CT_X_Id is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_X_Id_T,
-                                                             Allocation_Type_Access => CT_X_Id_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_X_Id_T,
+                                                                             Allocation_Type_Access => CT_X_Id_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 X_Id       : X_Proto_XML.X_Id.Ptr;
@@ -359,8 +359,8 @@ package body XML_File_Parser is
       type CT_X_Id_Union_Ptr is access all CT_X_Id_Union_T;
 
       function New_CT_X_Id_Union is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_X_Id_Union_T,
-                                                             Allocation_Type_Access => CT_X_Id_Union_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_X_Id_Union_T,
+                                                                             Allocation_Type_Access => CT_X_Id_Union_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 X_Id_Union : X_Proto_XML.X_Id_Union.Ptr;
@@ -378,8 +378,8 @@ package body XML_File_Parser is
       type CT_Type_Definition_Ptr is access all CT_Type_Definition_T;
 
       function New_CT_Type_Definition is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Type_Definition_T,
-                                                             Allocation_Type_Access => CT_Type_Definition_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Type_Definition_T,
+                                                                             Allocation_Type_Access => CT_Type_Definition_Ptr);
 
       function New_Current_Tag (Parent_Tag      : Current_Tag_Access_Type;
                                 Type_Definition : X_Proto_XML.Type_Definition.Ptr;
@@ -397,8 +397,8 @@ package body XML_File_Parser is
       type CT_Enum_Ptr is access all CT_Enum_T;
 
       function New_CT_Enum is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Enum_T,
-                                                             Allocation_Type_Access => CT_Enum_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Enum_T,
+                                                                             Allocation_Type_Access => CT_Enum_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Enum       : X_Proto_XML.Enum.Ptr;
@@ -416,8 +416,8 @@ package body XML_File_Parser is
       type CT_Event_Ptr is access all CT_Event_T;
 
       function New_CT_Event is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Event_T,
-                                                             Allocation_Type_Access => CT_Event_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Event_T,
+                                                                             Allocation_Type_Access => CT_Event_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Event      : X_Proto_XML.Event.Ptr;
@@ -435,8 +435,8 @@ package body XML_File_Parser is
       type CT_Event_Copy_Ptr is access all CT_Event_Copy_T;
 
       function New_CT_Event_Copy is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Event_Copy_T,
-                                                             Allocation_Type_Access => CT_Event_Copy_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Event_Copy_T,
+                                                                             Allocation_Type_Access => CT_Event_Copy_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Event_Copy : X_Proto_XML.Event_Copy.Ptr;
@@ -454,8 +454,8 @@ package body XML_File_Parser is
       type CT_Union_Ptr is access all CT_Union_T;
 
       function New_CT_Union is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Union_T,
-                                                             Allocation_Type_Access => CT_Union_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Union_T,
+                                                                             Allocation_Type_Access => CT_Union_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Union      : X_Proto_XML.Union.Ptr;
@@ -473,8 +473,8 @@ package body XML_File_Parser is
       type CT_Error_Ptr is access all CT_Error_T;
 
       function New_CT_Error is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Error_T,
-                                                             Allocation_Type_Access => CT_Error_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Error_T,
+                                                                             Allocation_Type_Access => CT_Error_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Error      : X_Proto_XML.Error.Ptr;
@@ -492,8 +492,8 @@ package body XML_File_Parser is
       type CT_Error_Copy_Ptr is access all CT_Error_Copy_T;
 
       function New_CT_Error_Copy is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Error_Copy_T,
-                                                             Allocation_Type_Access => CT_Error_Copy_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Error_Copy_T,
+                                                                             Allocation_Type_Access => CT_Error_Copy_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Error_Copy : X_Proto_XML.Error_Copy.Ptr;
@@ -511,8 +511,8 @@ package body XML_File_Parser is
       type CT_Request_Ptr is access all CT_Request_T;
 
       function New_CT_Request is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Request_T,
-                                                             Allocation_Type_Access => CT_Request_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Request_T,
+                                                                             Allocation_Type_Access => CT_Request_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Request    : X_Proto_XML.Request.Ptr;
@@ -530,8 +530,8 @@ package body XML_File_Parser is
       type CT_Field_Ptr is access all CT_Field_T;
 
       function New_CT_Field is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Field_T,
-                                                             Allocation_Type_Access => CT_Field_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Field_T,
+                                                                             Allocation_Type_Access => CT_Field_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Field      : X_Proto_XML.Field.Ptr;
@@ -549,8 +549,8 @@ package body XML_File_Parser is
       type CT_Pad_Ptr is access all CT_Pad_T;
 
       function New_CT_Pad is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Pad_T,
-                                                             Allocation_Type_Access => CT_Pad_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Pad_T,
+                                                                             Allocation_Type_Access => CT_Pad_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Pad        : X_Proto_XML.Pad.Ptr;
@@ -568,8 +568,8 @@ package body XML_File_Parser is
       type CT_List_Ptr is access all CT_List_T;
 
       function New_CT_List is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_List_T,
-                                                             Allocation_Type_Access => CT_List_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_List_T,
+                                                                             Allocation_Type_Access => CT_List_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 List       : X_Proto_XML.List.Ptr;
@@ -587,8 +587,8 @@ package body XML_File_Parser is
       type CT_Kind_Ptr is access all CT_Kind_T;
 
       function New_CT_Kind is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Kind_T,
-                                                             Allocation_Type_Access => CT_Kind_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Kind_T,
+                                                                             Allocation_Type_Access => CT_Kind_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Kind       : X_Proto_XML.Type_P.Ptr;
@@ -606,8 +606,8 @@ package body XML_File_Parser is
       type CT_Item_Ptr is access all CT_Item_T;
 
       function New_CT_Item is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Item_T,
-                                                             Allocation_Type_Access => CT_Item_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Item_T,
+                                                                             Allocation_Type_Access => CT_Item_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Item       : X_Proto_XML.Item.Ptr;
@@ -625,8 +625,8 @@ package body XML_File_Parser is
       type CT_Documentation_Ptr is access all CT_Documentation_T;
 
       function New_CT_Documentation is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Documentation_T,
-                                                             Allocation_Type_Access => CT_Documentation_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Documentation_T,
+                                                                             Allocation_Type_Access => CT_Documentation_Ptr);
 
       function New_Current_Tag (Parent_Tag    : Current_Tag_Access_Type;
                                 Documentation : X_Proto_XML.Documentation.Ptr;
@@ -644,8 +644,8 @@ package body XML_File_Parser is
       type CT_Operation_Ptr is access all CT_Operation_T;
 
       function New_CT_Operation is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Operation_T,
-                                                             Allocation_Type_Access => CT_Operation_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Operation_T,
+                                                                             Allocation_Type_Access => CT_Operation_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Operation  : X_Proto_XML.Operation.Ptr;
@@ -663,8 +663,8 @@ package body XML_File_Parser is
       type CT_Value_Ptr is access all CT_Value_T;
 
       function New_CT_Value is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Value_T,
-                                                             Allocation_Type_Access => CT_Value_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Value_T,
+                                                                             Allocation_Type_Access => CT_Value_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Value      : X_Proto_XML.Value_Access_Type;
@@ -682,8 +682,8 @@ package body XML_File_Parser is
       type CT_Field_Reference_Ptr is access all CT_Field_Reference_T;
 
       function New_CT_Field_Reference is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Field_Reference_T,
-                                                             Allocation_Type_Access => CT_Field_Reference_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Field_Reference_T,
+                                                                             Allocation_Type_Access => CT_Field_Reference_Ptr);
 
       function New_Current_Tag (Parent_Tag      : Current_Tag_Access_Type;
                                 Field_Reference : X_Proto_XML.Field_Reference_Access_Type;
@@ -701,8 +701,8 @@ package body XML_File_Parser is
       type CT_See_Ptr is access all CT_See_T;
 
       function New_CT_See is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_See_T,
-                                                             Allocation_Type_Access => CT_See_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_See_T,
+                                                                             Allocation_Type_Access => CT_See_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 See        : X_Proto_XML.See.Ptr;
@@ -720,8 +720,8 @@ package body XML_File_Parser is
       type CT_Example_Ptr is access all CT_Example_T;
 
       function New_CT_Example is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Example_T,
-                                                             Allocation_Type_Access => CT_Example_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Example_T,
+                                                                             Allocation_Type_Access => CT_Example_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Example    : X_Proto_XML.Example.Ptr;
@@ -739,8 +739,8 @@ package body XML_File_Parser is
       type CT_Value_Param_Ptr is access all CT_Value_Param_T;
 
       function New_CT_Value_Param is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Value_Param_T,
-                                                             Allocation_Type_Access => CT_Value_Param_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Value_Param_T,
+                                                                             Allocation_Type_Access => CT_Value_Param_Ptr);
 
       function New_Current_Tag (Parent_Tag  : Current_Tag_Access_Type;
                                 Value_Param : X_Proto_XML.Value_Param.Ptr;
@@ -758,8 +758,8 @@ package body XML_File_Parser is
       type CT_Reply_Ptr is access all CT_Reply_T;
 
       function New_CT_Reply is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Reply_T,
-                                                             Allocation_Type_Access => CT_Reply_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Reply_T,
+                                                                             Allocation_Type_Access => CT_Reply_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Reply      : X_Proto_XML.Reply.Ptr;
@@ -777,8 +777,8 @@ package body XML_File_Parser is
       type CT_Expression_Field_Ptr is access all CT_Expression_Field_T;
 
       function New_CT_Expression_Field is
-        new Bounded_Dynamic_Pools.Allocation_Scoped_Subpool (Allocation_Type        => CT_Expression_Field_T,
-                                                             Allocation_Type_Access => CT_Expression_Field_Ptr);
+        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Expression_Field_T,
+                                                                             Allocation_Type_Access => CT_Expression_Field_Ptr);
 
       function New_Current_Tag (Parent_Tag       : Current_Tag_Access_Type;
                                 Expression_Field : X_Proto_XML.Expression_Field.Ptr;
@@ -1472,7 +1472,7 @@ package body XML_File_Parser is
          if Current_Tag = null then
             Is_Success := False;
             Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", attribute name " & Attribute_Name & " and value " & Attribute_Value & ", parents: " & To_String (
-Parent_Tags_And_Current_Tag));
+                        Parent_Tags_And_Current_Tag));
             return;
          end if;
 

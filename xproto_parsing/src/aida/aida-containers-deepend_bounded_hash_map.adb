@@ -3,12 +3,12 @@ with Ada.Exceptions;
 package body Aida.Containers.Deepend_Bounded_Hash_Map is
 
    function New_Bucket_Array is
-     new Bounded_Dynamic_Pools.Allocate_Huge_Item_Scoped_Subpool (Allocation_Type        => Bucket_Array_T,
-                                                                  Allocation_Type_Access => Bucket_Array_Ptr);
+     new Bounded_Dynamic_Pools.Allocation_Of_Huge_Item_In_Scoped_Subpool (Allocation_Type        => Bucket_Array_T,
+                                                                          Allocation_Type_Access => Bucket_Array_Ptr);
 
    function New_Number_Of_Stored_Elements_Array is
-     new Bounded_Dynamic_Pools.Allocate_Huge_Item_Scoped_Subpool (Allocation_Type        => Number_Of_Stored_Elements_Array_T,
-                                                                  Allocation_Type_Access => Number_Of_Stored_Elements_Array_Ptr);
+     new Bounded_Dynamic_Pools.Allocation_Of_Huge_Item_In_Scoped_Subpool (Allocation_Type        => Number_Of_Stored_Elements_Array_T,
+                                                                          Allocation_Type_Access => Number_Of_Stored_Elements_Array_Ptr);
 
    procedure Create (This    : out T;
                      Subpool : Bounded_Dynamic_Pools.Scoped_Subpool) is

@@ -318,20 +318,6 @@ package Bounded_Dynamic_Pools is
    --  The task calling Create_Default_Subpool initially "owns" the subpool.
 
    generic
-      type Allocation_Type is limited private;
-      type Allocation_Type_Access is access Allocation_Type;
-   function Allocation
-     (Subpool : Subpool_Handle) return Allocation_Type_Access;
-   --  This generic routine provides a mechanism to allocate an object of
-   --  a definite subtype from a specific subpool.
-
-   generic
-      type Allocation_Type is limited private;
-      type Allocation_Type_Access is access Allocation_Type;
-   function Allocate_Huge_Item
-     (Subpool : Subpool_Handle) return Allocation_Type_Access;
-
-   generic
       type Allocation_Type is private;
       type Allocation_Type_Access is access Allocation_Type;
    function Initialized_Allocation
@@ -339,7 +325,50 @@ package Bounded_Dynamic_Pools is
       Qualified_Expression : Allocation_Type) return Allocation_Type_Access;
    --  This generic routine provides a mechanism to allocate an object of
    --  a definite subtype from a specific subpool, and initializing the
-   --  new object with a specific value.
+   --  new object with a specific value through assignment.
+
+   --
+   -- Begin special generic subprograms
+   --
+
+   --
+   -- Tiny items vs. Huge items
+   --
+   -- The functions allocating a huge item in a subpool have
+   -- the following characteristics:
+   --
+   -- + Does not allocate an instance of Allocation_Type on the stack
+   --   and therefore doesn't suffer from the risk of Stack Overflow exception.
+   -- - The function doesn't do any kind of default initialization.
+   --   This has the drawback that unexpected values may be present
+   --   in the object allocated in the subpool. Not good for record types with
+   --   default values nor types with discriminants. Good for allocating
+   --   arrays in the subpool.
+   --
+   -- The functions allocating a tiny item in a subpool have
+   -- the following characteristics:
+   --
+   -- - An instance of type Allocation_Type is allocated on the stack
+   --   with risk of Stack overflow exception.
+   -- + The allocated instance on the stack is used for
+   --   initialization of the allocated memory in the subpool.
+   --   It is therefore important that instances of Allocation_Type
+   --   are small/tiny enough to fit on the stack, otherwise Stack overflow exception
+   --   will occur. Good for allocating types with discriminants and record types
+   --   with default values.
+   --
+
+   generic
+      type Allocation_Type is limited private;
+      type Allocation_Type_Access is access Allocation_Type;
+   function Allocation_Of_Tiny_Item
+     (Subpool : Subpool_Handle) return Allocation_Type_Access;
+
+   generic
+      type Allocation_Type is limited private;
+      type Allocation_Type_Access is access Allocation_Type;
+   function Allocation_Of_Huge_Item
+     (Subpool : Subpool_Handle) return Allocation_Type_Access;
 
    type Scoped_Subpool
      (Pool : access Dynamic_Pool;
@@ -356,15 +385,13 @@ package Bounded_Dynamic_Pools is
    generic
       type Allocation_Type is limited private;
       type Allocation_Type_Access is access Allocation_Type;
-   function Allocation_Scoped_Subpool
+   function Allocation_Of_Tiny_Item_In_Scoped_Subpool
      (Subpool : Scoped_Subpool) return Allocation_Type_Access;
-   --  This generic routine provides a mechanism to allocate an object of
-   --  a definite subtype from a specific subpool.
 
    generic
       type Allocation_Type is limited private;
       type Allocation_Type_Access is access Allocation_Type;
-   function Allocate_Huge_Item_Scoped_Subpool
+   function Allocation_Of_Huge_Item_In_Scoped_Subpool
      (Subpool : Scoped_Subpool) return Allocation_Type_Access;
 
    generic
@@ -372,8 +399,15 @@ package Bounded_Dynamic_Pools is
       type Allocation_Type_Access is access Allocation_Type;
       with procedure Init (This    : out Allocation_Type;
                            Subpool : Scoped_Subpool);
-   function Allocate_And_Initialize
+   function Allocation_And_Init_Of_Tiny_Item_In_Scoped_Subpool
      (Subpool : Scoped_Subpool) return Allocation_Type_Access;
+   -- In addition of allocating an instance of Allocation_Type
+   -- in the subpool with expected value(s), an initialize/constructor procedure
+   -- is called on the allocated instance right after allocation.
+
+   --
+   -- End special generic subprograms
+   --
 
 private
 
