@@ -18,5 +18,12 @@ with:
 
 The file xproto.xml may be found in the xproto_parsing directory. The idea is to open the file xcb_parser.gpr in the GPS (GNAT Programming Studio), build the sources and then execute the application by clicking the "play" button from inside the GPS (this will make the application execute in the xproto_parsing directory and the application will be able to find the xproto.xml-file).
 
+# Brad Moore's Deepend
+The Deepend open source project provides three different implementations of Storage Pools and Subpools: Ada95, Ada2005 and Ada2012 implementations. The xproto.xml file parser is implemented in Ada95 and is an example of how to use the Ada95 implementation of Storage Pools.
+
 # Thanks to
-Many thanks to Dmitry Kazakov for writing his Simple Components. They are used in the xproto.xml-file parser application for reading UTF8-characters.
+- Dmitry Kazakov for writing his Simple Components. They are used in the xproto.xml-file parser application for reading UTF8-characters.
+
+- David J.A. Koogler for providing feedback and improvement suggestions on the generated Ada code.
+
+- Brad Moore for providing Storage Pool (and Subpool) implementations available in the Deepend Open Source project.
