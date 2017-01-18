@@ -1,8 +1,9 @@
 with Aida;
 with Ada.Text_IO;
 with GNAT.Source_Info;
-with Aida.Containers.Deepend_Bounded_Vector;
-with Aida.Containers.Deepend_Bounded_Hash_Map;
+with Aida.Containers.Bounded_Vector;
+with Aida.Containers.Bounded_Hash_Map;
+with Ada.Unchecked_Conversion;
 --      if checked:
 --          _h(' * This form can be used only if the request will not cause')
 --          _h(' * a reply to be generated. Any returned error will be')
@@ -61,9 +62,9 @@ package body XCB_Package_Creator is
    use X_Proto_XML.Example;
    use X_Proto_XML.Struct.Fs.Member_Kind_Id;
 
-   package Unbounded_String_Vector_P is new Aida.Containers.Deepend_Bounded_Vector (Element_T  => X_Proto_XML.Large_Bounded_String.T,
-                                                                                    "="        => X_Proto_XML.Large_Bounded_String."=",
-                                                                                    MAX_LENGTH => 1_000);
+   package Unbounded_String_Vector_P is new Aida.Containers.Bounded_Vector (Element_T  => X_Proto_XML.Large_Bounded_String.T,
+                                                                            "="        => X_Proto_XML.Large_Bounded_String."=",
+                                                                            MAX_LENGTH => 1_000);
 
    use Unbounded_String_Vector_P;
 
@@ -71,12 +72,12 @@ package body XCB_Package_Creator is
 
    subtype Unbounded_String_Vector_Ptr is Unbounded_String_Vector_P.Ptr;
 
-   package Original_Name_To_Adaified_Name_P is new Aida.Containers.Deepend_Bounded_Hash_Map (Key_T             => X_Proto_XML.Large_Bounded_String.T,
-                                                                                             Element_T         => X_Proto_XML.Large_Bounded_String.T,
-                                                                                             Hash              => X_Proto_XML.Large_Bounded_String.Hash32,
-                                                                                             Equivalent_Keys   => X_Proto_XML.Large_Bounded_String."=",
-                                                                                             Max_Hash_Map_Size => 501,
-                                                                                             Max_Collisions    => 5);
+   package Original_Name_To_Adaified_Name_P is new Aida.Containers.Bounded_Hash_Map (Key_T             => X_Proto_XML.Large_Bounded_String.T,
+                                                                                     Element_T         => X_Proto_XML.Large_Bounded_String.T,
+                                                                                     Hash              => X_Proto_XML.Large_Bounded_String.Hash32,
+                                                                                     Equivalent_Keys   => X_Proto_XML.Large_Bounded_String."=",
+                                                                                     Max_Hash_Map_Size => 501,
+                                                                                     Max_Collisions    => 5);
 
    use Original_Name_To_Adaified_Name_P;
 
@@ -84,12 +85,12 @@ package body XCB_Package_Creator is
 
    subtype Original_Name_To_Adaified_Name_Ptr is Original_Name_To_Adaified_Name_P.Ptr;
 
-   package Enum_Name_To_Size_Identifier_Map_P is new Aida.Containers.Deepend_Bounded_Hash_Map (Key_T             => X_Proto_XML.Large_Bounded_String.T,
-                                                                                               Element_T         => X_Proto_XML.Large_Bounded_String.T,
-                                                                                               Hash              => X_Proto_XML.Large_Bounded_String.Hash32,
-                                                                                               Equivalent_Keys   => X_Proto_XML.Large_Bounded_String."=",
-                                                                                               Max_Hash_Map_Size => 501,
-                                                                                               Max_Collisions    => 5);
+   package Enum_Name_To_Size_Identifier_Map_P is new Aida.Containers.Bounded_Hash_Map (Key_T             => X_Proto_XML.Large_Bounded_String.T,
+                                                                                       Element_T         => X_Proto_XML.Large_Bounded_String.T,
+                                                                                       Hash              => X_Proto_XML.Large_Bounded_String.Hash32,
+                                                                                       Equivalent_Keys   => X_Proto_XML.Large_Bounded_String."=",
+                                                                                       Max_Hash_Map_Size => 501,
+                                                                                       Max_Collisions    => 5);
 
    subtype Enum_Name_To_Size_Identifier_Map_Ptr is Enum_Name_To_Size_Identifier_Map_P.Ptr;
 
@@ -399,25 +400,72 @@ package body XCB_Package_Creator is
 
    package Allocators is
 
-      function New_Unbounded_String_Vector is
-        new Bounded_Dynamic_Pools.Allocation_And_Init_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => Unbounded_String_Vector_T,
-                                                                                      Allocation_Type_Access => Unbounded_String_Vector_Ptr,
-                                                                                      Init                   => Unbounded_String_Vector_P.Create);
+--        function New_Unbounded_String_Vector is
+--          new Bounded_Dynamic_Pools.Allocation_And_Init_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => Unbounded_String_Vector_T,
+--                                                                                        Allocation_Type_Access => Unbounded_String_Vector_Ptr,
+--                                                                                        Init                   => Unbounded_String_Vector_P.Create);
 
-      function New_Original_Name_To_Adaified_Name is new Bounded_Dynamic_Pools.Allocation_And_Init_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => Original_Name_To_Adaified_Name_T,
-                                                                                                                                   Allocation_Type_Access => Original_Name_To_Adaified_Name_Ptr,
-                                                                                                                                   Init                   => Original_Name_To_Adaified_Name_P.Create);
+--        function New_Original_Name_To_Adaified_Name is new Bounded_Dynamic_Pools.Allocation_And_Init_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => Original_Name_To_Adaified_Name_T,
+--                                                                                                                                     Allocation_Type_Access => Original_Name_To_Adaified_Name_Ptr,
+--                                                                                                                                     Init                   => Original_Name_To_Adaified_Name_P.Create);
+--
+--        function New_Enum_Name_To_Size_Identifier_Map is new Bounded_Dynamic_Pools.Allocation_And_Init_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => Enum_Name_To_Size_Identifier_Map_T,
+--                                                                                                                                       Allocation_Type_Access => Enum_Name_To_Size_Identifier_Map_Ptr,
+--                                                                                                                                       Init                   => Enum_Name_To_Size_Identifier_Map_P.Create);
 
-      function New_Enum_Name_To_Size_Identifier_Map is new Bounded_Dynamic_Pools.Allocation_And_Init_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => Enum_Name_To_Size_Identifier_Map_T,
-                                                                                                                                     Allocation_Type_Access => Enum_Name_To_Size_Identifier_Map_Ptr,
-                                                                                                                                     Init                   => Enum_Name_To_Size_Identifier_Map_P.Create);
+      function New_Unbounded_String_Vector (Pool : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Unbounded_String_Vector_Ptr;
+
+      function New_Original_Name_To_Adaified_Name (Pool : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Original_Name_To_Adaified_Name_Ptr;
+
+      function New_Enum_Name_To_Size_Identifier_Map (Pool : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Enum_Name_To_Size_Identifier_Map_Ptr;
+
+   end Allocators;
+
+   package body Allocators is
+
+      function New_Unbounded_String_Vector (Pool : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Unbounded_String_Vector_Ptr is
+         type Local_Ptr is access all Unbounded_String_Vector_T;
+         for Local_Ptr'Storage_Pool use Pool.all;
+
+         function Convert is new Ada.Unchecked_Conversion (Source => Local_Ptr,
+                                                           Target => Unbounded_String_Vector_Ptr);
+
+         L : constant Local_Ptr := new Unbounded_String_Vector_T;
+      begin
+         return Convert (L);
+      end New_Unbounded_String_Vector;
+
+      function New_Original_Name_To_Adaified_Name (Pool : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Original_Name_To_Adaified_Name_Ptr is
+         type Local_Ptr is access all Original_Name_To_Adaified_Name_T;
+         for Local_Ptr'Storage_Pool use Pool.all;
+
+         function Convert is new Ada.Unchecked_Conversion (Source => Local_Ptr,
+                                                           Target => Original_Name_To_Adaified_Name_Ptr);
+
+         L : constant Local_Ptr := new Original_Name_To_Adaified_Name_T;
+      begin
+         return Convert (L);
+      end New_Original_Name_To_Adaified_Name;
+
+      function New_Enum_Name_To_Size_Identifier_Map (Pool : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Enum_Name_To_Size_Identifier_Map_Ptr is
+         type Local_Ptr is access all Enum_Name_To_Size_Identifier_Map_T;
+         for Local_Ptr'Storage_Pool use Pool.all;
+
+         function Convert is new Ada.Unchecked_Conversion (Source => Local_Ptr,
+                                                           Target => Enum_Name_To_Size_Identifier_Map_Ptr);
+
+         L : constant Local_Ptr := new Enum_Name_To_Size_Identifier_Map_T;
+      begin
+         return Convert (L);
+      end New_Enum_Name_To_Size_Identifier_Map;
 
    end Allocators;
 
    use Allocators;
 
    procedure Create_XCB_Package (XCB     : X_Proto_XML.Xcb.T;
-                                 Subpool : in out Bounded_Dynamic_Pools.Scoped_Subpool) is
+                                 Pool    : in out Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool)
+   is
       File   : Ada.Text_IO.File_Type;
 
       procedure Put_Tabs (N : Natural) is
@@ -440,19 +488,19 @@ package body XCB_Package_Creator is
                           Item => Text);
       end Put;
 
-      Processed_X_Ids : constant Unbounded_String_Vector_Ptr := New_Unbounded_String_Vector (Subpool);
+      Processed_X_Ids : constant Unbounded_String_Vector_Ptr := New_Unbounded_String_Vector (Pool'Unchecked_Access);
 
-      Eight_Bit_Variable_Type_Names : constant Unbounded_String_Vector_Ptr := New_Unbounded_String_Vector (Subpool);
+      Eight_Bit_Variable_Type_Names : constant Unbounded_String_Vector_Ptr := New_Unbounded_String_Vector (Pool'Unchecked_Access);
 
-      Thirty_Two_Bit_Variable_Type_Names : constant Unbounded_String_Vector_Ptr := New_Unbounded_String_Vector (Subpool);
+      Thirty_Two_Bit_Variable_Type_Names : constant Unbounded_String_Vector_Ptr := New_Unbounded_String_Vector (Pool'Unchecked_Access);
 
-      Original_Variable_Name_To_Adaified_Name : constant Original_Name_To_Adaified_Name_Ptr := New_Original_Name_To_Adaified_Name (Subpool);
+      Original_Variable_Name_To_Adaified_Name : constant Original_Name_To_Adaified_Name_Ptr := New_Original_Name_To_Adaified_Name (Pool'Unchecked_Access);
 
-      Original_Name_To_Adaified_Name : constant Original_Name_To_Adaified_Name_Ptr := New_Original_Name_To_Adaified_Name (Subpool);
+      Original_Name_To_Adaified_Name : constant Original_Name_To_Adaified_Name_Ptr := New_Original_Name_To_Adaified_Name (Pool'Unchecked_Access);
 
-      Original_Name_To_Adaified_Iterator_Type_Name : constant Original_Name_To_Adaified_Name_Ptr := New_Original_Name_To_Adaified_Name (Subpool);
+      Original_Name_To_Adaified_Iterator_Type_Name : constant Original_Name_To_Adaified_Name_Ptr := New_Original_Name_To_Adaified_Name (Pool'Unchecked_Access);
 
-      Original_Name_To_Adaified_Iterator_Access_Type_Name : constant Original_Name_To_Adaified_Name_Ptr := New_Original_Name_To_Adaified_Name (Subpool);
+      Original_Name_To_Adaified_Iterator_Access_Type_Name : constant Original_Name_To_Adaified_Name_Ptr := New_Original_Name_To_Adaified_Name (Pool'Unchecked_Access);
 
       procedure Translate_Variable_Type_Name (Variable_Type_Name : String;
                                               Is_Success         : out Boolean;
@@ -886,9 +934,9 @@ package body XCB_Package_Creator is
          Put_Line ("");
       end Generate_Request_With_Reply_Code;
 
-      Names_Of_Types_To_Make_Array_Types : constant Unbounded_String_Vector_Ptr := New_Unbounded_String_Vector (Subpool);
+      Names_Of_Types_To_Make_Array_Types : constant Unbounded_String_Vector_Ptr := New_Unbounded_String_Vector (Pool'Unchecked_Access);
 
-      Enum_Name_To_Size_Identifier_Map : constant Enum_Name_To_Size_Identifier_Map_Ptr := New_Enum_Name_To_Size_Identifier_Map (Subpool);
+      Enum_Name_To_Size_Identifier_Map : constant Enum_Name_To_Size_Identifier_Map_Ptr := New_Enum_Name_To_Size_Identifier_Map (Pool'Unchecked_Access);
 
       procedure Pre_Process_Requests is
 

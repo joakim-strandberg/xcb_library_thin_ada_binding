@@ -5,16 +5,12 @@ with Aida.XML;
 with X_Proto_XML;
 with XML_File_Parser;
 with XCB_Package_Creator;
-with Bounded_Dynamic_Pools;
+with Basic_Bounded_Dynamic_Pools;
 
 procedure Main is
 
-   Mega_Pool : aliased Bounded_Dynamic_Pools.Dynamic_Pool (Default_Subpool_Size => 0,
-                                                           Maximum_Subpools     => 2);
-
-   Subpool : Bounded_Dynamic_Pools.Scoped_Subpool (Pool           => Mega_Pool'Unchecked_Access,
-                                                   Size           => 120_000_000,
-                                                   Heap_Allocated => True);
+   Pool : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool (Size           => 120_000_000,
+                                                          Heap_Allocated => True);
 
    use Aida.XML.Error_Message_P;
 
@@ -64,13 +60,13 @@ procedure Main is
 
       XML_File_Parser.Parse (Contents,
                              Xcb,
-                             Subpool,
+                             Pool,
                              Error_Message,
                              Is_Success);
 
       if Is_Success then
          Ada.Text_IO.Put_Line ("Successfully parsed " & File_Name & "! Will create xcb.ads");
-         XCB_Package_Creator.Create_XCB_Package (Xcb.all, Subpool);
+         XCB_Package_Creator.Create_XCB_Package (Xcb.all, Pool);
       else
          Ada.Text_IO.Put_Line (To_String (Error_Message));
       end if;

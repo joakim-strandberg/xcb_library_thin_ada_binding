@@ -4,6 +4,7 @@ with Aida.Containers.Bounded_Hash_Map;
 with GNAT.Source_Info;
 with Ada.Exceptions;
 with X_Proto_XML.Allocators;
+with Ada.Unchecked_Conversion;
 
 package body XML_File_Parser is
 
@@ -184,611 +185,398 @@ package body XML_File_Parser is
       end case;
    end record;
 
+   package Allocs is new X_Proto_XML.Allocators.Alloc;
+
+   use Allocs;
+
    package Allocators is
+
+--        function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+--                                  Tag_Id_V   : Tag_Id.Enumeration_Type;
+--                                  Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Xcb        : X_Proto_XML.Xcb.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Struct     : X_Proto_XML.Struct.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 X_Id       : X_Proto_XML.X_Id.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 X_Id_Union : X_Proto_XML.X_Id_Union.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag      : Current_Tag_Access_Type;
                                 Type_Definition : X_Proto_XML.Type_Definition.Ptr;
-                                Subpool         : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool            : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Enum       : X_Proto_XML.Enum.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Event      : X_Proto_XML.Event.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Event_Copy : X_Proto_XML.Event_Copy.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Union      : X_Proto_XML.Union.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Error      : X_Proto_XML.Error.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Error_Copy : X_Proto_XML.Error_Copy.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Request    : X_Proto_XML.Request.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Field      : X_Proto_XML.Field.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Pad        : X_Proto_XML.Pad.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 List       : X_Proto_XML.List.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Kind       : X_Proto_XML.Type_P.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Item       : X_Proto_XML.Item.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag    : Current_Tag_Access_Type;
                                 Documentation : X_Proto_XML.Documentation.Ptr;
-                                Subpool       : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool          : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Operation  : X_Proto_XML.Operation.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Value      : X_Proto_XML.Value_Access_Type;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag      : Current_Tag_Access_Type;
                                 Field_Reference : X_Proto_XML.Field_Reference_Access_Type;
-                                Subpool         : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool            : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 See        : X_Proto_XML.See.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Example    : X_Proto_XML.Example.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag  : Current_Tag_Access_Type;
                                 Value_Param : X_Proto_XML.Value_Param.Ptr;
-                                Subpool     : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool        : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Reply      : X_Proto_XML.Reply.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag       : Current_Tag_Access_Type;
                                 Expression_Field : X_Proto_XML.Expression_Field.Ptr;
-                                Subpool          : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type;
+                                Pool             : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
    end Allocators;
 
    package body Allocators is
 
-      subtype CT_Xcb_T is Current_Tag_T (Tag_Id.Xcb);
+      function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
+                                Tag_Id_V   : Tag_Id.Enumeration_Type;
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
+      is
+          type Local_Current_Tag_Ptr is access all Current_Tag_T;
+          for Local_Current_Tag_Ptr'Storage_Pool use Pool.all;
 
-      type CT_Xcb_Ptr is access all CT_Xcb_T;
+          function Convert is new Ada.Unchecked_Conversion (Source => Local_Current_Tag_Ptr,
+                                                            Target => Current_Tag_Access_Type);
 
-      function New_CT_Xcb is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Xcb_T,
-                                                                             Allocation_Type_Access => CT_Xcb_Ptr);
+          L : constant Local_Current_Tag_Ptr := new Current_Tag_T (Tag_Id_V);
+      begin
+         L.Find_Tag := Parent_Tag;
+         return Convert (L);
+      end New_Current_Tag;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Xcb        : X_Proto_XML.Xcb.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Xcb_Ptr := New_CT_Xcb (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Xcb, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Xcb_V := Xcb;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Struct_T is Current_Tag_T (Tag_Id.Struct);
-
-      type CT_Struct_Ptr is access all CT_Struct_T;
-
-      function New_CT_Struct is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Struct_T,
-                                                                             Allocation_Type_Access => CT_Struct_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Struct     : X_Proto_XML.Struct.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant Current_Tag_Access_Type := Current_Tag_Access_Type (New_CT_Struct (Subpool));
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Struct, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
-         T.all := (Kind_Id => Tag_Id.Struct,
-                   Find_Tag => null,
-                   Struct_V => Struct);
          T.Struct_V := Struct;
          return T;
       end New_Current_Tag;
 
-      subtype CT_X_Id_T is Current_Tag_T (Tag_Id.X_Id_Kind);
-
-      type CT_X_Id_Ptr is access all CT_X_Id_T;
-
-      function New_CT_X_Id is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_X_Id_T,
-                                                                             Allocation_Type_Access => CT_X_Id_Ptr);
-
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 X_Id       : X_Proto_XML.X_Id.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_X_Id_Ptr := New_CT_X_Id (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.X_Id_Kind, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.X_Id_Kind_V := X_Id;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_X_Id_Union_T is Current_Tag_T (Tag_Id.X_Id_Union);
-
-      type CT_X_Id_Union_Ptr is access all CT_X_Id_Union_T;
-
-      function New_CT_X_Id_Union is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_X_Id_Union_T,
-                                                                             Allocation_Type_Access => CT_X_Id_Union_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 X_Id_Union : X_Proto_XML.X_Id_Union.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_X_Id_Union_Ptr := New_CT_X_Id_Union (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.X_Id_Union, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.X_Id_Union_V := X_Id_Union;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Type_Definition_T is Current_Tag_T (Tag_Id.Type_Definition);
-
-      type CT_Type_Definition_Ptr is access all CT_Type_Definition_T;
-
-      function New_CT_Type_Definition is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Type_Definition_T,
-                                                                             Allocation_Type_Access => CT_Type_Definition_Ptr);
 
       function New_Current_Tag (Parent_Tag      : Current_Tag_Access_Type;
                                 Type_Definition : X_Proto_XML.Type_Definition.Ptr;
-                                Subpool         : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool            : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Type_Definition_Ptr := New_CT_Type_Definition (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Type_Definition, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Type_Definition_V := Type_Definition;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Enum_T is Current_Tag_T (Tag_Id.Enum);
-
-      type CT_Enum_Ptr is access all CT_Enum_T;
-
-      function New_CT_Enum is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Enum_T,
-                                                                             Allocation_Type_Access => CT_Enum_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Enum       : X_Proto_XML.Enum.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Enum_Ptr := New_CT_Enum (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Enum, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Enum_V := Enum;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Event_T is Current_Tag_T (Tag_Id.Event);
-
-      type CT_Event_Ptr is access all CT_Event_T;
-
-      function New_CT_Event is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Event_T,
-                                                                             Allocation_Type_Access => CT_Event_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Event      : X_Proto_XML.Event.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Event_Ptr := New_CT_Event (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Event, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Event_V := Event;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Event_Copy_T is Current_Tag_T (Tag_Id.Event_Copy);
-
-      type CT_Event_Copy_Ptr is access all CT_Event_Copy_T;
-
-      function New_CT_Event_Copy is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Event_Copy_T,
-                                                                             Allocation_Type_Access => CT_Event_Copy_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Event_Copy : X_Proto_XML.Event_Copy.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Event_Copy_Ptr := New_CT_Event_Copy (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Event_Copy, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Event_Copy_V := Event_Copy;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Union_T is Current_Tag_T (Tag_Id.Union);
-
-      type CT_Union_Ptr is access all CT_Union_T;
-
-      function New_CT_Union is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Union_T,
-                                                                             Allocation_Type_Access => CT_Union_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Union      : X_Proto_XML.Union.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Union_Ptr := New_CT_Union (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Union, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Union_V := Union;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Error_T is Current_Tag_T (Tag_Id.Error);
-
-      type CT_Error_Ptr is access all CT_Error_T;
-
-      function New_CT_Error is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Error_T,
-                                                                             Allocation_Type_Access => CT_Error_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Error      : X_Proto_XML.Error.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Error_Ptr := New_CT_Error (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Error, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Error_V := Error;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Error_Copy_T is Current_Tag_T (Tag_Id.Error_Copy);
-
-      type CT_Error_Copy_Ptr is access all CT_Error_Copy_T;
-
-      function New_CT_Error_Copy is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Error_Copy_T,
-                                                                             Allocation_Type_Access => CT_Error_Copy_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Error_Copy : X_Proto_XML.Error_Copy.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Error_Copy_Ptr := New_CT_Error_Copy (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Error_Copy, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Error_Copy_V := Error_Copy;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Request_T is Current_Tag_T (Tag_Id.Request);
-
-      type CT_Request_Ptr is access all CT_Request_T;
-
-      function New_CT_Request is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Request_T,
-                                                                             Allocation_Type_Access => CT_Request_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Request    : X_Proto_XML.Request.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Request_Ptr := New_CT_Request (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Request, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Request_V := Request;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Field_T is Current_Tag_T (Tag_Id.Field);
-
-      type CT_Field_Ptr is access all CT_Field_T;
-
-      function New_CT_Field is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Field_T,
-                                                                             Allocation_Type_Access => CT_Field_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Field      : X_Proto_XML.Field.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Field_Ptr := New_CT_Field (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Field, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Field_V := Field;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Pad_T is Current_Tag_T (Tag_Id.Pad);
-
-      type CT_Pad_Ptr is access all CT_Pad_T;
-
-      function New_CT_Pad is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Pad_T,
-                                                                             Allocation_Type_Access => CT_Pad_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Pad        : X_Proto_XML.Pad.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Pad_Ptr := New_CT_Pad (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Pad, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Pad_V := Pad;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_List_T is Current_Tag_T (Tag_Id.List);
-
-      type CT_List_Ptr is access all CT_List_T;
-
-      function New_CT_List is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_List_T,
-                                                                             Allocation_Type_Access => CT_List_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 List       : X_Proto_XML.List.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_List_Ptr := New_CT_List (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.List, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.List_V := List;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Kind_T is Current_Tag_T (Tag_Id.Kind);
-
-      type CT_Kind_Ptr is access all CT_Kind_T;
-
-      function New_CT_Kind is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Kind_T,
-                                                                             Allocation_Type_Access => CT_Kind_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Kind       : X_Proto_XML.Type_P.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Kind_Ptr := New_CT_Kind (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Kind, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Kind := Kind;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Item_T is Current_Tag_T (Tag_Id.Item);
-
-      type CT_Item_Ptr is access all CT_Item_T;
-
-      function New_CT_Item is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Item_T,
-                                                                             Allocation_Type_Access => CT_Item_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Item       : X_Proto_XML.Item.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Item_Ptr := New_CT_Item (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Item, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Item_V := Item;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Documentation_T is Current_Tag_T (Tag_Id.Documentation);
-
-      type CT_Documentation_Ptr is access all CT_Documentation_T;
-
-      function New_CT_Documentation is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Documentation_T,
-                                                                             Allocation_Type_Access => CT_Documentation_Ptr);
 
       function New_Current_Tag (Parent_Tag    : Current_Tag_Access_Type;
                                 Documentation : X_Proto_XML.Documentation.Ptr;
-                                Subpool       : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool          : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Documentation_Ptr := New_CT_Documentation (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Documentation, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Documentation_V := Documentation;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Operation_T is Current_Tag_T (Tag_Id.Op);
-
-      type CT_Operation_Ptr is access all CT_Operation_T;
-
-      function New_CT_Operation is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Operation_T,
-                                                                             Allocation_Type_Access => CT_Operation_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Operation  : X_Proto_XML.Operation.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Operation_Ptr := New_CT_Operation (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Op, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Op_V := Operation;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Value_T is Current_Tag_T (Tag_Id.Value);
-
-      type CT_Value_Ptr is access all CT_Value_T;
-
-      function New_CT_Value is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Value_T,
-                                                                             Allocation_Type_Access => CT_Value_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Value      : X_Proto_XML.Value_Access_Type;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Value_Ptr := New_CT_Value (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Value, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Value_V := Value;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Field_Reference_T is Current_Tag_T (Tag_Id.Field_Reference);
-
-      type CT_Field_Reference_Ptr is access all CT_Field_Reference_T;
-
-      function New_CT_Field_Reference is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Field_Reference_T,
-                                                                             Allocation_Type_Access => CT_Field_Reference_Ptr);
 
       function New_Current_Tag (Parent_Tag      : Current_Tag_Access_Type;
                                 Field_Reference : X_Proto_XML.Field_Reference_Access_Type;
-                                Subpool         : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool            : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Field_Reference_Ptr := New_CT_Field_Reference (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Field_Reference, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Field_Reference := Field_Reference;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_See_T is Current_Tag_T (Tag_Id.See);
-
-      type CT_See_Ptr is access all CT_See_T;
-
-      function New_CT_See is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_See_T,
-                                                                             Allocation_Type_Access => CT_See_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 See        : X_Proto_XML.See.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_See_Ptr := New_CT_See (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.See, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.See_V := See;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Example_T is Current_Tag_T (Tag_Id.Example);
-
-      type CT_Example_Ptr is access all CT_Example_T;
-
-      function New_CT_Example is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Example_T,
-                                                                             Allocation_Type_Access => CT_Example_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Example    : X_Proto_XML.Example.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Example_Ptr := New_CT_Example (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Example, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Example_V := Example;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Value_Param_T is Current_Tag_T (Tag_Id.Value_Param);
-
-      type CT_Value_Param_Ptr is access all CT_Value_Param_T;
-
-      function New_CT_Value_Param is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Value_Param_T,
-                                                                             Allocation_Type_Access => CT_Value_Param_Ptr);
 
       function New_Current_Tag (Parent_Tag  : Current_Tag_Access_Type;
                                 Value_Param : X_Proto_XML.Value_Param.Ptr;
-                                Subpool     : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool        : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Value_Param_Ptr := New_CT_Value_Param (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Value_Param, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Value_Param_V := Value_Param;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Reply_T is Current_Tag_T (Tag_Id.Reply);
-
-      type CT_Reply_Ptr is access all CT_Reply_T;
-
-      function New_CT_Reply is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Reply_T,
-                                                                             Allocation_Type_Access => CT_Reply_Ptr);
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Reply      : X_Proto_XML.Reply.Ptr;
-                                Subpool    : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Reply_Ptr := New_CT_Reply (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Reply, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Reply_V := Reply;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
-
-      subtype CT_Expression_Field_T is Current_Tag_T (Tag_Id.Expression_Field);
-
-      type CT_Expression_Field_Ptr is access all CT_Expression_Field_T;
-
-      function New_CT_Expression_Field is
-        new Bounded_Dynamic_Pools.Allocation_Of_Tiny_Item_In_Scoped_Subpool (Allocation_Type        => CT_Expression_Field_T,
-                                                                             Allocation_Type_Access => CT_Expression_Field_Ptr);
 
       function New_Current_Tag (Parent_Tag       : Current_Tag_Access_Type;
                                 Expression_Field : X_Proto_XML.Expression_Field.Ptr;
-                                Subpool          : Bounded_Dynamic_Pools.Scoped_Subpool) return Current_Tag_Access_Type
+                                Pool             : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type
       is
-         T : constant CT_Expression_Field_Ptr := New_CT_Expression_Field (Subpool);
+         T : constant Current_Tag_Access_Type := New_Current_Tag (Parent_Tag, Tag_Id.Expression_Field, Pool);
       begin
-         T.Find_Tag := Parent_Tag;
          T.Expression_Field_V := Expression_Field;
-         return Current_Tag_Access_Type (T);
+         return T;
       end New_Current_Tag;
 
    end Allocators;
@@ -823,7 +611,7 @@ package body XML_File_Parser is
 
    procedure Parse (Contents      : String;
                     Xcb_V         : in out X_Proto_XML.Xcb.Ptr;
-                    Subpool       : in out Bounded_Dynamic_Pools.Scoped_Subpool;
+                    Pool          : in out Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool;
                     Error_Message : out Aida.XML.Error_Message_T;
                     Is_Success    : out Boolean)
    is
@@ -891,12 +679,10 @@ package body XML_File_Parser is
                   return;
                end if;
 
-               Xcb_V := New_Xcb (Subpool);
+               Xcb_V := New_Xcb (Pool'Unchecked_Access);
                Insert (This        => Parents_Including_Self_To_Current_Tag_Map,
                        Key         => Parents_Including_Self,
-                       New_Element => New_Current_Tag (Parent_Tag => Find_Tag (Parent_Tags),
-                                                       Xcb        => Xcb_V,
-                                                       Subpool    => Subpool));
+                       New_Element => New_Current_Tag (Find_Tag (Parent_Tags), Xcb_V, Pool'Unchecked_Access));
                Is_Success := True;
             else
                Is_Success := False;
@@ -909,14 +695,14 @@ package body XML_File_Parser is
             when Tag_Id.Xcb =>
                if Tag_Name = Tag_Struct then
                   declare
-                     Struct_V : constant X_Proto_XML.Struct.Ptr := New_Struct (Subpool);
+                     Struct_V : constant X_Proto_XML.Struct.Ptr := New_Struct (Pool'Unchecked_Access);
                   begin
                      case Prev_Tag.Kind_Id is
                         when Tag_Id.Xcb =>
                            Append_Struct (Prev_Tag.Xcb_V.all, Struct_V);
                            Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                                     Struct     => Struct_V,
-                                                    Subpool    => Subpool));
+                                                    Pool       => Pool'Unchecked_Access));
                            Is_Success := True;
                         when others =>
                            Is_Success := False;
@@ -925,103 +711,103 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_X_Id_Kind then
                   declare
-                     X_Id_Type_V : constant X_Proto_XML.X_Id.Ptr := New_X_Id (Subpool);
+                     X_Id_Type_V : constant X_Proto_XML.X_Id.Ptr := New_X_Id (Pool'Unchecked_Access);
                   begin
                      Append_X_Id (Prev_Tag.Xcb_V.all, X_Id_Type_V);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag  => Prev_Tag,
                                               X_Id        => X_Id_Type_V,
-                                              Subpool     => Subpool));
+                                              Pool        => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = Tag_X_Id_Union then
                   declare
-                     X_Id_Union_V : constant X_Proto_XML.X_Id_Union.Ptr := New_X_Id_Union (Subpool);
+                     X_Id_Union_V : constant X_Proto_XML.X_Id_Union.Ptr := New_X_Id_Union (Pool'Unchecked_Access);
                   begin
                      Append_X_Id_Union (Prev_Tag.Xcb_V.all, X_Id_Union_V);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               X_Id_Union => X_Id_Union_V,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = Tag_Type_Definition then
                   declare
-                     TD : constant X_Proto_XML.Type_Definition.Ptr := New_Type_Definition (Subpool);
+                     TD : constant X_Proto_XML.Type_Definition.Ptr := New_Type_Definition (Pool'Unchecked_Access);
                   begin
                      Append_Type_Definition (Prev_Tag.Xcb_V.all, TD);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag       => Prev_Tag,
                                               Type_Definition  => TD,
-                                              Subpool          => Subpool));
+                                              Pool             => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = Tag_Enum then
                   declare
-                     Enum_V : constant X_Proto_XML.Enum.Ptr := New_Enum (Subpool);
+                     Enum_V : constant X_Proto_XML.Enum.Ptr := New_Enum (Pool'Unchecked_Access);
                   begin
                      Append_Enum (Prev_Tag.Xcb_V.all, Enum_V);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Enum       => Enum_V,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Event then
                   declare
-                     E : constant X_Proto_XML.Event.Ptr := New_Event (Subpool);
+                     E : constant X_Proto_XML.Event.Ptr := New_Event (Pool'Unchecked_Access);
                   begin
                      Append_Event (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Event      => E,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Event_Copy then
                   declare
-                     EC : constant X_Proto_XML.Event_Copy.Ptr := New_Event_Copy (Subpool);
+                     EC : constant X_Proto_XML.Event_Copy.Ptr := New_Event_Copy (Pool'Unchecked_Access);
                   begin
                      Append_Event_Copy (Prev_Tag.Xcb_V.all, EC);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Event_Copy => EC,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Union then
                   declare
-                     U : constant X_Proto_XML.Union.Ptr := New_Union (Subpool);
+                     U : constant X_Proto_XML.Union.Ptr := New_Union (Pool'Unchecked_Access);
                   begin
                      Append_Union (Prev_Tag.Xcb_V.all, U);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Union      => U,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Error then
                   declare
-                     E : constant X_Proto_XML.Error.Ptr := New_Error (Subpool);
+                     E : constant X_Proto_XML.Error.Ptr := New_Error (Pool'Unchecked_Access);
                   begin
                      Append_Error (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Error      => E,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Error_Copy then
                   declare
-                     E : constant X_Proto_XML.Error_Copy.Ptr := New_Error_Copy (Subpool);
+                     E : constant X_Proto_XML.Error_Copy.Ptr := New_Error_Copy (Pool'Unchecked_Access);
                   begin
                      Append_Error_Copy (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Error_Copy => E,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Request then
                   declare
-                     R : constant X_Proto_XML.Request.Ptr := New_Request (Subpool);
+                     R : constant X_Proto_XML.Request.Ptr := New_Request (Pool'Unchecked_Access);
                   begin
                      Append_Request (Prev_Tag.Xcb_V.all, R);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Request    => R,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                else
                   Is_Success := False;
@@ -1030,33 +816,33 @@ package body XML_File_Parser is
             when Tag_Id.Struct =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Struct.Fs.Member_Ptr := New_Struct_Field (Subpool);
+                     F : X_Proto_XML.Struct.Fs.Member_Ptr := New_Struct_Member (Pool'Unchecked_Access, Field_Member);
                   begin
                      Append_Member (Prev_Tag.Struct_V.all, F);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Field      => F.F'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : X_Proto_XML.Struct.Fs.Member_Ptr := New_Struct_Pad (Subpool);
+                     P : X_Proto_XML.Struct.Fs.Member_Ptr := New_Struct_Member (Pool'Unchecked_Access, Pad_Member);
                   begin
                      Append_Member (Prev_Tag.Struct_V.all, P);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Pad        => P.P'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     L : X_Proto_XML.Struct.Fs.Member_Ptr := New_Struct_List (Subpool);
+                     L : X_Proto_XML.Struct.Fs.Member_Ptr := New_Struct_Member (Pool'Unchecked_Access, List_Member);
                   begin
                      Append_Member (Prev_Tag.Struct_V.all, L);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               List       => L.L'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                else
                   Is_Success := False;
@@ -1065,13 +851,13 @@ package body XML_File_Parser is
             when Tag_Id.X_Id_Union =>
                if Tag_Name = Tag_Kind then
                   declare
-                     Kind : constant X_Proto_XML.Type_P.Ptr := New_Type (Subpool);
+                     Kind : constant X_Proto_XML.Type_P.Ptr := New_Type (Pool'Unchecked_Access);
                   begin
                      Append_Kind (Prev_Tag.X_Id_Union_V.all, Kind);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Kind       => Kind,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                else
                   Is_Success := False;
@@ -1080,23 +866,23 @@ package body XML_File_Parser is
             when Tag_Id.Enum =>
                if Tag_Name = Tag_Item then
                   declare
-                     Item_V : constant X_Proto_XML.Item.Ptr := New_Item (Subpool);
+                     Item_V : constant X_Proto_XML.Item.Ptr := New_Item (Pool'Unchecked_Access);
                   begin
                      Append_Item (Prev_Tag.Enum_V.all, Item_V);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Item       => Item_V,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
-                     D : constant X_Proto_XML.Documentation.Ptr := New_Documentation (Subpool);
+                     D : constant X_Proto_XML.Documentation.Ptr := New_Documentation (Pool'Unchecked_Access);
                   begin
                      Append_Documentation (Prev_Tag.Enum_V.all, D);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag    => Prev_Tag,
                                               Documentation => D,
-                                              Subpool       => Subpool));
+                                              Pool          => Pool'Unchecked_Access));
                   end;
                else
                   Is_Success := False;
@@ -1116,23 +902,23 @@ package body XML_File_Parser is
                   Is_Success := True;
                elsif Tag_Name = XML_Tag_Operation then
                   declare
-                     Operation : X_Proto_XML.List.Fs.Member_Ptr := New_List_Operation (Subpool);
+                     Operation : X_Proto_XML.List.Fs.Member_Ptr := New_List_Member (Pool'Unchecked_Access, X_Proto_XML.List.Fs.List_Member_Kind_Operation);
                   begin
                      Append_Member (Prev_Tag.List_V.all, Operation);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Operation  => Operation.Operation'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Value then
                   declare
-                     V : X_Proto_XML.List.Fs.Member_Ptr := New_List_Value (Subpool);
+                     V : X_Proto_XML.List.Fs.Member_Ptr := New_List_Member (Pool'Unchecked_Access, X_Proto_XML.List.Fs.List_Member_Kind_Value);
                   begin
                      Append_Member (Prev_Tag.List_V.all, V);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Value      => V.Value'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                else
                   Is_Success := False;
@@ -1141,34 +927,34 @@ package body XML_File_Parser is
             when Tag_Id.Op =>
                if Tag_Name = XML_Tag_Operation then
                   declare
-                     V : constant X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Operation (Subpool);
+                     V : constant X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (Pool'Unchecked_Access, X_Proto_XML.Operation.Fs.Member_Operation);
                   begin
-                     V.Operation := New_Operation (Subpool);
+                     V.Operation := New_Operation (Pool'Unchecked_Access);
                      Append_Member (Prev_Tag.Op_V.all, V);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Operation  => V.Operation,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = Tag_Field_Reference then
                   declare
-                     V : X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Field_Reference (Subpool);
+                     V : X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (Pool'Unchecked_Access, X_Proto_XML.Operation.Fs.Member_Kind_Field_Reference);
                   begin
                      Append_Member (Prev_Tag.Op_V.all, V);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag      => Prev_Tag,
                                               Field_Reference => V.Field_Reference'Access,
-                                              Subpool         => Subpool));
+                                              Pool            => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Value then
                   declare
-                     V : X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Value (Subpool);
+                     V : X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (Pool'Unchecked_Access, X_Proto_XML.Operation.Fs.Member_Kind_Value);
                   begin
                      Append_Member (Prev_Tag.Op_V.all, V);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Value      => V.Value'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                else
                   Is_Success := False;
@@ -1177,43 +963,43 @@ package body XML_File_Parser is
             when Tag_Id.Event =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Field (Subpool);
+                     F : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Member (Pool'Unchecked_Access, X_Proto_XML.Event.Fs.Event_Member_Field);
                   begin
                      Append_Member (Prev_Tag.Event_V.all, F);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Field      => F.F'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Pad(Subpool);
+                     P : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Member (Pool'Unchecked_Access, X_Proto_XML.Event.Fs.Event_Member_Pad);
                   begin
                      Append_Member (Prev_Tag.Event_V.all, P);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Pad        => P.P'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
-                     D : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Doc(Subpool);
+                     D : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Member (Pool'Unchecked_Access, X_Proto_XML.Event.Fs.Event_Member_Doc);
                   begin
                      Append_Member (Prev_Tag.Event_V.all, D);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag    => Prev_Tag,
                                               Documentation => D.D'Access,
-                                              Subpool       => Subpool));
+                                              Pool          => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     L : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_List(Subpool);
+                     L : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Member (Pool'Unchecked_Access, X_Proto_XML.Event.Fs.Event_Member_List);
                   begin
                      Append_Member (Prev_Tag.Event_V.all, L);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               List       => L.L'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                else
                   Is_Success := False;
@@ -1222,43 +1008,43 @@ package body XML_File_Parser is
             when Tag_Id.Documentation =>
                if Tag_Name = Tag_Field then
                   declare
-                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Field(Subpool);
+                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Member (Pool'Unchecked_Access, X_Proto_XML.Documentation.Fs.Member_Field);
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Field      => D.F'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_See then
                   declare
-                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_See(Subpool);
+                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Member (Pool'Unchecked_Access, X_Proto_XML.Documentation.Fs.Member_See);
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               See        => D.S'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Error then
                   declare
-                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Error(Subpool);
+                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Member (Pool'Unchecked_Access, X_Proto_XML.Documentation.Fs.Member_Error);
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Error      => D.E'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Example then
                   declare
-                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Example(Subpool);
+                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Member (Pool'Unchecked_Access, X_Proto_XML.Documentation.Fs.Member_Example);
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Example    => D.Ex'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Brief then
                   Is_Success := True;
@@ -1271,13 +1057,13 @@ package body XML_File_Parser is
             when Tag_Id.Union =>
                if Tag_Name = Tag_List then
                   declare
-                     L : X_Proto_XML.Union.Fs.Child_Ptr := New_Union_List (Subpool);
+                     L : X_Proto_XML.Union.Fs.Child_Ptr := New_Union_Child (Pool'Unchecked_Access, X_Proto_XML.Union.Fs.Child_List);
                   begin
                      Append_Child (Prev_Tag.Union_V.all, L);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               List       => L.L'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                else
                   Is_Success := False;
@@ -1286,23 +1072,23 @@ package body XML_File_Parser is
             when Tag_Id.Error =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Error.Fs.Child_Ptr := New_Error_Field(Subpool);
+                     F : X_Proto_XML.Error.Fs.Child_Ptr := New_Error_Child (Pool'Unchecked_Access, X_Proto_XML.Error.Fs.Child_Field);
                   begin
                      Append_Child (Prev_Tag.Error_V.all, F);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Field      => F.F'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : X_Proto_XML.Error.Fs.Child_Ptr := New_Error_Pad (Subpool);
+                     P : X_Proto_XML.Error.Fs.Child_Ptr := New_Error_Child (Pool'Unchecked_Access, X_Proto_XML.Error.Fs.Child_Pad);
                   begin
                      Append_Child (Prev_Tag.Error_V.all, P);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Pad        => P.P'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                else
                   Is_Success := False;
@@ -1311,73 +1097,73 @@ package body XML_File_Parser is
             when Tag_Id.Request =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Field(Subpool);
+                     F : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (Pool'Unchecked_Access, X_Proto_XML.Request.Fs.Child_Field);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, F);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Field      => F.F'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Pad (Subpool);
+                     P : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (Pool'Unchecked_Access, X_Proto_XML.Request.Fs.Child_Pad);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, P);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Pad        => P.P'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Value_Param then
                   declare
-                     V : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Value_Param (Subpool);
+                     V : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (Pool'Unchecked_Access, X_Proto_XML.Request.Fs.Child_Value_Param);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, V);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag  => Prev_Tag,
                                               Value_Param => V.V'Access,
-                                              Subpool     => Subpool));
+                                              Pool        => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
-                     V : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Documentation (Subpool);
+                     V : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (Pool'Unchecked_Access, X_Proto_XML.Request.Fs.Child_Documentation);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, V);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag    => Prev_Tag,
                                               Documentation => V.D'Access,
-                                              Subpool       => Subpool));
+                                              Pool          => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Reply then
                   declare
-                     R : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Reply(Subpool);
+                     R : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (Pool'Unchecked_Access, X_Proto_XML.Request.Fs.Child_Reply);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Reply      => R.R'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     R : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_List (Subpool);
+                     R : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (Pool'Unchecked_Access, X_Proto_XML.Request.Fs.Child_List);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               List       => R.L'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Expression_Field then
                   declare
-                     R : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Expression_Field (Subpool);
+                     R : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (Pool'Unchecked_Access, X_Proto_XML.Request.Fs.Child_Expression_Field);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag       => Prev_Tag,
                                               Expression_Field => R.EF'Access,
-                                              Subpool          => Subpool));
+                                              Pool             => Pool'Unchecked_Access));
                   end;
                else
                   Is_Success := False;
@@ -1386,43 +1172,43 @@ package body XML_File_Parser is
             when Tag_Id.Reply =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Field (Subpool);
+                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Child (Pool'Unchecked_Access, X_Proto_XML.Reply.Fs.Child_Field);
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Field      => F.F'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Pad (Subpool);
+                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Child (Pool'Unchecked_Access, X_Proto_XML.Reply.Fs.Child_Pad);
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Pad        => F.P'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
-                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Documentation (Subpool);
+                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Child (Pool'Unchecked_Access, X_Proto_XML.Reply.Fs.Child_Documentation);
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag    => Prev_Tag,
                                               Documentation => F.D'Access,
-                                              Subpool       => Subpool));
+                                              Pool          => Pool'Unchecked_Access));
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_List (Subpool);
+                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Child (Pool'Unchecked_Access, X_Proto_XML.Reply.Fs.Child_List);
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               List       => F.L'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                else
                   Is_Success := False;
@@ -1431,13 +1217,13 @@ package body XML_File_Parser is
             when Tag_Id.Expression_Field =>
                if Tag_Name = XML_Tag_Operation then
                   declare
-                     C : X_Proto_XML.Expression_Field.Fs.Child_Ptr := New_Expression_Field_Operation (Subpool);
+                     C : X_Proto_XML.Expression_Field.Fs.Child_Ptr := New_Expression_Field_Child (Pool'Unchecked_Access, X_Proto_XML.Expression_Field.Fs.Child_Operation);
                   begin
                      Append_Child (Prev_Tag.Expression_Field_V.all, C);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
                                               Operation  => C.Op'Access,
-                                              Subpool    => Subpool));
+                                              Pool       => Pool'Unchecked_Access));
                   end;
                else
                   Is_Success := False;
@@ -2026,7 +1812,7 @@ package body XML_File_Parser is
                   when Tag_Id.List =>
                      if Tag_Name = Tag_Field_Reference then
                         declare
-                           L : constant X_Proto_XML.List.Fs.Member_Ptr := New_List_Field_Reference (Subpool);
+                           L : constant X_Proto_XML.List.Fs.Member_Ptr := New_List_Member (Pool'Unchecked_Access, X_Proto_XML.List.Fs.List_Member_Kind_Field_Reference);
                         begin
                            Initialize (L.Field_Reference, Tag_Value);
                            Append_Member (Prev_Tag.List_V.all, L);
@@ -2119,7 +1905,7 @@ package body XML_File_Parser is
                   if Tag_Name = Tag_Field_Reference then
                      declare
                         V : X_Proto_XML.Field_Reference_Type;
-                        FR : constant X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Field_Reference (Subpool);
+                        FR : constant X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (Pool'Unchecked_Access, X_Proto_XML.Operation.Fs.Member_Kind_Field_Reference);
                      begin
                         Initialize (V, Tag_Value);
                         FR.Field_Reference := V;
@@ -2139,7 +1925,7 @@ package body XML_File_Parser is
                            Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", failed to interpret '" & Tag_Value & "' as a number for end tag " & Tag_Name);
                         else
                            declare
-                              Operation_Value : constant X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Value (Subpool);
+                              Operation_Value : constant X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (Pool'Unchecked_Access, X_Proto_XML.Operation.Fs.Member_Kind_Value);
                            begin
                               Operation_Value.Value := V;
                               Append_Member (Current_Tag.Op_V.all, Operation_Value);
