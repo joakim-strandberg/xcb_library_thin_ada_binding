@@ -185,15 +185,7 @@ package body XML_File_Parser is
       end case;
    end record;
 
-   package Allocs is new X_Proto_XML.Allocators.Alloc;
-
-   use Allocs;
-
    package Allocators is
-
---        function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
---                                  Tag_Id_V   : Tag_Id.Enumeration_Type;
---                                  Pool       : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool_Access) return Current_Tag_Access_Type;
 
       function New_Current_Tag (Parent_Tag : Current_Tag_Access_Type;
                                 Xcb        : X_Proto_XML.Xcb.Ptr;
