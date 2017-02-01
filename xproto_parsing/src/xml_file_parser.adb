@@ -3,7 +3,6 @@ with Aida.XML.Parse_XML_File;
 with Aida.Containers.Bounded_Hash_Map;
 with GNAT.Source_Info;
 with Ada.Exceptions;
-with X_Proto_XML.Allocators;
 with Ada.Unchecked_Conversion;
 
 package body XML_File_Parser is
@@ -39,7 +38,7 @@ package body XML_File_Parser is
    use X_Proto_XML.Type_P;
    use X_Proto_XML.Example;
    use X_Proto_XML.Field_Reference;
-   use X_Proto_XML.Allocators;
+   use Main_Allocator_Interface;
 
    Tag_Xcb                                    : constant String := "xcb";
    Tag_Xcb_Attribute_Header                   : constant String := "header";
@@ -604,6 +603,7 @@ package body XML_File_Parser is
    procedure Parse (Contents      : String;
                     Xcb_V         : in out X_Proto_XML.Xcb.Ptr;
                     Pool          : in out Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool;
+                    A             : in Main_Allocator_Interface.T'Class;
                     Error_Message : out Aida.XML.Error_Message_T;
                     Is_Success    : out Boolean)
    is
@@ -671,7 +671,7 @@ package body XML_File_Parser is
                   return;
                end if;
 
-               Xcb_V := New_Xcb (Pool'Unchecked_Access);
+               Xcb_V := New_Xcb (A);
                Insert (This        => Parents_Including_Self_To_Current_Tag_Map,
                        Key         => Parents_Including_Self,
                        New_Element => New_Current_Tag (Find_Tag (Parent_Tags), Xcb_V, Pool'Unchecked_Access));
@@ -687,7 +687,7 @@ package body XML_File_Parser is
             when Tag_Id.Xcb =>
                if Tag_Name = Tag_Struct then
                   declare
-                     Struct_V : constant X_Proto_XML.Struct.Ptr := New_Struct (Pool'Unchecked_Access);
+                     Struct_V : constant X_Proto_XML.Struct.Ptr := New_Struct (A);
                   begin
                      case Prev_Tag.Kind_Id is
                         when Tag_Id.Xcb =>
@@ -703,7 +703,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_X_Id_Kind then
                   declare
-                     X_Id_Type_V : constant X_Proto_XML.X_Id.Ptr := New_X_Id (Pool'Unchecked_Access);
+                     X_Id_Type_V : constant X_Proto_XML.X_Id.Ptr := New_X_Id (A);
                   begin
                      Append_X_Id (Prev_Tag.Xcb_V.all, X_Id_Type_V);
                      Is_Success := True;
@@ -713,7 +713,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_X_Id_Union then
                   declare
-                     X_Id_Union_V : constant X_Proto_XML.X_Id_Union.Ptr := New_X_Id_Union (Pool'Unchecked_Access);
+                     X_Id_Union_V : constant X_Proto_XML.X_Id_Union.Ptr := New_X_Id_Union (A);
                   begin
                      Append_X_Id_Union (Prev_Tag.Xcb_V.all, X_Id_Union_V);
                      Is_Success := True;
@@ -723,7 +723,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_Type_Definition then
                   declare
-                     TD : constant X_Proto_XML.Type_Definition.Ptr := New_Type_Definition (Pool'Unchecked_Access);
+                     TD : constant X_Proto_XML.Type_Definition.Ptr := New_Type_Definition (A);
                   begin
                      Append_Type_Definition (Prev_Tag.Xcb_V.all, TD);
                      Is_Success := True;
@@ -733,7 +733,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_Enum then
                   declare
-                     Enum_V : constant X_Proto_XML.Enum.Ptr := New_Enum (Pool'Unchecked_Access);
+                     Enum_V : constant X_Proto_XML.Enum.Ptr := New_Enum (A);
                   begin
                      Append_Enum (Prev_Tag.Xcb_V.all, Enum_V);
                      Is_Success := True;
@@ -743,7 +743,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Event then
                   declare
-                     E : constant X_Proto_XML.Event.Ptr := New_Event (Pool'Unchecked_Access);
+                     E : constant X_Proto_XML.Event.Ptr := New_Event (A);
                   begin
                      Append_Event (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
@@ -753,7 +753,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Event_Copy then
                   declare
-                     EC : constant X_Proto_XML.Event_Copy.Ptr := New_Event_Copy (Pool'Unchecked_Access);
+                     EC : constant X_Proto_XML.Event_Copy.Ptr := New_Event_Copy (A);
                   begin
                      Append_Event_Copy (Prev_Tag.Xcb_V.all, EC);
                      Is_Success := True;
@@ -763,7 +763,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Union then
                   declare
-                     U : constant X_Proto_XML.Union.Ptr := New_Union (Pool'Unchecked_Access);
+                     U : constant X_Proto_XML.Union.Ptr := New_Union (A);
                   begin
                      Append_Union (Prev_Tag.Xcb_V.all, U);
                      Is_Success := True;
@@ -773,7 +773,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Error then
                   declare
-                     E : constant X_Proto_XML.Error.Ptr := New_Error (Pool'Unchecked_Access);
+                     E : constant X_Proto_XML.Error.Ptr := New_Error (A);
                   begin
                      Append_Error (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
@@ -783,7 +783,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Error_Copy then
                   declare
-                     E : constant X_Proto_XML.Error_Copy.Ptr := New_Error_Copy (Pool'Unchecked_Access);
+                     E : constant X_Proto_XML.Error_Copy.Ptr := New_Error_Copy (A);
                   begin
                      Append_Error_Copy (Prev_Tag.Xcb_V.all, E);
                      Is_Success := True;
@@ -793,7 +793,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Request then
                   declare
-                     R : constant X_Proto_XML.Request.Ptr := New_Request (Pool'Unchecked_Access);
+                     R : constant X_Proto_XML.Request.Ptr := New_Request (A);
                   begin
                      Append_Request (Prev_Tag.Xcb_V.all, R);
                      Is_Success := True;
@@ -808,7 +808,7 @@ package body XML_File_Parser is
             when Tag_Id.Struct =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Struct.Fs.Member_Ptr := New_Struct_Member (Pool'Unchecked_Access, Field_Member);
+                     F : X_Proto_XML.Struct.Fs.Member_Ptr := New_Struct_Member (A, Field_Member);
                   begin
                      Append_Member (Prev_Tag.Struct_V.all, F);
                      Is_Success := True;
@@ -818,7 +818,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : X_Proto_XML.Struct.Fs.Member_Ptr := New_Struct_Member (Pool'Unchecked_Access, Pad_Member);
+                     P : X_Proto_XML.Struct.Fs.Member_Ptr := New_Struct_Member (A, Pad_Member);
                   begin
                      Append_Member (Prev_Tag.Struct_V.all, P);
                      Is_Success := True;
@@ -828,7 +828,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     L : X_Proto_XML.Struct.Fs.Member_Ptr := New_Struct_Member (Pool'Unchecked_Access, List_Member);
+                     L : X_Proto_XML.Struct.Fs.Member_Ptr := New_Struct_Member (A, List_Member);
                   begin
                      Append_Member (Prev_Tag.Struct_V.all, L);
                      Is_Success := True;
@@ -843,7 +843,7 @@ package body XML_File_Parser is
             when Tag_Id.X_Id_Union =>
                if Tag_Name = Tag_Kind then
                   declare
-                     Kind : constant X_Proto_XML.Type_P.Ptr := New_Type (Pool'Unchecked_Access);
+                     Kind : constant X_Proto_XML.Type_P.Ptr := New_Type (A);
                   begin
                      Append_Kind (Prev_Tag.X_Id_Union_V.all, Kind);
                      Is_Success := True;
@@ -858,7 +858,7 @@ package body XML_File_Parser is
             when Tag_Id.Enum =>
                if Tag_Name = Tag_Item then
                   declare
-                     Item_V : constant X_Proto_XML.Item.Ptr := New_Item (Pool'Unchecked_Access);
+                     Item_V : constant X_Proto_XML.Item.Ptr := New_Item (A);
                   begin
                      Append_Item (Prev_Tag.Enum_V.all, Item_V);
                      Is_Success := True;
@@ -868,7 +868,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
-                     D : constant X_Proto_XML.Documentation.Ptr := New_Documentation (Pool'Unchecked_Access);
+                     D : constant X_Proto_XML.Documentation.Ptr := New_Documentation (A);
                   begin
                      Append_Documentation (Prev_Tag.Enum_V.all, D);
                      Is_Success := True;
@@ -894,7 +894,7 @@ package body XML_File_Parser is
                   Is_Success := True;
                elsif Tag_Name = XML_Tag_Operation then
                   declare
-                     Operation : X_Proto_XML.List.Fs.Member_Ptr := New_List_Member (Pool'Unchecked_Access, X_Proto_XML.List.Fs.List_Member_Kind_Operation);
+                     Operation : X_Proto_XML.List.Fs.Member_Ptr := New_List_Member (A, X_Proto_XML.List.Fs.List_Member_Kind_Operation);
                   begin
                      Append_Member (Prev_Tag.List_V.all, Operation);
                      Is_Success := True;
@@ -904,7 +904,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Value then
                   declare
-                     V : X_Proto_XML.List.Fs.Member_Ptr := New_List_Member (Pool'Unchecked_Access, X_Proto_XML.List.Fs.List_Member_Kind_Value);
+                     V : X_Proto_XML.List.Fs.Member_Ptr := New_List_Member (A, X_Proto_XML.List.Fs.List_Member_Kind_Value);
                   begin
                      Append_Member (Prev_Tag.List_V.all, V);
                      Is_Success := True;
@@ -919,9 +919,9 @@ package body XML_File_Parser is
             when Tag_Id.Op =>
                if Tag_Name = XML_Tag_Operation then
                   declare
-                     V : constant X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (Pool'Unchecked_Access, X_Proto_XML.Operation.Fs.Member_Operation);
+                     V : constant X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (A, X_Proto_XML.Operation.Fs.Member_Operation);
                   begin
-                     V.Operation := New_Operation (Pool'Unchecked_Access);
+                     V.Operation := New_Operation (A);
                      Append_Member (Prev_Tag.Op_V.all, V);
                      Is_Success := True;
                      Insert (New_Current_Tag (Parent_Tag => Prev_Tag,
@@ -930,7 +930,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_Field_Reference then
                   declare
-                     V : X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (Pool'Unchecked_Access, X_Proto_XML.Operation.Fs.Member_Kind_Field_Reference);
+                     V : X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (A, X_Proto_XML.Operation.Fs.Member_Kind_Field_Reference);
                   begin
                      Append_Member (Prev_Tag.Op_V.all, V);
                      Is_Success := True;
@@ -940,7 +940,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Value then
                   declare
-                     V : X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (Pool'Unchecked_Access, X_Proto_XML.Operation.Fs.Member_Kind_Value);
+                     V : X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (A, X_Proto_XML.Operation.Fs.Member_Kind_Value);
                   begin
                      Append_Member (Prev_Tag.Op_V.all, V);
                      Is_Success := True;
@@ -955,7 +955,7 @@ package body XML_File_Parser is
             when Tag_Id.Event =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Member (Pool'Unchecked_Access, X_Proto_XML.Event.Fs.Event_Member_Field);
+                     F : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Member (A, X_Proto_XML.Event.Fs.Event_Member_Field);
                   begin
                      Append_Member (Prev_Tag.Event_V.all, F);
                      Is_Success := True;
@@ -965,7 +965,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Member (Pool'Unchecked_Access, X_Proto_XML.Event.Fs.Event_Member_Pad);
+                     P : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Member (A, X_Proto_XML.Event.Fs.Event_Member_Pad);
                   begin
                      Append_Member (Prev_Tag.Event_V.all, P);
                      Is_Success := True;
@@ -975,7 +975,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
-                     D : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Member (Pool'Unchecked_Access, X_Proto_XML.Event.Fs.Event_Member_Doc);
+                     D : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Member (A, X_Proto_XML.Event.Fs.Event_Member_Doc);
                   begin
                      Append_Member (Prev_Tag.Event_V.all, D);
                      Is_Success := True;
@@ -985,7 +985,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     L : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Member (Pool'Unchecked_Access, X_Proto_XML.Event.Fs.Event_Member_List);
+                     L : X_Proto_XML.Event.Fs.Member_Ptr := New_Event_Member (A, X_Proto_XML.Event.Fs.Event_Member_List);
                   begin
                      Append_Member (Prev_Tag.Event_V.all, L);
                      Is_Success := True;
@@ -1000,7 +1000,7 @@ package body XML_File_Parser is
             when Tag_Id.Documentation =>
                if Tag_Name = Tag_Field then
                   declare
-                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Member (Pool'Unchecked_Access, X_Proto_XML.Documentation.Fs.Member_Field);
+                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Member (A, X_Proto_XML.Documentation.Fs.Member_Field);
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
@@ -1010,7 +1010,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_See then
                   declare
-                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Member (Pool'Unchecked_Access, X_Proto_XML.Documentation.Fs.Member_See);
+                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Member (A, X_Proto_XML.Documentation.Fs.Member_See);
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
@@ -1020,7 +1020,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Error then
                   declare
-                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Member (Pool'Unchecked_Access, X_Proto_XML.Documentation.Fs.Member_Error);
+                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Member (A, X_Proto_XML.Documentation.Fs.Member_Error);
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
@@ -1030,7 +1030,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Example then
                   declare
-                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Member (Pool'Unchecked_Access, X_Proto_XML.Documentation.Fs.Member_Example);
+                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := New_Documentation_Member (A, X_Proto_XML.Documentation.Fs.Member_Example);
                   begin
                      Append_Member (Prev_Tag.Documentation_V.all, D);
                      Is_Success := True;
@@ -1049,7 +1049,7 @@ package body XML_File_Parser is
             when Tag_Id.Union =>
                if Tag_Name = Tag_List then
                   declare
-                     L : X_Proto_XML.Union.Fs.Child_Ptr := New_Union_Child (Pool'Unchecked_Access, X_Proto_XML.Union.Fs.Child_List);
+                     L : X_Proto_XML.Union.Fs.Child_Ptr := New_Union_Child (A, X_Proto_XML.Union.Fs.Child_List);
                   begin
                      Append_Child (Prev_Tag.Union_V.all, L);
                      Is_Success := True;
@@ -1064,7 +1064,7 @@ package body XML_File_Parser is
             when Tag_Id.Error =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Error.Fs.Child_Ptr := New_Error_Child (Pool'Unchecked_Access, X_Proto_XML.Error.Fs.Child_Field);
+                     F : X_Proto_XML.Error.Fs.Child_Ptr := New_Error_Child (A, X_Proto_XML.Error.Fs.Child_Field);
                   begin
                      Append_Child (Prev_Tag.Error_V.all, F);
                      Is_Success := True;
@@ -1074,7 +1074,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : X_Proto_XML.Error.Fs.Child_Ptr := New_Error_Child (Pool'Unchecked_Access, X_Proto_XML.Error.Fs.Child_Pad);
+                     P : X_Proto_XML.Error.Fs.Child_Ptr := New_Error_Child (A, X_Proto_XML.Error.Fs.Child_Pad);
                   begin
                      Append_Child (Prev_Tag.Error_V.all, P);
                      Is_Success := True;
@@ -1089,7 +1089,7 @@ package body XML_File_Parser is
             when Tag_Id.Request =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (Pool'Unchecked_Access, X_Proto_XML.Request.Fs.Child_Field);
+                     F : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (A, X_Proto_XML.Request.Fs.Child_Field);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, F);
                      Is_Success := True;
@@ -1099,7 +1099,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (Pool'Unchecked_Access, X_Proto_XML.Request.Fs.Child_Pad);
+                     P : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (A, X_Proto_XML.Request.Fs.Child_Pad);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, P);
                      Is_Success := True;
@@ -1109,7 +1109,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Value_Param then
                   declare
-                     V : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (Pool'Unchecked_Access, X_Proto_XML.Request.Fs.Child_Value_Param);
+                     V : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (A, X_Proto_XML.Request.Fs.Child_Value_Param);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, V);
                      Is_Success := True;
@@ -1119,7 +1119,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
-                     V : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (Pool'Unchecked_Access, X_Proto_XML.Request.Fs.Child_Documentation);
+                     V : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (A, X_Proto_XML.Request.Fs.Child_Documentation);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, V);
                      Is_Success := True;
@@ -1129,7 +1129,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Reply then
                   declare
-                     R : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (Pool'Unchecked_Access, X_Proto_XML.Request.Fs.Child_Reply);
+                     R : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (A, X_Proto_XML.Request.Fs.Child_Reply);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
@@ -1139,7 +1139,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     R : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (Pool'Unchecked_Access, X_Proto_XML.Request.Fs.Child_List);
+                     R : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (A, X_Proto_XML.Request.Fs.Child_List);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
@@ -1149,7 +1149,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Expression_Field then
                   declare
-                     R : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (Pool'Unchecked_Access, X_Proto_XML.Request.Fs.Child_Expression_Field);
+                     R : X_Proto_XML.Request.Fs.Child_Ptr := New_Request_Child (A, X_Proto_XML.Request.Fs.Child_Expression_Field);
                   begin
                      Append_Child (Prev_Tag.Request_V.all, R);
                      Is_Success := True;
@@ -1164,7 +1164,7 @@ package body XML_File_Parser is
             when Tag_Id.Reply =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Child (Pool'Unchecked_Access, X_Proto_XML.Reply.Fs.Child_Field);
+                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Child (A, X_Proto_XML.Reply.Fs.Child_Field);
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
@@ -1174,7 +1174,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Child (Pool'Unchecked_Access, X_Proto_XML.Reply.Fs.Child_Pad);
+                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Child (A, X_Proto_XML.Reply.Fs.Child_Pad);
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
@@ -1184,7 +1184,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
-                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Child (Pool'Unchecked_Access, X_Proto_XML.Reply.Fs.Child_Documentation);
+                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Child (A, X_Proto_XML.Reply.Fs.Child_Documentation);
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
@@ -1194,7 +1194,7 @@ package body XML_File_Parser is
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Child (Pool'Unchecked_Access, X_Proto_XML.Reply.Fs.Child_List);
+                     F : X_Proto_XML.Reply.Fs.Child_Ptr := New_Reply_Child (A, X_Proto_XML.Reply.Fs.Child_List);
                   begin
                      Append_Child (Prev_Tag.Reply_V.all, F);
                      Is_Success := True;
@@ -1209,7 +1209,7 @@ package body XML_File_Parser is
             when Tag_Id.Expression_Field =>
                if Tag_Name = XML_Tag_Operation then
                   declare
-                     C : X_Proto_XML.Expression_Field.Fs.Child_Ptr := New_Expression_Field_Child (Pool'Unchecked_Access, X_Proto_XML.Expression_Field.Fs.Child_Operation);
+                     C : X_Proto_XML.Expression_Field.Fs.Child_Ptr := New_Expression_Field_Child (A, X_Proto_XML.Expression_Field.Fs.Child_Operation);
                   begin
                      Append_Child (Prev_Tag.Expression_Field_V.all, C);
                      Is_Success := True;
@@ -1804,7 +1804,7 @@ package body XML_File_Parser is
                   when Tag_Id.List =>
                      if Tag_Name = Tag_Field_Reference then
                         declare
-                           L : constant X_Proto_XML.List.Fs.Member_Ptr := New_List_Member (Pool'Unchecked_Access, X_Proto_XML.List.Fs.List_Member_Kind_Field_Reference);
+                           L : constant X_Proto_XML.List.Fs.Member_Ptr := New_List_Member (A, X_Proto_XML.List.Fs.List_Member_Kind_Field_Reference);
                         begin
                            Initialize (L.Field_Reference, Tag_Value);
                            Append_Member (Prev_Tag.List_V.all, L);
@@ -1897,7 +1897,7 @@ package body XML_File_Parser is
                   if Tag_Name = Tag_Field_Reference then
                      declare
                         V : X_Proto_XML.Field_Reference_Type;
-                        FR : constant X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (Pool'Unchecked_Access, X_Proto_XML.Operation.Fs.Member_Kind_Field_Reference);
+                        FR : constant X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (A, X_Proto_XML.Operation.Fs.Member_Kind_Field_Reference);
                      begin
                         Initialize (V, Tag_Value);
                         FR.Field_Reference := V;
@@ -1917,7 +1917,7 @@ package body XML_File_Parser is
                            Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", failed to interpret '" & Tag_Value & "' as a number for end tag " & Tag_Name);
                         else
                            declare
-                              Operation_Value : constant X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (Pool'Unchecked_Access, X_Proto_XML.Operation.Fs.Member_Kind_Value);
+                              Operation_Value : constant X_Proto_XML.Operation.Fs.Member_Ptr := New_Operation_Member (A, X_Proto_XML.Operation.Fs.Member_Kind_Value);
                            begin
                               Operation_Value.Value := V;
                               Append_Member (Current_Tag.Op_V.all, Operation_Value);

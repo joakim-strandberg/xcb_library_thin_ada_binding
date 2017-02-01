@@ -774,7 +774,7 @@ package X_Proto_XML is
       procedure Set_Name (This : in out T;
                           Name : Large_Bounded_String.T);
 
-      type Ptr is access T;
+      type Ptr is access all T;
 
    private
 
@@ -847,7 +847,7 @@ package X_Proto_XML is
       procedure Append_Kind (This : in out T;
                              Kind : Type_P.Ptr);
 
-      type Ptr is access T;
+      type Ptr is access all T;
 
    private
       type T is limited
