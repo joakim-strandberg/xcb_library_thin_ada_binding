@@ -1,8 +1,10 @@
-library project Deepend is
-   for Library_Name use "deepend_ada";
+with "deepend";
+
+library project XCB_Parser_Middle is
+   for Library_Name use "middle";
    for Library_Kind use "static";
 
-   for Source_Dirs  use ("src/deepend");
+   for Source_Dirs  use ("src/middle", "src/aida");
    for Object_Dir   use "obj";
    for Library_Dir  use "lib";
 
@@ -11,8 +13,10 @@ library project Deepend is
    package Compiler is
       for Local_Configuration_Pragmas use "";
       for Default_Switches ("Ada") use ("-g",
-                                        "-gnat95",
+                                        "-gnat2005",
+                                        "-Wall",
+                                        "-pedantic",
                                         "-fstack-check");
    end Compiler;
 
-end Deepend;
+end XCB_Parser_Middle;
