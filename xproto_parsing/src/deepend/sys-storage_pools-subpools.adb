@@ -50,7 +50,7 @@ package body Sys.Storage_Pools.Subpools is
       return Subpool_Handle is
    begin
       raise Program_Error;
-      return Default_Subpool_For_Pool (Pool);
+      return null;
    end Default_Subpool_For_Pool;
 
 end Sys.Storage_Pools.Subpools;

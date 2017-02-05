@@ -234,8 +234,6 @@ package Basic_Bounded_Dynamic_Pools is
    --  owner to a Null_Task_Id. Another task may obtain ownership of a pool,
    --  provided that the pool has no owner.
 
-   type Basic_Dynamic_Pool_Access is access all Basic_Dynamic_Pool;
-
 private
 
    subtype Storage_Array is System.Storage_Elements.Storage_Array;
@@ -280,8 +278,14 @@ private
 
    procedure Finalize   (Pool : in out Basic_Dynamic_Pool);
 
-   pragma Inline
-     (Allocate,
-      Initialize, Finalize, Is_Owner, Set_Owner);
+   --  NOTE: Ada 95 allows multiple subprograms to be mentioned in a single
+   --  Inline pragma, but Janus currently doesn't support this, which is why
+   --  they are listed separately
+   --
+   pragma Inline (Allocate);
+   pragma Inline (Initialize);
+   pragma Inline (Finalize);
+   pragma Inline (Is_Owner);
+   pragma Inline (Set_Owner);
 
 end Basic_Bounded_Dynamic_Pools;
