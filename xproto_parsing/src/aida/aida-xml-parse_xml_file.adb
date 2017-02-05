@@ -119,12 +119,12 @@ begin
                         Pointer => P,
                         Value   => CP);
 
---                     Ada.Text_IO.Put_Line ("Extracted:" & Strings_Edit.UTF8.Image (CP) & ", state " & State_Id'Img);
+--                     Ada.Text_IO.Put_Line ("Extracted:" & Strings_Edit.UTF8.Image (CP) & ", state " & State_Id));
 --                     Ada.Text_IO.Put (Strings_Edit.UTF8.Image (CP));
 
          case State_Id is
             when Searching_For_XML_Start_String =>
-               Initialize (Error_Message, "It should not be possible to be in the state " & State_Id'Img);
+               Initialize (Error_Message, "It should not be possible to be in the state " & State_Id_Type'Image (State_Id));
                Is_Success := False;
                return;
             when Expecting_NL_Sign_Or_Space_Or_Less_Sign =>
@@ -133,7 +133,7 @@ begin
                elsif CP = Standard.Character'Pos ('<') then
                   State_Id := Found_Less_Sign;
                else
-                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & CP'Img & "), state " & State_Id'Img & " " & Contents (F..P));
+                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & Aida.Code_Point_T'Image (CP) & "), state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                end if;
@@ -147,7 +147,7 @@ begin
                   State_Id := Extracting_Start_Tag_Name;
                   Start_Tag_Name_First_Index := Prev_P;
                else
-                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & CP'Img & "), state " & State_Id'Img & " " & Contents (F..P));
+                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & Aida.Code_Point_T'Image (CP) & "), state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                end if;
@@ -155,7 +155,7 @@ begin
                if CP = Standard.Character'Pos ('-') then
                   State_Id := Found_Less_Followed_By_Exclamation_And_Dash_Sign;
                else
-                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & CP'Img & "), state " & State_Id'Img & " " & Contents (F..P));
+                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & Aida.Code_Point_T'Image (CP) & "), state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                end if;
@@ -163,7 +163,7 @@ begin
                if CP = Standard.Character'Pos ('-') then
                   State_Id := Ignore_Comment;
                else
-                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & CP'Img & "), state " & State_Id'Img & " " & Contents (F..P));
+                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & Aida.Code_Point_T'Image (CP) & "), state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                end if;
@@ -238,7 +238,7 @@ begin
 
                   State_Id := Expecting_New_Tag_Or_Extracting_Tag_Value;
                elsif Is_Special_Symbol (CP) then
-                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & CP'Img & "), state " & State_Id'Img & " " & Contents (F..P));
+                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & Aida.Code_Point_T'Image (CP) & "), state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                end if;
@@ -273,7 +273,7 @@ begin
                   Shall_Ignore_Tag_Value := True;
                   Delete_Last (Shall_Ignore_Tag_Value_List);
                else
-                  Initialize (Error_Message, "Expected '>', state " & State_Id'Img & " " & Contents (F..P));
+                  Initialize (Error_Message, "Expected '>', state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                end if;
@@ -283,7 +283,7 @@ begin
                   State_Id := Expecting_Attribute_Value_Quotation_Mark;
 --                  Ada.Text_IO.Put_Line ("Extracted attribute name: '" & Contents (Attribute_First_Index..Attribute_Last_Index) & "'");
                elsif CP = Standard.Character'Pos (Ada.Characters.Latin_1.LF) then
-                  Initialize (Error_Message, "New line is forbidden inside attribute name, state " & State_Id'Img & " " & Contents (F..P));
+                  Initialize (Error_Message, "New line is forbidden inside attribute name, state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                elsif not Is_Special_Symbol (CP) then
@@ -294,7 +294,7 @@ begin
                   Attribute_Value_First_Index := P;
                   State_Id := Extracting_Attribute_Value;
                else
-                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & CP'Img & "), state " & State_Id'Img & " " & Contents (F..P));
+                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & Aida.Code_Point_T'Image (CP) & "), state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                end if;
@@ -314,7 +314,7 @@ begin
                   end if;
 
                elsif CP = Standard.Character'Pos (Ada.Characters.Latin_1.LF) then
-                  Initialize (Error_Message, "New line is forbidden inside attribute value, state " & State_Id'Img & " " & Contents (F..P));
+                  Initialize (Error_Message, "New line is forbidden inside attribute value, state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                end if;
@@ -330,7 +330,7 @@ begin
                   State_Id := Extracting_End_Tag_Name;
                   End_Tag_Name_First_Index := P;
                elsif Is_Special_Symbol (CP) then
-                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & CP'Img & "), state " & State_Id'Img & " " & Contents (F..P));
+                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & Aida.Code_Point_T'Image (CP) & "), state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                else
@@ -403,7 +403,7 @@ begin
                if CP = Standard.Character'Pos ('<') then
                   State_Id := Extracting_CDATA_Found_Two_Square_Brackets_And_G_Sign_And_L_Sign;
                else
-                  Initialize (Error_Message, "Expecting '<' followed by end tag but was something else, state " & State_Id'Img & " " & Contents (F..P));
+                  Initialize (Error_Message, "Expecting '<' followed by end tag but was something else, state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                end if;
@@ -412,7 +412,7 @@ begin
                   State_Id := Extracting_End_Tag_Name;
                   End_Tag_Name_First_Index := P;
                else
-                  Initialize (Error_Message, "Expecting '/' followed by end tag but was something else, state " & State_Id'Img & " " & Contents (F..P));
+                  Initialize (Error_Message, "Expecting '/' followed by end tag but was something else, state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                end if;
@@ -425,7 +425,7 @@ begin
                   begin
                      if Tag_Name /= Contents (End_Tag_Name_First_Index..End_Tag_Name_Last_Index) then
                         Initialize (Error_Message, "Tag names does not match! Start tag is '" & Tag_Name &
-                                                "', and end tag is '" & Contents (End_Tag_Name_First_Index..End_Tag_Name_Last_Index) & "' state " & State_Id'Img & " " & Contents (F..P));
+                                                "', and end tag is '" & Contents (End_Tag_Name_First_Index..End_Tag_Name_Last_Index) & "' state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                         Is_Success := False;
                         return;
                      end if;
@@ -459,11 +459,11 @@ begin
 
                   State_Id := Expecting_NL_Sign_Or_Space_Or_Less_Sign;
                elsif CP = Standard.Character'Pos (Ada.Characters.Latin_1.LF) then
-                  Initialize (Error_Message, "New line is forbidden inside attribute value, state " & State_Id'Img & " " & Contents (F..P));
+                  Initialize (Error_Message, "New line is forbidden inside attribute value, state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                elsif Is_Special_Symbol (CP) then
-                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & CP'Img & "), state " & State_Id'Img & " " & Contents (F..P));
+                  Initialize (Error_Message, "Unexpected UTF8 symbol (code point" & Aida.Code_Point_T'Image (CP) & "), state " & State_Id_Type'Image (State_Id) & " " & Contents (F..P));
                   Is_Success := False;
                   return;
                end if;

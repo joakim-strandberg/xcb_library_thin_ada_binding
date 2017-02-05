@@ -1,5 +1,3 @@
-pragma Ada_95;
-
 generic
    Maximum_Length_Of_Bounded_String : Positive;
 package Aida.Bounded_String is

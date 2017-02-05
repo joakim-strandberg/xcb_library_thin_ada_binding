@@ -1,5 +1,3 @@
-pragma Ada_95;
-
 generic
    type Key_T is private;
    type Element_T is private;

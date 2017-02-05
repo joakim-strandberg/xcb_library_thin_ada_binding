@@ -1,5 +1,3 @@
-pragma Ada_95;
-
 generic
    type Element_T is private;
    with function "=" (L, R : Element_T) return Boolean is <>;

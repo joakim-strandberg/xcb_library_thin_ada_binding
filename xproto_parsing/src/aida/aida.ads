@@ -1,5 +1,4 @@
 package Aida is
-   --   pragma Pure;
 
    -- max  2147483647
    -- min -2147483648
@@ -8,6 +7,9 @@ package Aida is
 
    type Int64_T is range -2**63 .. (2**63 - 1);
    for Int64_T'Size use 64;
+
+   type Uint32_T is range  0 .. (2**32 - 1);
+   for Uint32_T'Size use 32;
 
    type String_T is new Standard.String;
 
