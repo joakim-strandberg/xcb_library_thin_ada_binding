@@ -375,4 +375,280 @@ package body Allocator is
       return X_Proto_XML.Expression_Field.Fs.Child_Ptr (X_Proto_XML.Ptr_Conversions.Expression_Field_Child.To_Pointer (SA));
    end New_Expression_Field_Child;
 
+   type Local_Current_Tag_Ptr is access all Current_Tag.T;
+   for Local_Current_Tag_Ptr'Storage_Pool use Pool;
+
+   package Current_Tag_Conversions is new System.Address_To_Access_Conversions (Current_Tag.T);
+
+   function New_Current_Tag (Parent_Tag : Current_Tag.Ptr;
+                             Tag_Id_V   : Current_Tag.Fs.Tag_Id.Enumeration_Type) return Current_Tag.Ptr
+   is
+      L : constant Local_Current_Tag_Ptr := new Current_Tag.T (Tag_Id_V);
+
+      SA : constant System.Address := Current_Tag_Conversions.To_Address (Current_Tag_Conversions.Object_Pointer (L));
+   begin
+      L.Find_Tag := Parent_Tag;
+      return Current_Tag.Ptr (Current_Tag.Ptr_Conversions.To_Pointer (SA));
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Xcb        : X_Proto_XML.Xcb.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Xcb);
+   begin
+      T.Xcb_V := Xcb;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Struct     : X_Proto_XML.Struct.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Struct);
+   begin
+      T.Struct_V := Struct;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             X_Id       : X_Proto_XML.X_Id.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.X_Id_Kind);
+   begin
+      T.X_Id_Kind_V := X_Id;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             X_Id_Union : X_Proto_XML.X_Id_Union.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.X_Id_Union);
+   begin
+      T.X_Id_Union_V := X_Id_Union;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag      : Current_Tag.Ptr;
+                             Type_Definition : X_Proto_XML.Type_Definition.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Type_Definition);
+   begin
+      T.Type_Definition_V := Type_Definition;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Enum       : X_Proto_XML.Enum.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Enum);
+   begin
+      T.Enum_V := Enum;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Event      : X_Proto_XML.Event.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Event);
+   begin
+      T.Event_V := Event;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Event_Copy : X_Proto_XML.Event_Copy.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Event_Copy);
+   begin
+      T.Event_Copy_V := Event_Copy;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Union      : X_Proto_XML.Union.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Union);
+   begin
+      T.Union_V := Union;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Error      : X_Proto_XML.Error.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Error);
+   begin
+      T.Error_V := Error;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Error_Copy : X_Proto_XML.Error_Copy.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Error_Copy);
+   begin
+      T.Error_Copy_V := Error_Copy;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Request    : X_Proto_XML.Request.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Request);
+   begin
+      T.Request_V := Request;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Field      : X_Proto_XML.Field.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Field);
+   begin
+      T.Field_V := Field;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Pad        : X_Proto_XML.Pad.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Pad);
+   begin
+      T.Pad_V := Pad;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             List       : X_Proto_XML.List.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.List);
+   begin
+      T.List_V := List;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Kind       : X_Proto_XML.Type_P.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Kind);
+   begin
+      T.Kind := Kind;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Item       : X_Proto_XML.Item.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Item);
+   begin
+      T.Item_V := Item;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag    : Current_Tag.Ptr;
+                             Documentation : X_Proto_XML.Documentation.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Documentation);
+   begin
+      T.Documentation_V := Documentation;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Operation  : X_Proto_XML.Operation.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Op);
+   begin
+      T.Op_V := Operation;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Value      : X_Proto_XML.Value_Access_Type) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Value);
+   begin
+      T.Value_V := Value;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag      : Current_Tag.Ptr;
+                             Field_Reference : X_Proto_XML.Field_Reference_Access_Type) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Field_Reference);
+   begin
+      T.Field_Reference := Field_Reference;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             See        : X_Proto_XML.See.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.See);
+   begin
+      T.See_V := See;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Example    : X_Proto_XML.Example.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Example);
+   begin
+      T.Example_V := Example;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag  : Current_Tag.Ptr;
+                             Value_Param : X_Proto_XML.Value_Param.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Value_Param);
+   begin
+      T.Value_Param_V := Value_Param;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This       : T;
+                             Parent_Tag : Current_Tag.Ptr;
+                             Reply      : X_Proto_XML.Reply.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Reply);
+   begin
+      T.Reply_V := Reply;
+      return T;
+   end New_Current_Tag;
+
+   function New_Current_Tag (This             : T;
+                             Parent_Tag       : Current_Tag.Ptr;
+                             Expression_Field : X_Proto_XML.Expression_Field.Ptr) return Current_Tag.Ptr
+   is
+      T : constant Current_Tag.Ptr := New_Current_Tag (Parent_Tag, Current_Tag.Fs.Tag_Id.Expression_Field);
+   begin
+      T.Expression_Field_V := Expression_Field;
+      return T;
+   end New_Current_Tag;
+
 end Allocator;
