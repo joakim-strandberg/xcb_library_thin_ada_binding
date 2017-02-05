@@ -1,7 +1,6 @@
 with Ada.Text_IO;
 with Aida.XML.Parse_XML_File;
 with Aida.Containers.Bounded_Hash_Map;
-with GNAT.Source_Info;
 with Ada.Exceptions;
 
 package body XML_File_Parser is
@@ -262,6 +261,8 @@ package body XML_File_Parser is
                            Error_Message : out Aida.XML.Error_Message_T;
                            Is_Success    : out Boolean)
       is
+         This_Subprogram : constant String := "Start_Tag";
+
          Parents_Including_Self : Aida.XML.DL.T;
 
          procedure Insert (CT : Current_Tag_Access_Type) is
@@ -279,7 +280,7 @@ package body XML_File_Parser is
             if Tag_Name = Tag_Xcb then
                if Xcb_V /= null then
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & "Expected Xcb access to be null, tag name is " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & "1. Expected Xcb access to be null, tag name is " & Tag_Name);
                   return;
                end if;
 
@@ -292,7 +293,7 @@ package body XML_File_Parser is
                Is_Success := True;
             else
                Is_Success := False;
-               Initialize (Error_Message, GNAT.Source_Info.Source_Location & "Expected " & Tag_Xcb & ", but found " & Tag_Name);
+               Initialize (Error_Message, This_Subprogram & "2. Expected " & Tag_Xcb & ", but found " & Tag_Name);
             end if;
             return;
          end if;
@@ -312,7 +313,7 @@ package body XML_File_Parser is
                            Is_Success := True;
                         when others =>
                            Is_Success := False;
-                           Initialize (Error_Message, GNAT.Source_Info.Source_Location & "Expected " & Tag_Struct & ", but found " & Tag_Name);
+                           Initialize (Error_Message, This_Subprogram & "3. Expected " & Tag_Struct & ", but found " & Tag_Name);
                      end case;
                   end;
                elsif Tag_Name = Tag_X_Id_Kind then
@@ -417,7 +418,7 @@ package body XML_File_Parser is
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & "Found unexpected start tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & "4. Found unexpected start tag " & Tag_Name);
                end if;
             when Tag_Id.Struct =>
                if Tag_Name = Tag_Field then
@@ -452,7 +453,7 @@ package body XML_File_Parser is
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & "Found unexpected start tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & "5. Found unexpected start tag " & Tag_Name);
                end if;
             when Tag_Id.X_Id_Union =>
                if Tag_Name = Tag_Kind then
@@ -467,7 +468,7 @@ package body XML_File_Parser is
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & ", 6. found unexpected start tag " & Tag_Name);
                end if;
             when Tag_Id.Enum =>
                if Tag_Name = Tag_Item then
@@ -492,7 +493,7 @@ package body XML_File_Parser is
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & ", 7. found unexpected start tag " & Tag_Name);
                end if;
             when Tag_Id.Item =>
                if Tag_Name = XML_Tag_Value then
@@ -501,7 +502,7 @@ package body XML_File_Parser is
                   Is_Success := True;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & ", 8. found unexpected start tag " & Tag_Name);
                end if;
             when Tag_Id.List =>
                if Tag_Name = Tag_Field_Reference then
@@ -528,7 +529,7 @@ package body XML_File_Parser is
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & ", 9. found unexpected start tag " & Tag_Name);
                end if;
             when Tag_Id.Op =>
                if Tag_Name = XML_Tag_Operation then
@@ -564,7 +565,7 @@ package body XML_File_Parser is
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & ", 10. found unexpected start tag " & Tag_Name);
                end if;
             when Tag_Id.Event =>
                if Tag_Name = Tag_Field then
@@ -609,7 +610,7 @@ package body XML_File_Parser is
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & ", 11. found unexpected start tag " & Tag_Name);
                end if;
             when Tag_Id.Documentation =>
                if Tag_Name = Tag_Field then
@@ -658,7 +659,7 @@ package body XML_File_Parser is
                   Is_Success := True;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & ", 12. found unexpected start tag " & Tag_Name);
                end if;
             when Tag_Id.Union =>
                if Tag_Name = Tag_List then
@@ -673,7 +674,7 @@ package body XML_File_Parser is
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & ", 13. found unexpected start tag " & Tag_Name);
                end if;
             when Tag_Id.Error =>
                if Tag_Name = Tag_Field then
@@ -698,7 +699,7 @@ package body XML_File_Parser is
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & ", 14. found unexpected start tag " & Tag_Name);
                end if;
             when Tag_Id.Request =>
                if Tag_Name = Tag_Field then
@@ -773,7 +774,7 @@ package body XML_File_Parser is
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & ", 15. found unexpected start tag " & Tag_Name);
                end if;
             when Tag_Id.Reply =>
                if Tag_Name = Tag_Field then
@@ -818,7 +819,7 @@ package body XML_File_Parser is
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & ", 16. found unexpected start tag " & Tag_Name);
                end if;
             when Tag_Id.Expression_Field =>
                if Tag_Name = XML_Tag_Operation then
@@ -833,7 +834,7 @@ package body XML_File_Parser is
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected start tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & ", 17. found unexpected start tag " & Tag_Name);
                end if;
             when Tag_Id.Field |
                  Tag_Id.X_Id_Kind |
@@ -849,7 +850,7 @@ package body XML_File_Parser is
                  Tag_Id.Value_Param |
                  Tag_Id.Example =>
                Is_Success := False;
-               Initialize (Error_Message, GNAT.Source_Info.Source_Location & "Error, tag name is " & Tag_Name);
+               Initialize (Error_Message, This_Subprogram & ", 18, Error, tag name is " & Tag_Name);
          end case;
       end Start_Tag;
 
@@ -859,11 +860,13 @@ package body XML_File_Parser is
                            Error_Message               : out Aida.XML.Error_Message_T;
                            Is_Success                  : out Boolean)
       is
+         This_Subprogram : constant String := "Attribute";
+
          Current_Tag : constant Current_Tag_Access_Type := Find_Tag (Parent_Tags_And_Current_Tag);
       begin
          if Current_Tag = null then
             Is_Success := False;
-            Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", attribute name " & Attribute_Name & " and value " & Attribute_Value & ", parents: " & To_String (
+            Initialize (Error_Message, This_Subprogram & ", 1, attribute name " & Attribute_Name & " and value " & Attribute_Value & ", parents: " & To_String (
 Parent_Tags_And_Current_Tag));
             return;
          end if;
@@ -881,7 +884,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 2, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Struct =>
                if Attribute_Name = Tag_Struct_Attribute_Name then
@@ -893,7 +896,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 3, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Field =>
                if Attribute_Name = Tag_Field_Attribute_Kind then
@@ -933,7 +936,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 4, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.X_Id_Kind =>
                if Attribute_Name = Tag_X_Id_Kind_Attribute_Name then
@@ -945,7 +948,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 5, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.X_Id_Union =>
                if Attribute_Name = Tag_X_Id_Union_Attribute_Name then
@@ -957,7 +960,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 6, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Type_Definition =>
                if Attribute_Name = Tag_Type_Definition_Attribute_Old_Name then
@@ -976,7 +979,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 7, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Pad =>
                if Attribute_Name = Tag_Pad_Attribute_Bytes then
@@ -991,14 +994,14 @@ Parent_Tags_And_Current_Tag));
 
                      if Has_Failed then
                         Is_Success := False;
-                        Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                        Initialize (Error_Message, This_Subprogram & ", 8, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
                         Set_Bytes (Current_Tag.Pad_V.all, Positive (V));
                      end if;
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 9, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Enum =>
                if Attribute_Name = Tag_Enum_Attribute_Name then
@@ -1010,7 +1013,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 9, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Item =>
                if Attribute_Name = Tag_Item_Attribute_Name then
@@ -1022,7 +1025,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 10, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.List =>
                if Attribute_Name = Tag_List_Attribute_Kind then
@@ -1041,7 +1044,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 11, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Op =>
                if Attribute_Name = Tag_Operation_Attribute_Op then
@@ -1053,7 +1056,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 12, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Event =>
                if Attribute_Name = XML_Tag_Event_Attribute_Name then
@@ -1074,7 +1077,7 @@ Parent_Tags_And_Current_Tag));
 
                      if Has_Failed then
                         Is_Success := False;
-                        Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                        Initialize (Error_Message, This_Subprogram & ", 13, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
                         Set_Number (Current_Tag.Event_V.all, Positive (V));
                      end if;
@@ -1086,7 +1089,7 @@ Parent_Tags_And_Current_Tag));
                      Set_No_Sequence_Number (Current_Tag.Event_V.all, False);
                   else
                      Is_Success := False;
-                     Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                     Initialize (Error_Message, This_Subprogram & ", 14, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                   end if;
                elsif Attribute_Name = XML_Tag_Event_Attribute_XGE then
                   if Attribute_Value = "true" then
@@ -1095,11 +1098,11 @@ Parent_Tags_And_Current_Tag));
                      Set_XGE (Current_Tag.Event_V.all, False);
                   else
                      Is_Success := False;
-                     Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                     Initialize (Error_Message, This_Subprogram & ", 15, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                   end if;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 16, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.See =>
                if Attribute_Name = XML_Tag_See_Attribute_Name then
@@ -1118,7 +1121,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 17, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Event_Copy =>
                if Attribute_Name = XML_Tag_Event_Copy_Attribute_Name then
@@ -1146,14 +1149,14 @@ Parent_Tags_And_Current_Tag));
 
                      if Has_Failed then
                         Is_Success := False;
-                        Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                        Initialize (Error_Message, This_Subprogram & ", 18, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
                         Set_Number (Current_Tag.Event_Copy_V.all, V);
                      end if;
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 19, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Union =>
                if Attribute_Name = XML_Tag_Union_Attribute_Name then
@@ -1165,7 +1168,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 20, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Error =>
                if Attribute_Name = XML_Tag_Error_Attribute_Name then
@@ -1186,7 +1189,7 @@ Parent_Tags_And_Current_Tag));
 
                      if Has_Failed then
                         Is_Success := False;
-                        Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                        Initialize (Error_Message, This_Subprogram & ", 21, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
                         Set_Number (Current_Tag.Error_V.all, V);
                      end if;
@@ -1200,7 +1203,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 22, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Error_Copy =>
                if Attribute_Name = XML_Tag_Error_Copy_Attribute_Name then
@@ -1221,7 +1224,7 @@ Parent_Tags_And_Current_Tag));
 
                      if Has_Failed then
                         Is_Success := False;
-                        Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                        Initialize (Error_Message, This_Subprogram & ", 23, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
                         Set_Number (Current_Tag.Error_Copy_V.all, V);
                      end if;
@@ -1235,7 +1238,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 23, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Request =>
                if Attribute_Name = XML_Tag_Request_Attribute_Name then
@@ -1256,7 +1259,7 @@ Parent_Tags_And_Current_Tag));
 
                      if Has_Failed then
                         Is_Success := False;
-                        Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                        Initialize (Error_Message, This_Subprogram & ", 24, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
                         Set_Op_Code (Current_Tag.Request_V.all, V);
                      end if;
@@ -1268,11 +1271,11 @@ Parent_Tags_And_Current_Tag));
                      Set_Shall_Combine_Adjacent (Current_Tag.Request_V.all, False);
                   else
                      Is_Success := False;
-                     Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                     Initialize (Error_Message, This_Subprogram & ", 25, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                   end if;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 26, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Value_Param =>
                if Attribute_Name = XML_Tag_Value_Param_Attribute_Mask_Kind then
@@ -1298,7 +1301,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 27, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Expression_Field =>
                if Attribute_Name = XML_Tag_Expression_Field_Attribute_Name then
@@ -1317,7 +1320,7 @@ Parent_Tags_And_Current_Tag));
                   end;
                else
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+                  Initialize (Error_Message, This_Subprogram & ", 28, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                end if;
             when Tag_Id.Kind |
                  Tag_Id.Value |
@@ -1327,7 +1330,7 @@ Parent_Tags_And_Current_Tag));
                  Tag_Id.Reply |
                  Tag_Id.Example =>
                Is_Success := False;
-               Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
+               Initialize (Error_Message, This_Subprogram & ", 29, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
          end case;
       end Attribute;
 
@@ -1336,6 +1339,8 @@ Parent_Tags_And_Current_Tag));
                          Error_Message : out Aida.XML.Error_Message_T;
                          Is_Success    : out Boolean)
       is
+         This_Subprogram : constant String := "End_Tag";
+
          Parents_Including_Self : Aida.XML.DL.T;
       begin
          Populate_Parents_Including_Self (Parents_Including_Self => Parents_Including_Self,
@@ -1348,7 +1353,7 @@ Parent_Tags_And_Current_Tag));
             when Unknown_Exception : others =>
                Ada.Text_IO.Put_Line ("delete 1");
                Is_Success := False;
-               Initialize (Error_Message, GNAT.Source_Info.Source_Location & Ada.Exceptions.Exception_Information(Unknown_Exception));
+               Initialize (Error_Message, This_Subprogram & Ada.Exceptions.Exception_Information(Unknown_Exception));
                return;
          end;
 
@@ -1361,6 +1366,8 @@ Parent_Tags_And_Current_Tag));
                          Error_Message : out Aida.XML.Error_Message_T;
                          Is_Success    : out Boolean)
       is
+         This_Subprogram : constant String := "End_Tag2";
+
          Parents_Including_Self : Aida.XML.DL.T;
 
          Current_Tag : Current_Tag_Access_Type;
@@ -1377,7 +1384,7 @@ Parent_Tags_And_Current_Tag));
             begin
                if Prev_Tag = null then
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & "Both Current_Tag and Prev_Tag was null for end tag '" & Tag_Name & "' and value '" & Tag_Value & "'");
+                  Initialize (Error_Message, This_Subprogram & ", 1, Both Current_Tag and Prev_Tag was null for end tag '" & Tag_Name & "' and value '" & Tag_Value & "'");
                   return;
                end if;
 
@@ -1393,7 +1400,7 @@ Parent_Tags_And_Current_Tag));
 
                         if Has_Failed then
                            Is_Success := False;
-                           Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", failed to interpret '" & Tag_Value & "' as a number for end tag " & Tag_Name);
+                           Initialize (Error_Message, This_Subprogram & ", 1, failed to interpret '" & Tag_Value & "' as a number for end tag " & Tag_Name);
                         else
                            case Kind_Id (Prev_Tag.Item_V.all) is
                               when X_Proto_XML.Item.Fs.Not_Specified =>
@@ -1405,12 +1412,12 @@ Parent_Tags_And_Current_Tag));
                                     Set_Bit (Prev_Tag.Item_V.all, X_Proto_XML.Item.Fs.Bit_Type (V));
                                  else
                                     Is_Success := False;
-                                    Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", unknown end tag '" & Tag_Name & "'");
+                                    Initialize (Error_Message, This_Subprogram & ", 2, unknown end tag '" & Tag_Name & "'");
                                  end if;
                               when X_Proto_XML.Item.Fs.Specified_As_Value |
                                    X_Proto_XML.Item.Fs.Specified_As_Bit =>
                                  Is_Success := False;
-                                 Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", value already initialized for end tag " & Tag_Name & ", kind id " & Kind_Id (Prev_Tag.Item_V.all)'Img)
+                                 Initialize (Error_Message, This_Subprogram & ", 3, value already initialized for end tag " & Tag_Name & ", kind id " & X_Proto_XML.Item.Fs.Kind_Id_Type'Image (Kind_Id (Prev_Tag.Item_V.all)))
 ;
                            end case;
                         end if;
@@ -1425,7 +1432,7 @@ Parent_Tags_And_Current_Tag));
                         end;
                      else
                         Is_Success := False;
-                        Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected end tag '" & Tag_Name & "' and previous tag is " & Prev_Tag.Kind_Id'Img);
+                        Initialize (Error_Message, This_Subprogram & ", 4, found unexpected end tag '" & Tag_Name & "' and previous tag is " & Tag_Id.Enumeration_Type'Image (Prev_Tag.Kind_Id));
                      end if;
                   when Tag_Id.Documentation =>
                      if Tag_Name = XML_Tag_Brief then
@@ -1444,11 +1451,11 @@ Parent_Tags_And_Current_Tag));
                         end;
                      else
                         Is_Success := False;
-                        Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected end tag '" & Tag_Name & "' and previous tag is " & Prev_Tag.Kind_Id'Img);
+                        Initialize (Error_Message, This_Subprogram & ", 5, found unexpected end tag '" & Tag_Name & "' and previous tag is " & Tag_Id.Enumeration_Type'Image (Prev_Tag.Kind_Id));
                      end if;
                   when others =>
                      Is_Success := False;
-                     Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected end tag '" & Tag_Name & "'");
+                     Initialize (Error_Message, This_Subprogram & ", 6, found unexpected end tag '" & Tag_Name & "'");
                end case;
             end;
          else
@@ -1458,7 +1465,7 @@ Parent_Tags_And_Current_Tag));
                when Unknown_Exception : others =>
                   Ada.Text_IO.Put_Line ("delete 2");
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & Ada.Exceptions.Exception_Information(Unknown_Exception));
+                  Initialize (Error_Message, This_Subprogram & ", 7," & Ada.Exceptions.Exception_Information(Unknown_Exception));
                   return;
             end;
 
@@ -1488,7 +1495,7 @@ Parent_Tags_And_Current_Tag));
 
                      if Has_Failed then
                         Is_Success := False;
-                        Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", failed to interpret '" & Tag_Value & "' as a number for end tag " & Tag_Name);
+                        Initialize (Error_Message, This_Subprogram & ", 8, failed to interpret '" & Tag_Value & "' as a number for end tag " & Tag_Name);
                      else
                         Current_Tag.Value_V.all := V;
                      end if;
@@ -1527,7 +1534,7 @@ Parent_Tags_And_Current_Tag));
 
                         if Has_Failed then
                            Is_Success := False;
-                           Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", failed to interpret '" & Tag_Value & "' as a number for end tag " & Tag_Name);
+                           Initialize (Error_Message, This_Subprogram & ", 9, failed to interpret '" & Tag_Value & "' as a number for end tag " & Tag_Name);
                         else
                            Append_Member (Current_Tag.Op_V.all, new X_Proto_XML.Operation.Fs.Member_Type'(Kind_Id => X_Proto_XML.Operation.Fs.Member_Kind_Value,
                                                                                                       Value   => V));
@@ -1535,7 +1542,7 @@ Parent_Tags_And_Current_Tag));
                      end;
                   else
                      Is_Success := False;
-                     Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", found unexpected end tag '" & Tag_Name & "' and previous tag is " & Current_Tag.Kind_Id'Img);
+                     Initialize (Error_Message, This_Subprogram & ", 10, found unexpected end tag '" & Tag_Name & "' and previous tag is " & Tag_Id.Enumeration_Type'Image (Current_Tag.Kind_Id));
                   end if;
                when Tag_Id.Field_Reference =>
                   declare
@@ -1565,7 +1572,7 @@ Parent_Tags_And_Current_Tag));
                     Tag_Id.Reply |
                     Tag_Id.Expression_Field =>
                   Is_Success := False;
-                  Initialize (Error_Message, GNAT.Source_Info.Source_Location & ", but found unexpected end tag " & Tag_Name);
+                  Initialize (Error_Message, This_Subprogram & ", 11, but found unexpected end tag " & Tag_Name);
             end case;
          end if;
       end End_Tag;
