@@ -9,7 +9,7 @@ library project Deepend is
    for Languages    use ("Ada");
 
    package Compiler is
-      for Local_Configuration_Pragmas use "";
+      for Local_Configuration_Pragmas use "deepend.adc";
       for Default_Switches ("Ada") use ("-g",
                                         "-gnat95",
                                         "-fstack-check");
