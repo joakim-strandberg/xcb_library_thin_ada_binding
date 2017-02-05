@@ -1,6 +1,5 @@
 with Aida;
 with Ada.Text_IO;
-with GNAT.Source_Info;
 with Aida.Containers.Bounded_Vector;
 with Aida.Containers.Bounded_Hash_Map;
 --      if checked:
@@ -547,6 +546,8 @@ package body XCB_Package_Creator is
       Generic_Iterator_Type_Name : constant String := "Generic_Iterator_Type";
 
       procedure Generate_Code_For_Next_Procedure (Name : String) is
+         This_Subprogram : constant String := "Create_XCB_Package.Generate_Code_For_Next_Procedure";
+
          N                         : X_Proto_XML.Large_Bounded_String.T;
          Iterator_Access_Type_Name : X_Proto_XML.Large_Bounded_String.T;
          Procedure_Name            : X_Proto_XML.Large_Bounded_String.T;
@@ -560,7 +561,7 @@ package body XCB_Package_Creator is
                                      Translated_Name    => N);
 
          if not Is_Success then
-            Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Failed to convert " & Name & " to corresponding variable name.");
+            Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Failed to convert " & Name & " to corresponding variable name.");
          end if;
 
          Translate_To_Iterator_Access_Type_Name (Variable_Type_Name => Name,
@@ -574,11 +575,13 @@ package body XCB_Package_Creator is
             Put_Tabs (1); Put_Line ("pragma Import (C, " & To_String (Procedure_Name) & ", """ & To_String (C_Function_Name) & """);");
             Put_Line ("");
          else
-            Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Failed to convert " & Name & " to corresponding iterator type name.");
+            Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Failed to convert " & Name & " to corresponding iterator type name.");
          end if;
       end Generate_Code_For_Next_Procedure;
 
       procedure Generate_Code_For_End_Function (Name : String) is
+         This_Subprogram : constant String := "Create_XCB_Package.Generate_Code_For_End_Function";
+
          N                  : X_Proto_XML.Large_Bounded_String.T;
          Iterator_Type_Name : X_Proto_XML.Large_Bounded_String.T;
          Function_Name      : X_Proto_XML.Large_Bounded_String.T;
@@ -592,7 +595,7 @@ package body XCB_Package_Creator is
                                      Translated_Name    => N);
 
          if not Is_Success then
-            Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Failed to convert " & Name & " to corresponding variable name.");
+            Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Failed to convert " & Name & " to corresponding variable name.");
          end if;
 
          Translate_To_Iterator_Type_Name (Variable_Type_Name => Name,
@@ -606,7 +609,7 @@ package body XCB_Package_Creator is
             Put_Tabs (1); Put_Line ("pragma Import (C, " & To_String (Function_Name) & ", """ & To_String (C_Function_Name) & """);");
             Put_Line ("");
          else
-            Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Failed to convert " & Name & " to corresponding iterator access type name.");
+            Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Failed to convert " & Name & " to corresponding iterator access type name.");
          end if;
       end Generate_Code_For_End_Function;
 
@@ -700,6 +703,8 @@ package body XCB_Package_Creator is
                                                   Request_Name    : String;
                                                   Reply_Type_Name : X_Proto_XML.Large_Bounded_String.T)
       is
+         This_Subprogram : constant String := "Create_XCB_Package.Generate_Request_With_Reply_Code";
+
          Is_First_Parameter : Boolean := True;
       begin
          Put_Tabs (1); Put_Line ("function " & To_String (Function_Name));
@@ -742,7 +747,7 @@ package body XCB_Package_Creator is
                                        if FER.Exists then
                                           Put_Tabs (2); Put (To_String (Field_Name) & " : " & To_String (FER.Element));
                                        else
-                                          Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", could not find enum type name " & To_String (Enum (Element (Children, I).F).Value));
+                                          Ada.Text_IO.Put_Line (This_Subprogram & ", 1, could not find enum type name " & To_String (Enum (Element (Children, I).F).Value));
                                        end if;
                                     end;
                                  else
@@ -750,27 +755,14 @@ package body XCB_Package_Creator is
                                  end if;
                               end;
                            else
-                              Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & To_String (Kind (Element (Children, I).F).Value));
+                              Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Unknown field type name " & To_String (Kind (Element (Children, I).F).Value));
                            end if;
                         end;
                      end if;
                   else
-                     Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Request has field withot type!?");
+                     Ada.Text_IO.Put_Line (This_Subprogram & ", 3, Request has field withot type!?");
                   end if;
                when X_Proto_XML.Request.Fs.Child_Pad =>
-                  --                          if Members (Event).Element (I).P.Bytes.Value > 1 then
-                  --                             declare
-                  --                                Variable_Type_Name : X_Proto_XML.Large_Bounded_String.T;
-                  --                             begin
-                  --                                Generate_Classic_Event_List_Type_Name (Enum_Name => To_String (Name (Event).Value),
-                  --                                                                       List_Name => "Padding" & Aida.Strings.To_String (Padding_Number),
-                  --                                                                       New_Name  => New_Variable_Type_Name);
-                  --
-                  --                                Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is array (0.." &
-                  --                                                          Aida.Strings.To_String (Integer (Members (Event).Element (I).P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
-                  --                             end;
-                  --                          end if;
-                  --                          Padding_Number := Padding_Number  + 1;
                   null;
                when X_Proto_XML.Request.Fs.Child_Value_Param =>
                   if
@@ -808,12 +800,12 @@ package body XCB_Package_Creator is
                               Put_Tabs (2); Put (To_String (Field_Name) & " : Value_List_Array");
                            end;
                         else
-                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Request " & Request_Name &
+                           Ada.Text_IO.Put_Line (This_Subprogram & ", 4, Request " & Request_Name &
                                                    " has  unexpected or unknown field type name " & To_String (Mask_Kind (Element (Children, I).V).Value));
                         end if;
                      end;
                   else
-                     Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Request has value param that misses either mask type, mask name or list name!?");
+                     Ada.Text_IO.Put_Line (This_Subprogram & ", 5, Request has value param that misses either mask type, mask name or list name!?");
                   end if;
                when X_Proto_XML.Request.Fs.Child_Documentation =>
                   null;
@@ -889,6 +881,8 @@ package body XCB_Package_Creator is
          procedure Handle_Request (Request : X_Proto_XML.Request.T) is
 
             procedure Handle_Request_Field (F : X_Proto_XML.Field.T) is
+               This_Subprogram : constant String := "Create_XCB_Package.Pre_Process_Requests.Handle_Request.Handle_Request_Field";
+
                Is_Success : Boolean;
                Translated_Name : X_Proto_XML.Large_Bounded_String.T;
             begin
@@ -913,7 +907,7 @@ package body XCB_Package_Creator is
                         end if;
                      end;
                   else
-                     Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location  & ", could not translate " & To_String (Kind (F).Value));
+                     Ada.Text_IO.Put_Line (This_Subprogram  & ", 1, could not translate " & To_String (Kind (F).Value));
                   end if;
                else
                   null; -- Far from all fields are expected to have an enum specified
@@ -1009,6 +1003,7 @@ package body XCB_Package_Creator is
                Padding_Number : Aida.Int32.T := 0;
 
                procedure Handle_Struct_Child (Child : X_Proto_XML.Struct.Fs.Member_Type) is
+                  This_Subprogram : constant String := "Create_XCB_Package.Generate_Ada_Code_For_Structs.Handle_Struct.Generate_Code_For_The_Struct";
                begin
                   case Child.Kind_Id is
                      when Field_Member =>
@@ -1030,11 +1025,11 @@ package body XCB_Package_Creator is
                                     Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_Type_Name) & ";");
                                  end;
                               else
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & To_String (Kind (Child.F).Value));
+                                 Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Unknown field type name " & To_String (Kind (Child.F).Value));
                               end if;
                            end;
                         else
-                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
+                           Ada.Text_IO.Put_Line (This_Subprogram & ", 2, error");
                         end if;
                      when Pad_Member =>
                         if Bytes (Child.P).Value = 1 then
@@ -1130,6 +1125,7 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Code_For_Event_Constants (Events : X_Proto_XML.Xcb.Fs.Event_Vector.Elements_Array_T) is
 
          procedure Handle_Event (Event : X_Proto_XML.Event.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Generate_Ada_Code_For_Event_Constants.Handle_Event";
          begin
             if
               Number (Event).Exists and
@@ -1144,7 +1140,7 @@ package body XCB_Package_Creator is
                   Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Number (Event).Value'Img & ";");
                end;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", event without name or number!?");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 1, event without name or number!?");
             end if;
          end Handle_Event;
 
@@ -1161,6 +1157,7 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Code_For_Event_Copy_Constants (Event_Copies : X_Proto_XML.Xcb.Fs.Event_Copy_Vector.Elements_Array_T) is
 
          procedure Handle_Event_Copy (Event_Copy : X_Proto_XML.Event_Copy.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Generate_Ada_Code_For_Event_Copy_Constants.Handle_Event_Copy";
          begin
             if
               Number (Event_Copy).Exists and
@@ -1175,7 +1172,7 @@ package body XCB_Package_Creator is
                   Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Number (Event_Copy).Value'Img & ";");
                end;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", event copy without name or number!?");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 1, event copy without name or number!?");
             end if;
          end Handle_Event_Copy;
 
@@ -1190,6 +1187,7 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Code_For_Error_Constants (Errors : X_Proto_XML.Xcb.Fs.Error_Vector.Elements_Array_T) is
 
          procedure Handle_Error (Error : X_Proto_XML.Error.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Generate_Ada_Code_For_Error_Constants.Handle_Error";
          begin
             if
               Number (Error).Exists and
@@ -1204,7 +1202,7 @@ package body XCB_Package_Creator is
                   Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Number (Error).Value'Img & ";");
                end;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error without name or number!?");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 1, error without name or number!?");
             end if;
          end Handle_Error;
 
@@ -1219,6 +1217,7 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Code_For_Error_Copy_Constants (Error_Copies : X_Proto_XML.Xcb.Fs.Error_Copy_Vector.Elements_Array_T) is
 
          procedure Handle_Error_Copy (Error_Copy : X_Proto_XML.Error_Copy.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Handle_Error_Copy";
          begin
             if
               Number (Error_Copy).Exists and
@@ -1233,7 +1232,7 @@ package body XCB_Package_Creator is
                   Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Number (Error_Copy).Value'Img & ";");
                end;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error copy without name or number!?");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 1, error copy without name or number!?");
             end if;
          end Handle_Error_Copy;
 
@@ -1250,6 +1249,7 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Code_For_Request_Constants (Requests : X_Proto_XML.Xcb.Fs.Request_Vector.Elements_Array_T) is
 
          procedure Handle_Request (Request : X_Proto_XML.Request.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Handle_Request";
          begin
             if
               Op_Code (Request).Exists and
@@ -1264,7 +1264,7 @@ package body XCB_Package_Creator is
                   Put_Tabs (1); Put_Line (To_String (Constant_Name) & " : constant :=" & Op_Code (Request).Value'Img & ";");
                end;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", event without name or number!?");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 1, event without name or number!?");
             end if;
          end Handle_Request;
 
@@ -1281,6 +1281,8 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Code_For_X_Id_Unions (X_Id_Unions : X_Proto_XML.Xcb.Fs.X_Id_Union_Vector.Elements_Array_T) is
 
          procedure Handle_X_Id_Union (X_Id_Union : X_Proto_XML.X_Id_Union.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Handle_X_Id_Union";
+
             Searched_For : X_Proto_XML.Large_Bounded_String.T;
             X_Id_Union_Type_Name : X_Proto_XML.Large_Bounded_String.T;
          begin
@@ -1319,7 +1321,7 @@ package body XCB_Package_Creator is
                                           exit;
                                        end if;
                                     else
-                                       Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
+                                       Ada.Text_IO.Put_Line (This_Subprogram & ", 1, error");
                                     end if;
                                  end;
                               end loop;
@@ -1329,11 +1331,11 @@ package body XCB_Package_Creator is
                         end;
                      end loop;
                   else
-                     Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Failed to translate: " & To_String (Searched_For));
+                     Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Failed to translate: " & To_String (Searched_For));
                   end if;
                end;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 3, error");
             end if;
          end Handle_X_Id_Union;
 
@@ -1348,6 +1350,7 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Code_For_Enums (Enums : X_Proto_XML.Xcb.Fs.Enum_Vector.Elements_Array_T) is
 
          procedure Handle_Enum (Enum : X_Proto_XML.Enum.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Handle_Enum";
          begin
             if Name (Enum).Exists then
                declare
@@ -1370,7 +1373,7 @@ package body XCB_Package_Creator is
                         Put_Tabs (1); Put ("XCB_" & Aida.UTF8.To_Uppercase (To_String (Enum_Prefix_Name) & "_" & To_String (Enum_Value_Name)) & " : constant Atom_Id_Type :=");
                         case Kind_Id (Element (Items (Enum).all, I).all) is
                            when X_Proto_XML.Item.Fs.Not_Specified =>
-                              Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", should never happen");
+                              Ada.Text_IO.Put_Line (This_Subprogram & ", 1, should never happen");
                               Put_Line ("0;");
                            when X_Proto_XML.Item.Fs.Specified_As_Value =>
                               Put_Line (Value (Element (Items (Enum).all, I).all)'Img & ";");
@@ -1410,7 +1413,7 @@ package body XCB_Package_Creator is
                                                 To_String (New_Variable_Type_Name) & " :=");
                            case Kind_Id (Element (Items (Enum).all, I).all) is
                               when X_Proto_XML.Item.Fs.Not_Specified =>
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", should never happen");
+                                 Ada.Text_IO.Put_Line (This_Subprogram & ", 2, should never happen");
                                  Put_Line ("0;");
                               when X_Proto_XML.Item.Fs.Specified_As_Value =>
                                  Put_Line (Value (Element (Items (Enum).all, I).all)'Img & ";");
@@ -1423,7 +1426,7 @@ package body XCB_Package_Creator is
                   end if;
                end;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 3, error");
             end if;
          end Handle_Enum;
 
@@ -1438,6 +1441,8 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Code_For_Type_Definitions (Type_Definitions : X_Proto_XML.Xcb.Fs.Type_Definition_Vector.Elements_Array_T) is
 
          procedure Handle_Type_Definition (Type_Definition : X_Proto_XML.Type_Definition.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Handle_Type_Definition";
+
             Old_Variable_Type_Name                 : X_Proto_XML.Large_Bounded_String.T;
             New_Variable_Name                      : X_Proto_XML.Large_Bounded_String.T;
             New_Variable_Type_Name                 : X_Proto_XML.Large_Bounded_String.T;
@@ -1509,10 +1514,10 @@ package body XCB_Package_Creator is
                      Append (Thirty_Two_Bit_Variable_Type_Names.all, New_Name (Type_Definition).Value);
                   end if;
                else
-                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Failed to translate: " & To_String (Old_Name (Type_Definition).Value));
+                  Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Failed to translate: " & To_String (Old_Name (Type_Definition).Value));
                end if;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 2, error");
             end if;
          end Handle_Type_Definition;
 
@@ -1527,6 +1532,7 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Code_For_Unions (Unions : X_Proto_XML.Xcb.Fs.Union_Vector.Elements_Array_T) is
 
          procedure Handle_Union (Union : X_Proto_XML.Union.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Handle_Union";
          begin
             if Name (Union).Exists then
                declare
@@ -1547,7 +1553,7 @@ package body XCB_Package_Creator is
 
                            case Element (Members (Element (Children (Union).all, I).L).all, 1).Kind_Id is
                               when X_Proto_XML.List.Fs.List_Member_Kind_Field_Reference =>
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & To_String (Name (Union).Value) & " with list field child is unimplemented.");
+                                 Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Union " & To_String (Name (Union).Value) & " with list field child is unimplemented.");
                               when X_Proto_XML.List.Fs.List_Member_Kind_Value =>
                                  declare
                                     Is_Success : Boolean;
@@ -1561,16 +1567,16 @@ package body XCB_Package_Creator is
                                        Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is array (0.." &
                                                                  To_String (Aida.Int32.T (Element (Members (Element (Children (Union).all, I).L).all, 1).Value - 1)) & ") of aliased " & To_String (N) & ";");
                                     else
-                                       Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & To_String (Name (Union).Value) & ", failed to identify kind of array item: " &
+                                       Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Union " & To_String (Name (Union).Value) & ", failed to identify kind of array item: " &
                                                                To_String (Kind (Element (Children (Union).all, I).L).Value));
                                     end if;
                                  end;
                               when X_Proto_XML.List.Fs.List_Member_Kind_Operation =>
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & To_String (Name (Union).Value) & " with list kind child is unimplemented.");
+                                 Ada.Text_IO.Put_Line (This_Subprogram & ", 3, Union " & To_String (Name (Union).Value) & " with list kind child is unimplemented.");
                            end case;
 
                         else
-                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Union " & To_String (Name (Union).Value) & " contains list child with" &
+                           Ada.Text_IO.Put_Line (This_Subprogram & ", 4, Union " & To_String (Name (Union).Value) & " contains list child with" &
                                                    Last_Index (Members (Element (Children (Union).all, I).L).all)'Img & " number fo children");
                         end if;
                      end case;
@@ -1645,7 +1651,7 @@ package body XCB_Package_Creator is
                           New_Element => New_Variable_Type_Name);
                end;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Union exists without name!");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 5, Union exists without name!");
             end if;
          end Handle_Union;
 
@@ -1660,6 +1666,7 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Code_For_Events (Events : X_Proto_XML.Xcb.Fs.Event_Vector.Elements_Array_T) is
 
          procedure Handle_Event (Event : X_Proto_XML.Event.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Handle_Event";
          begin
             if Name (Event).Exists then
                declare
@@ -1691,7 +1698,7 @@ package body XCB_Package_Creator is
 
                            case Element (Members (Element (Members (Event).all, I).L).all, 1).Kind_Id is
                               when X_Proto_XML.List.Fs.List_Member_Kind_Field_Reference =>
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Name (Event).Value) & " with list field child is unimplemented.");
+                                 Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Event " & To_String (Name (Event).Value) & " with list field child is unimplemented.");
                               when X_Proto_XML.List.Fs.List_Member_Kind_Value =>
                                  declare
                                     Is_Success : Boolean;
@@ -1705,16 +1712,16 @@ package body XCB_Package_Creator is
                                        Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_Type_Name) & " is array (0.." &
                                                                  To_String (Aida.Int32.T (Element (Members (Element (Members (Event).all, I).L).all, 1).Value) - 1) & ") of aliased " & To_String (N) & ";");
                                     else
-                                       Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Name (Event).Value) & ", failed to identify kind of array item: " &
+                                       Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Event " & To_String (Name (Event).Value) & ", failed to identify kind of array item: " &
                                                                To_String (Kind (Element (Members (Event).all, I).L).Value));
                                     end if;
                                  end;
                               when X_Proto_XML.List.Fs.List_Member_Kind_Operation =>
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Name (Event).Value) & " with list kind child is unimplemented.");
+                                 Ada.Text_IO.Put_Line (This_Subprogram & ", 3, Event " & To_String (Name (Event).Value) & " with list kind child is unimplemented.");
                            end case;
 
                         else
-                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Name (Event).Value) & " contains list child with" &
+                           Ada.Text_IO.Put_Line (This_Subprogram & ", 4, Event " & To_String (Name (Event).Value) & " contains list child with" &
                                                    Last_Index (Members (Element (Members (Event).all, I).L).all)'Img & " number fo children");
                         end if;
                      end case;
@@ -1765,7 +1772,7 @@ package body XCB_Package_Creator is
                                           Put_Tabs (2); Put_Line ("Sequence : aliased Interfaces.Unsigned_16;");
                                        end if;
                                     else
-                                       Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Name (Event).Value) & " has first field non-8-bits.");
+                                       Ada.Text_IO.Put_Line (This_Subprogram & ", 5, Event " & To_String (Name (Event).Value) & " has first field non-8-bits.");
                                        -- This is interesting because in xproto.xml for lib xcb version 1.10 the
                                        -- first field in all events were 8-bits!
 
@@ -1780,7 +1787,7 @@ package body XCB_Package_Creator is
                                  end if;
                               end;
                            else
-                              Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & To_String (Kind (Element (Members (Event).all, I).F).Value));
+                              Ada.Text_IO.Put_Line (This_Subprogram & ", 6, Unknown field type name " & To_String (Kind (Element (Members (Event).all, I).F).Value));
                            end if;
                         end;
                      when X_Proto_XML.Event.Fs.Event_Member_Pad =>
@@ -1808,15 +1815,15 @@ package body XCB_Package_Creator is
                                                     New_Name => Variable_Name);
                               case Element (Members (Element (Members (Event).all, I).L).all, 1).Kind_Id is
                               when X_Proto_XML.List.Fs.List_Member_Kind_Field_Reference =>
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Name (Event).Value) & " with list field child is unimplemented.");
+                                 Ada.Text_IO.Put_Line (This_Subprogram & ", 7, Event " & To_String (Name (Event).Value) & " with list field child is unimplemented.");
                               when X_Proto_XML.List.Fs.List_Member_Kind_Value =>
                                  Put_Tabs (2); Put_Line (To_String (Variable_Name) & " : aliased " & To_String (New_Variable_Type_Name) & ";");
                               when X_Proto_XML.List.Fs.List_Member_Kind_Operation =>
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Name (Event).Value) & " with list kind child is unimplemented.");
+                                 Ada.Text_IO.Put_Line (This_Subprogram & ", 8, Event " & To_String (Name (Event).Value) & " with list kind child is unimplemented.");
                               end case;
                            end;
                         else
-                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event " & To_String (Name (Event).Value) & " contains list child with" &
+                           Ada.Text_IO.Put_Line (This_Subprogram & ", 9, Event " & To_String (Name (Event).Value) & " contains list child with" &
                                                    Last_Index (Members (Element (Members (Event).all, I).L).all)'Img & " number fo children");
                         end if;
                      end case;
@@ -1838,7 +1845,7 @@ package body XCB_Package_Creator is
                   end;
                end;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 10, error");
             end if;
          end Handle_Event;
 
@@ -1853,6 +1860,7 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Code_For_Event_Copies (Event_Copies : X_Proto_XML.Xcb.Fs.Event_Copy_Vector.Elements_Array_T) is
 
          procedure Handle_Event_Copy (Event_Copy : X_Proto_XML.Event_Copy.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Handle_Event_Copy";
          begin
             if Name (Event_Copy).Exists then
                if Ref (Event_Copy).Exists then
@@ -1878,10 +1886,10 @@ package body XCB_Package_Creator is
                      end;
                   end;
                else
-                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event copy " & To_String (Name (Event_Copy).Value) & " with no ref!?");
+                  Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Event copy " & To_String (Name (Event_Copy).Value) & " with no ref!?");
                end if;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event copy exists without a name!?");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Event copy exists without a name!?");
             end if;
          end Handle_Event_Copy;
 
@@ -1896,6 +1904,7 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Code_For_Errors (Errors : X_Proto_XML.Xcb.Fs.Error_Vector.Elements_Array_T) is
 
          procedure Handle_Error (Error : X_Proto_XML.Error.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Handle_Error";
          begin
             if Name (Error).Exists then
                declare
@@ -1955,15 +1964,15 @@ package body XCB_Package_Creator is
                                     Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_Type_Name) & ";");
 
                                     if Enum (Child.F).Exists then
-                                       Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
+                                       Ada.Text_IO.Put_Line (This_Subprogram & ", 1, error");
                                     end if;
                                  end;
                               else
-                                 Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & To_String (Kind (Child.F).Value));
+                                 Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Unknown field type name " & To_String (Kind (Child.F).Value));
                               end if;
                            end;
                         else
-                           Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
+                           Ada.Text_IO.Put_Line (This_Subprogram & ", 3, error");
                         end if;
                      when X_Proto_XML.Error.Fs.Child_Pad =>
                         if Bytes (Child.P).Value = 1 then
@@ -2000,7 +2009,7 @@ package body XCB_Package_Creator is
                   Put_Line ("");
                end;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Error exists without a name!?");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 4, Error exists without a name!?");
             end if;
          end Handle_Error;
 
@@ -2015,6 +2024,7 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Code_For_Error_Copies (Error_Copies : X_Proto_XML.Xcb.Fs.Error_Copy_Vector.Elements_Array_T) is
 
          procedure Handle_Error_Copy (Error_Copy : X_Proto_XML.Error_Copy.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Handle_Error_Copy";
          begin
             if Name (Error_Copy).Exists then
                if Ref (Error_Copy).Exists then
@@ -2032,10 +2042,10 @@ package body XCB_Package_Creator is
                      Put_Line ("");
                   end;
                else
-                  Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event copy " & To_String (Name (Error_Copy).Value) & " with no ref!?");
+                  Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Event copy " & To_String (Name (Error_Copy).Value) & " with no ref!?");
                end if;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Event copy exists without a name!?");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Event copy exists without a name!?");
             end if;
          end Handle_Error_Copy;
 
@@ -2050,12 +2060,13 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Subprograms_From_Type_Definitions (Type_Definitions : X_Proto_XML.Xcb.Fs.Type_Definition_Vector.Elements_Array_T) is
 
          procedure Handle_Type_Definition (Type_Def : X_Proto_XML.Type_Definition.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Handle_Type_Definition";
          begin
             if New_Name (Type_Def).Exists then
                Generate_Code_For_Next_Procedure (To_String (New_Name (Type_Def).Value));
                Generate_Code_For_End_Function (To_String (New_Name (Type_Def).Value));
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Type definition exists without new name!?");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Type definition exists without new name!?");
             end if;
          end Handle_Type_Definition;
 
@@ -2070,6 +2081,7 @@ package body XCB_Package_Creator is
       procedure Generate_Ada_Code_For_Requests (Requests : X_Proto_XML.Xcb.Fs.Request_Vector.Elements_Array_T) is
 
          procedure Handle_Request (Request : X_Proto_XML.Request.T) is
+            This_Subprogram : constant String := "Create_XCB_Package.Handle_Request";
          begin
             if Name (Request).Exists then
                declare
@@ -2140,7 +2152,9 @@ package body XCB_Package_Creator is
                            Reply_Name : X_Proto_XML.Large_Bounded_String.T;
 
                            procedure Process_Reply_Child (Reply_Child : X_Proto_XML.Reply.Fs.Child_Ptr;
-                                                          Is_First    : Boolean) is
+                                                          Is_First    : Boolean)
+                           is
+                              This_Subprogram : constant String := "Create_XCB_Package.Process_Reply_Child";
                            begin
                               case Reply_Child.Kind_Id is
                                  when X_Proto_XML.Reply.Fs.Child_Field =>
@@ -2180,7 +2194,7 @@ package body XCB_Package_Creator is
                                                       Put_Tabs (2); Put_Line ("Sequence : aliased Interfaces.Unsigned_16;");
                                                       Put_Tabs (2); Put_Line ("Length : aliased Interfaces.Unsigned_32;");
                                                    else
-                                                      Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", Request " & To_String (Name (Request).Value) &
+                                                      Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Request " & To_String (Name (Request).Value) &
                                                                               ", reply " & To_String (Name (Reply_Child.F).Value) & " has first field " &
                                                                               To_String (Kind (Reply_Child.F).Value) & ", which is non-8-bits.");
                                                    end if;
@@ -2189,11 +2203,11 @@ package body XCB_Package_Creator is
                                                 end if;
                                              end;
                                           else
-                                             Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & " Unknown field type name " & To_String (Kind (Reply_Child.F).Value));
+                                             Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Unknown field type name " & To_String (Kind (Reply_Child.F).Value));
                                           end if;
                                        end;
                                     else
-                                       Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", kind does not exist!?");
+                                       Ada.Text_IO.Put_Line (This_Subprogram & ", 3, kind does not exist!?");
                                     end if;
                                  when X_Proto_XML.Reply.Fs.Child_Pad =>
                                     if Bytes (Reply_Child.P).Value = 1 then
@@ -2370,7 +2384,7 @@ package body XCB_Package_Creator is
                   end;
                end;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Type definition exists without new name!?");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Type definition exists without new name!?");
             end if;
          end Handle_Request;
 
@@ -2381,6 +2395,8 @@ package body XCB_Package_Creator is
       end Generate_Ada_Code_For_Requests;
 
       procedure Generate_Ada_Code_For_Requests is new X_Proto_XML.Xcb.Fs.Request_Vector.Act_On_Immutable_Elements (Generate_Ada_Code_For_Requests);
+
+      This_Subprogram : constant String := "Create_XCB_Package";
 
    begin
       declare
@@ -2450,7 +2466,7 @@ package body XCB_Package_Creator is
                                           How => Use_The_New_Keyword);
                end if;
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", error");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 1, error");
             end if;
          end;
       end loop;
@@ -2482,7 +2498,7 @@ package body XCB_Package_Creator is
                Put_Tabs (1); Put_Line ("pragma Convention (C, " & To_String (Variable_Array_Type_Name) & ");");
                Put_Line ("");
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & ", Could not translate type " & To_String (Text));
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Could not translate type " & To_String (Text));
             end if;
          end;
       end loop;
@@ -2731,7 +2747,7 @@ package body XCB_Package_Creator is
             Generate_Code_For_Next_Procedure (To_String (Name (Element (Structs (XCB).all, I).all).Value));
             Generate_Code_For_End_Function (To_String (Name (Element (Structs (XCB).all, I).all).Value));
          else
-            Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "Struct exists without a name!?");
+            Ada.Text_IO.Put_Line (This_Subprogram & ", 3, Struct exists without a name!?");
          end if;
       end loop;
 
@@ -2743,7 +2759,7 @@ package body XCB_Package_Creator is
                Generate_Code_For_Next_Procedure (To_String (Name (X_Id.all).Value));
                Generate_Code_For_End_Function (To_String (Name (X_Id.all).Value));
             else
-               Ada.Text_IO.Put_Line (GNAT.Source_Info.Source_Location & "X_Id exists without a name!?");
+               Ada.Text_IO.Put_Line (This_Subprogram & ", 4, X_Id exists without a name!?");
             end if;
          end;
       end loop;
