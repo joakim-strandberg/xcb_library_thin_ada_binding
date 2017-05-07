@@ -46,8 +46,8 @@ package Aida.Containers.Bounded_Vector is
 
    type Element_Const_Ptr is access constant Element_T;
 
-   function Const_Ref (This  : T;
-                       Index : Index_T) return Element_Const_Ptr;
+--     function Const_Ref (This  : T;
+--                         Index : Index_T) return Element_Const_Ptr;
 
    type Ptr is access all T;
 

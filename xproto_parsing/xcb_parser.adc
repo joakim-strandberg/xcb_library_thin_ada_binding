@@ -1,1 +1,7 @@
 pragma Default_Storage_Pool (null);
+
+pragma Restrictions (No_Dependence => Ada.Unchecked_Deallocation);
+pragma Restrictions (No_Dependence => Ada.Unchecked_Conversion);
+pragma Restrictions (No_Unchecked_Access);
+
+pragma Profile (Ravenscar);

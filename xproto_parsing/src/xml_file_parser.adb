@@ -189,14 +189,26 @@ package body XML_File_Parser is
       R : Aida.Hash32_T := 0;
 
       use type Aida.Hash32_T;
+
+      procedure Calculate_R (Elements : Aida.XML.DL.Elements_Array_T) is
+      begin
+         for I in Elements'Range loop
+            R := R + Aida.XML.Bounded_String.Hash32 (Elements (I));
+         end loop;
+      end Calculate_R;
+
+      procedure Calculate_R is new Aida.XML.DL.Act_On_Immutable_Elements (Calculate_R);
+
    begin
       if Is_Empty (Parent_And_Self_Tags) then
          return 0;
       end if;
 
-      for I in Aida.XML.DL.Index_T range 1..Last_Index (Parent_And_Self_Tags) loop
-         R := R + Aida.XML.Bounded_String.Hash32 (Const_Ref (Parent_And_Self_Tags, I).all);
-      end loop;
+      Calculate_R (Parent_And_Self_Tags);
+
+--        for I in Aida.XML.DL.Index_T range 1..Last_Index (Parent_And_Self_Tags) loop
+--           R := R + Aida.XML.Bounded_String.Hash32 (Const_Ref (Parent_And_Self_Tags, I).all);
+--        end loop;
       return R;
    end Hash;
 
@@ -226,12 +238,19 @@ package body XML_File_Parser is
                                                  Parents                : Aida.XML.DL.T;
                                                  Tag_Name               : String)
       is
+         procedure Populate_Parents (Elements : Aida.XML.DL.Elements_Array_T) is
+         begin
+            for I in Elements'Range loop
+               Append (This     => Parents_Including_Self,
+                       New_Item => Elements (I));
+            end loop;
+         end Populate_Parents;
+
+         procedure Populate_Parents is new Aida.XML.DL.Act_On_Immutable_Elements (Populate_Parents);
+
          TN : Aida.XML.Bounded_String_T;
       begin
-         for I in Aida.XML.DL.Index_T range 1..Last_Index (Parents) loop
-            Append (This     => Parents_Including_Self,
-                    New_Item => Const_Ref (Parents, I).all);
-         end loop;
+         Populate_Parents (Parents);
          Initialize (This => TN,
                      Text => Tag_Name);
          Append (This     => Parents_Including_Self,
