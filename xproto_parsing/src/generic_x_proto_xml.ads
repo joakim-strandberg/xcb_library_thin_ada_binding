@@ -14,44 +14,44 @@ package Generic_X_Proto_XML is
 
    package Field is
 
-      type Kind_Type is record
+      type Kind_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Name_Type is record
+      type Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Enum_Type is record
+      type Enum_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Mask_Type is record
+      type Mask_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Value_Type is record
+      type Value_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Alt_Enum_Type is record
+      type Alt_Enum_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
       type T is limited
          record
-            Kind     : aliased Kind_Type;
-            Name     : aliased Name_Type;
-            Enum     : aliased Enum_Type;
-            Mask     : aliased Mask_Type;
-            Alt_Enum : aliased Alt_Enum_Type;
-            Value    : aliased Value_Type;
+            Kind     : aliased Kind_T;
+            Name     : aliased Name_T;
+            Enum     : aliased Enum_T;
+            Mask     : aliased Mask_T;
+            Alt_Enum : aliased Alt_Enum_T;
+            Value    : aliased Value_T;
          end record;
 
       type Ptr is access all T;
@@ -61,14 +61,14 @@ package Generic_X_Proto_XML is
 
    package Pad is
 
-      type Bytes_Type is record
+      type Bytes_T is record
          Exists : Boolean := False;
          Value  : Positive;
       end record;
 
       type T is limited
          record
-            Bytes : aliased Bytes_Type;
+            Bytes : aliased Bytes_T;
          end record;
 
       type Ptr is access all T;
@@ -78,19 +78,19 @@ package Generic_X_Proto_XML is
 
    package Field_Reference is new Aida.Bounded_String (Maximum_Length_Of_Bounded_String => 1_00);
 
-   subtype Field_Reference_Type is Field_Reference.T;
+   subtype Field_Reference_T is Field_Reference.T;
 
-   type Field_Reference_Access_Type is access all Field_Reference_Type;
-   for Field_Reference_Access_Type'Storage_Pool use Pool;
+   type Field_Reference_Ptr is access all Field_Reference_T;
+   for Field_Reference_Ptr'Storage_Pool use Pool;
 
-   type Value_Type is new Natural;
+   type Value_T is new Natural;
 
-   type Value_Access_Type is access all Value_Type;
-   for Value_Access_Type'Storage_Pool use Pool;
+   type Value_Ptr is access all Value_T;
+   for Value_Ptr'Storage_Pool use Pool;
 
    package Operation is
 
-      type Op_Type is record
+      type Op_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
@@ -100,21 +100,21 @@ package Generic_X_Proto_XML is
       type Ptr is access all T;
       for Ptr'Storage_Pool use Pool;
 
-      type Member_Kind_Id_Type is (
+      type Member_Kind_Id_T is (
                                    Member_Kind_Field_Reference,
                                    Member_Kind_Value,
                                    Member_Operation
                                   );
 
-      type Member_Type (Kind_Id : Member_Kind_Id_Type) is record
+      type Member_T (Kind_Id : Member_Kind_Id_T) is record
          case Kind_Id is
-            when Member_Kind_Field_Reference => Field_Reference : aliased Field_Reference_Type;
-            when Member_Kind_Value           => Value           : aliased Value_Type;
+            when Member_Kind_Field_Reference => Field_Reference : aliased Field_Reference_T;
+            when Member_Kind_Value           => Value           : aliased Value_T;
             when Member_Operation            => Operation       : aliased Ptr;
          end case;
       end record;
 
-      type Member_Ptr is access all Member_Type;
+      type Member_Ptr is access all Member_T;
       for Member_Ptr'Storage_Pool use Pool;
 
       package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
@@ -123,7 +123,7 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Op      : aliased Op_Type;
+            Op      : aliased Op_T;
             Members : aliased Member_Vector.T;
          end record;
 
@@ -133,31 +133,31 @@ package Generic_X_Proto_XML is
 
    package List is
 
-      type Kind_Type is record
+      type Kind_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Name_Type is record
+      type Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Member_Kind_Id_Type is (
+      type Member_Kind_Id_T is (
                                    List_Member_Kind_Field_Reference,
                                    List_Member_Kind_Value,
                                    List_Member_Kind_Operation
                                   );
 
-      type Member_Type (Kind_Id : Member_Kind_Id_Type) is limited record
+      type Member_T (Kind_Id : Member_Kind_Id_T) is limited record
          case Kind_Id is
             when List_Member_Kind_Field_Reference => Field_Reference : Large_Bounded_String.T;
-            when List_Member_Kind_Value           => Value           : aliased Value_Type;
+            when List_Member_Kind_Value           => Value           : aliased Value_T;
             when List_Member_Kind_Operation       => Operation       : aliased Operation_T;
          end case;
       end record;
 
-      type Member_Ptr is access all Member_Type;
+      type Member_Ptr is access all Member_T;
       for Member_Ptr'Storage_Pool use Pool;
 
       package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
@@ -166,8 +166,8 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Kind    : aliased Kind_Type;
-            Name    : aliased Name_Type;
+            Kind    : aliased Kind_T;
+            Name    : aliased Name_T;
             Members : aliased Member_Vector.T;
          end record;
 
@@ -178,26 +178,26 @@ package Generic_X_Proto_XML is
 
    package Item is
 
-      type Kind_Id_Type is (
+      type Kind_Id_T is (
                             Not_Specified,
                             Specified_As_Value,
                             Specified_As_Bit
                            );
 
-      type Bit_Type is new Natural;
+      type Bit_T is new Natural;
 
-      type Bit_Ptr is access all Bit_Type;
+      type Bit_Ptr is access all Bit_T;
 
-      type Name_Type is record
+      type Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
       type T is limited record
-         Kind_Id : aliased Kind_Id_Type := Not_Specified;
-         Name    : aliased Name_Type;
-         Value   : aliased Value_Type;
-         Bit     : aliased Bit_Type;
+         Kind_Id : aliased Kind_Id_T := Not_Specified;
+         Name    : aliased Name_T;
+         Value   : aliased Value_T;
+         Bit     : aliased Bit_T;
       end record;
 
       type Ptr is access all T;
@@ -207,27 +207,27 @@ package Generic_X_Proto_XML is
 
    package Expression_Field is
 
-      type Kind_Type is record
+      type Kind_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Name_Type is record
+      type Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Child_Kind_Id_Type is (
+      type Child_Kind_Id_T is (
                                   Child_Operation
                                  );
 
-      type Child_Type (Kind_Id : Child_Kind_Id_Type) is record
+      type Child_T (Kind_Id : Child_Kind_Id_T) is record
          case Kind_Id is
             when Child_Operation  => Op : aliased Operation.T;
          end case;
       end record;
 
-      type Child_Ptr is access all Child_Type;
+      type Child_Ptr is access all Child_T;
       for Child_Ptr'Storage_Pool use Pool;
 
       package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
@@ -236,8 +236,8 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Kind     : aliased Kind_Type;
-            Name     : aliased Name_Type;
+            Kind     : aliased Kind_T;
+            Name     : aliased Name_T;
             Children : aliased Child_Vector.T;
          end record;
 
@@ -248,39 +248,39 @@ package Generic_X_Proto_XML is
 
    package Error is
 
-      type Name_Type is record
+      type Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Number_Type is record
+      type Number_T is record
          Exists : Boolean := False;
          Value  : Natural;
       end record;
 
-      type Kind_Type is record
+      type Kind_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Value_Type is record
+      type Value_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Child_Kind_Id_Type is (
+      type Child_Kind_Id_T is (
                                   Child_Field,
                                   Child_Pad
                                  );
 
-      type Child_Type (Kind_Id : Child_Kind_Id_Type) is record
+      type Child_T (Kind_Id : Child_Kind_Id_T) is record
          case Kind_Id is
             when Child_Field  => F : aliased Field.T;
             when Child_Pad    => P : aliased Pad.T;
          end case;
       end record;
 
-      type Child_Ptr is access all Child_Type;
+      type Child_Ptr is access all Child_T;
       for Child_Ptr'Storage_Pool use Pool;
 
       package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
@@ -289,10 +289,10 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name     : aliased Name_Type;
-            Number   : aliased Number_Type;
-            Kind     : aliased Kind_Type;
-            Value    : aliased Value_Type;
+            Name     : aliased Name_T;
+            Number   : aliased Number_T;
+            Kind     : aliased Kind_T;
+            Value    : aliased Value_T;
             Children : aliased Child_Vector.T;
          end record;
 
@@ -303,26 +303,26 @@ package Generic_X_Proto_XML is
 
    package Error_Copy is
 
-         type Name_Type is record
+         type Name_T is record
             Exists : Boolean := False;
             Value  : Large_Bounded_String.T;
          end record;
 
-         type Number_Type is record
+         type Number_T is record
             Exists : Boolean := False;
             Value  : Natural;
          end record;
 
-         type Ref_Type is record
+         type Ref_T is record
             Exists : Boolean := False;
             Value  : Large_Bounded_String.T;
          end record;
 
       type T is limited
          record
-            Name   : aliased Name_Type;
-            Number : aliased Number_Type;
-            Ref    : aliased Ref_Type;
+            Name   : aliased Name_T;
+            Number : aliased Number_T;
+            Ref    : aliased Ref_T;
          end record;
 
       type Ptr is access all T;
@@ -332,14 +332,14 @@ package Generic_X_Proto_XML is
 
    package Example is
 
-      type Value_Type is record
+      type Value_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
       type T is limited
          record
-            Value : aliased Value_Type;
+            Value : aliased Value_T;
          end record;
 
       type Ptr is access all T;
@@ -349,20 +349,20 @@ package Generic_X_Proto_XML is
 
    package See is
 
-      type Kind_Type is record
+      type Kind_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Name_Type is record
+      type Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
       type T is limited
          record
-            Kind : aliased Kind_Type;
-            Name : aliased Name_Type;
+            Kind : aliased Kind_T;
+            Name : aliased Name_T;
          end record;
 
       type Ptr is access all T;
@@ -372,24 +372,24 @@ package Generic_X_Proto_XML is
 
    package Documentation is
 
-      type Brief_Description_Type is record
+      type Brief_Description_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Description_Type is record
+      type Description_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Member_Kind_Id_Type is (
+      type Member_Kind_Id_T is (
                                    Member_Field,
                                    Member_See,
                                    Member_Error,
                                    Member_Example
                                   );
 
-      type Member_Type (Kind_Id : Member_Kind_Id_Type) is record
+      type Member_T (Kind_Id : Member_Kind_Id_T) is record
          case Kind_Id is
             when Member_Field   => F  : aliased Field.T;
             when Member_See     => S  : aliased See.T;
@@ -398,7 +398,7 @@ package Generic_X_Proto_XML is
          end case;
       end record;
 
-      type Member_Ptr is access all Member_Type;
+      type Member_Ptr is access all Member_T;
       for Member_Ptr'Storage_Pool use Pool;
 
       package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
@@ -407,8 +407,8 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Brief_Description : aliased Brief_Description_Type;
-            Description       : aliased Description_Type;
+            Brief_Description : aliased Brief_Description_T;
+            Description       : aliased Description_T;
             Members           : aliased Member_Vector.T;
          end record;
 
@@ -419,26 +419,26 @@ package Generic_X_Proto_XML is
 
    package Event_Copy is
 
-      type Name_Type is record
+      type Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Number_Type is record
+      type Number_T is record
          Exists : Boolean := False;
          Value  : Natural;
       end record;
 
-      type Ref_Type is record
+      type Ref_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
       type T is limited
          record
-            Name   : aliased Name_Type;
-            Number : aliased Number_Type;
-            Ref    : aliased Ref_Type;
+            Name   : aliased Name_T;
+            Number : aliased Number_T;
+            Ref    : aliased Ref_T;
          end record;
 
       type Ptr is access all T;
@@ -448,14 +448,14 @@ package Generic_X_Proto_XML is
 
    package X_Id is
 
-      type Name_Type is record
+      type Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
       type T is limited
          record
-            Name : aliased Name_Type;
+            Name : aliased Name_T;
          end record;
 
       type Ptr is access T;
@@ -465,14 +465,14 @@ package Generic_X_Proto_XML is
 
    package Type_P is
 
-      type Value_Type is record
+      type Value_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
       type T is limited
          record
-            Value : aliased Value_Type;
+            Value : aliased Value_T;
          end record;
 
       type Ptr is access all T;
@@ -482,7 +482,7 @@ package Generic_X_Proto_XML is
 
    package X_Id_Union is
 
-      type Name_Type is record
+      type Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
@@ -493,7 +493,7 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name  : aliased Name_Type;
+            Name  : aliased Name_T;
             Kinds : aliased Type_Vector.T;
          end record;
 
@@ -504,20 +504,20 @@ package Generic_X_Proto_XML is
 
    package Type_Definition is
 
-      type Old_Name_Type is record
+      type Old_Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type New_Name_Type is record
+      type New_Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
       type T is limited
          record
-            Old_Name : aliased Old_Name_Type;
-            New_Name : aliased New_Name_Type;
+            Old_Name : aliased Old_Name_T;
+            New_Name : aliased New_Name_T;
          end record;
 
       type Ptr is access all T;
@@ -527,7 +527,7 @@ package Generic_X_Proto_XML is
 
    package Enum is
 
-      type Name_Type is record
+      type Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
@@ -542,7 +542,7 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name           : aliased Name_Type;
+            Name           : aliased Name_T;
             Items          : aliased Item_Vector.T;
             Documentations : aliased Documentation_Vector.T;
          end record;
@@ -554,22 +554,22 @@ package Generic_X_Proto_XML is
 
    package Union is
 
-      type Name_Type is record
+      type Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Child_Kind_Id_Type is (
+      type Child_Kind_Id_T is (
                                   Child_List
                                  );
 
-      type Child_Type (Kind_Id : Child_Kind_Id_Type) is record
+      type Child_T (Kind_Id : Child_Kind_Id_T) is record
          case Kind_Id is
             when Child_List  => L : aliased List.T;
          end case;
       end record;
 
-      type Child_Ptr is access all Child_Type;
+      type Child_Ptr is access all Child_T;
       for Child_Ptr'Storage_Pool use Pool;
 
       package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
@@ -578,7 +578,7 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name     : aliased Name_Type;
+            Name     : aliased Name_T;
             Children : aliased Child_Vector.T;
          end record;
 
@@ -589,7 +589,7 @@ package Generic_X_Proto_XML is
 
    package Struct is
 
-      type Name_Type is record
+      type Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
@@ -604,7 +604,7 @@ package Generic_X_Proto_XML is
 
       use Member_Kind_Id;
 
-      type Member_Type (Kind_Id : Member_Kind_Id.Enum_T) is record
+      type Member_T (Kind_Id : Member_Kind_Id.Enum_T) is record
          case Kind_Id is
             when Field_Member => F : aliased Field.T;
             when Pad_Member   => P : aliased Pad.T;
@@ -612,7 +612,7 @@ package Generic_X_Proto_XML is
          end case;
       end record;
 
-      type Member_Ptr is access all Member_Type;
+      type Member_Ptr is access all Member_T;
       for Member_Ptr'Storage_Pool use Pool;
 
       package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
@@ -621,7 +621,7 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name    : aliased Name_Type;
+            Name    : aliased Name_T;
             Members : aliased Member_Vector.T;
          end record;
 
@@ -632,34 +632,34 @@ package Generic_X_Proto_XML is
 
    package Event is
 
-      type Name_Type is record
+      type Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Number_Type is record
+      type Number_T is record
          Exists : Boolean := False;
          Value  : Natural;
       end record;
 
-      type No_Sequence_Number_Type is record
+      type No_Sequence_Number_T is record
          Exists : Boolean := False;
          Value  : Boolean;
       end record;
 
-      type XGE_Type is record
+      type XGE_T is record
          Exists : Boolean := False;
          Value  : Boolean;
       end record;
 
-      type Member_Kind_Id_Type is (
+      type Member_Kind_Id_T is (
                                    Event_Member_Field,
                                    Event_Member_Pad,
                                    Event_Member_Doc,
                                    Event_Member_List
                                   );
 
-      type Member_Type (Kind_Id : Member_Kind_Id_Type) is record
+      type Member_T (Kind_Id : Member_Kind_Id_T) is record
          case Kind_Id is
             when Event_Member_Field => F : aliased Field.T;
             when Event_Member_Pad   => P : aliased Pad.T;
@@ -668,7 +668,7 @@ package Generic_X_Proto_XML is
          end case;
       end record;
 
-      type Member_Ptr is access all Member_Type;
+      type Member_Ptr is access all Member_T;
       for Member_Ptr'Storage_Pool use Pool;
 
       package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
@@ -677,11 +677,11 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name               : aliased Name_Type;
-            Number             : aliased Number_Type;
-            No_Sequence_Number : aliased No_Sequence_Number_Type;
+            Name               : aliased Name_T;
+            Number             : aliased Number_T;
+            No_Sequence_Number : aliased No_Sequence_Number_T;
             Members            : aliased Member_Vector.T;
-            XGE                : aliased XGE_Type;
+            XGE                : aliased XGE_T;
          end record;
 
       type Ptr is access all T;
@@ -691,26 +691,26 @@ package Generic_X_Proto_XML is
 
    package Value_Param is
 
-      type Mask_Kind_Type is record
+      type Mask_Kind_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Mask_Name_Type is record
+      type Mask_Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
-      type List_Name_Type is record
+      type List_Name_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
 
       type T is limited
          record
-            Mask_Kind : aliased Mask_Kind_Type;
-            Mask_Name : aliased Mask_Name_Type;
-            List_Name : aliased List_Name_Type;
+            Mask_Kind : aliased Mask_Kind_T;
+            Mask_Name : aliased Mask_Name_T;
+            List_Name : aliased List_Name_T;
          end record;
 
       type Ptr is access all T;
@@ -720,14 +720,14 @@ package Generic_X_Proto_XML is
 
    package Reply is
 
-      type Child_Kind_Id_Type is (
+      type Child_Kind_Id_T is (
                                   Child_Field,
                                   Child_Pad,
                                   Child_Documentation,
                                   Child_List
                                  );
 
-      type Child_Type (Kind_Id : Child_Kind_Id_Type) is record
+      type Child_T (Kind_Id : Child_Kind_Id_T) is record
          case Kind_Id is
             when Child_Field         => F : aliased Field.T;
             when Child_Pad           => P : aliased Pad.T;
@@ -736,7 +736,7 @@ package Generic_X_Proto_XML is
          end case;
       end record;
 
-      type Child_Ptr is access all Child_Type;
+      type Child_Ptr is access all Child_T;
       for Child_Ptr'Storage_Pool use Pool;
 
       package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
@@ -755,22 +755,22 @@ package Generic_X_Proto_XML is
 
    package Request is
 
-         type Name_Type is record
+         type Name_T is record
             Exists : Boolean := False;
             Value  : Large_Bounded_String.T;
          end record;
 
-         type Op_Code_Type is record
+         type Op_Code_T is record
             Exists : Boolean := False;
             Value  : Natural;
          end record;
 
-         type Shall_Combine_Adjacent_Type is record
+         type Shall_Combine_Adjacent_T is record
             Exists : Boolean := False;
             Value  : Boolean;
          end record;
 
-         type Child_Kind_Id_Type is (
+         type Child_Kind_Id_T is (
                                      Child_Field,
                                      Child_Pad,
                                      Child_Value_Param,
@@ -780,7 +780,7 @@ package Generic_X_Proto_XML is
                                      Child_Expression_Field
                                     );
 
-         type Child_Type (Kind_Id : Child_Kind_Id_Type) is record
+         type Child_T (Kind_Id : Child_Kind_Id_T) is record
             case Kind_Id is
               when Child_Field            => F  : aliased Field.T;
               when Child_Pad              => P  : aliased Pad.T;
@@ -792,7 +792,7 @@ package Generic_X_Proto_XML is
             end case;
          end record;
 
-         type Child_Ptr is access all Child_Type;
+         type Child_Ptr is access all Child_T;
          for Child_Ptr'Storage_Pool use Pool;
 
          package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
@@ -801,9 +801,9 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name                   : aliased Name_Type;
-            Op_Code                : aliased Op_Code_Type;
-            Shall_Combine_Adjacent : aliased Shall_Combine_Adjacent_Type;
+            Name                   : aliased Name_T;
+            Op_Code                : aliased Op_Code_T;
+            Shall_Combine_Adjacent : aliased Shall_Combine_Adjacent_T;
             Children               : aliased Child_Vector.T;
          end record;
 
@@ -814,7 +814,7 @@ package Generic_X_Proto_XML is
 
    package Xcb is
 
-      type Header_Type is record
+      type Header_T is record
          Exists : Boolean := False;
          Value  : Large_Bounded_String.T;
       end record;
@@ -865,7 +865,7 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Header           : aliased Header_Type;
+            Header           : aliased Header_T;
             Structs          : aliased Struct_Vector.T;
             X_Ids            : aliased X_Id_Vector.T;
             X_Id_Unions      : aliased X_Id_Union_Vector.T;
