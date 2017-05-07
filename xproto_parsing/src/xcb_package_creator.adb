@@ -29,10 +29,10 @@ package body XCB_Package_Creator is
    use X_Proto_XML.Request.Child_Vector;
    use X_Proto_XML.Reply.Child_Vector;
    use X_Proto_XML.Xcb.Request_Vector;
-   use X_Proto_XML.Struct.Member_Vector;
+   use X_Proto_XML.Struct.Child_Vector;
    use X_Proto_XML.X_Id_Union.Type_Vector;
    use X_Proto_XML.Union.Child_Vector;
-   use X_Proto_XML.Event.Member_Vector;
+   use X_Proto_XML.Event.Child_Vector;
    use X_Proto_XML.Error.Child_Vector;
    use X_Proto_XML.X_Id;
    use X_Proto_XML.Xcb;
@@ -40,7 +40,7 @@ package body XCB_Package_Creator is
    use X_Proto_XML.Union;
    use X_Proto_XML.Enum;
    use X_Proto_XML.X_Id_Union;
-   use X_Proto_XML.List.Member_Vector;
+   use X_Proto_XML.List.Child_Vector;
    use X_Proto_XML.Event;
    use X_Proto_XML.Event_Copy;
    use X_Proto_XML.Documentation;
@@ -57,7 +57,7 @@ package body XCB_Package_Creator is
    use X_Proto_XML.Value_Param;
    use X_Proto_XML.Type_P;
    use X_Proto_XML.Example;
-   use X_Proto_XML.Struct.Member_Kind_Id;
+   use X_Proto_XML.Struct.Child_Kind_Id;
 
    package Unbounded_String_Vector_P is new Aida.Containers.Bounded_Vector (Element_T  => X_Proto_XML.Large_Bounded_String.T,
                                                                             "="        => X_Proto_XML.Large_Bounded_String."=",
@@ -825,7 +825,7 @@ package body XCB_Package_Creator is
                         Generate_Struct_Name (Old_Name => To_String (Element (Children, I).L.Name.Value),
                                               New_Name => Field_Name);
                         Put_Line (";");
-                        if Is_Empty (Element (Children, I).L.Members) then
+                        if Is_Empty (Element (Children, I).L.Children) then
                            -- Assuming the refence indicates length is already specified
                            Put_Tabs (2); Put_Line (To_String (Field_Name) & "_Length : Interfaces.Unsigned_32;");
                         end if;
@@ -928,7 +928,7 @@ package body XCB_Package_Creator is
                      null;
                   when X_Proto_XML.Request.Child_List             =>
                      if
-                       Is_Empty (Request_Child.L.Members) and
+                       Is_Empty (Request_Child.L.Children) and
                        Request_Child.L.Name.Exists and
                        Request_Child.L.Kind.Exists
                      then
@@ -962,12 +962,12 @@ package body XCB_Package_Creator is
             procedure Generate_Code_For_Struct_Array is
                Padding_Number : Aida.Int32.T := 0;
 
-               procedure Handle_Struct_Child (Child : X_Proto_XML.Struct.Member_T) is
+               procedure Handle_Struct_Child (Child : X_Proto_XML.Struct.Child_T) is
                begin
                   case Child.Kind_Id is
-                  when Field_Member =>
+                  when Field_Child =>
                      null;
-                  when Pad_Member =>
+                  when Pad_Child =>
                      if Child.P.Bytes.Value > 1 then
                         declare
                            Variable_T_Name : X_Proto_XML.Large_Bounded_String.T;
@@ -981,14 +981,14 @@ package body XCB_Package_Creator is
                         end;
                      end if;
                      Padding_Number := Padding_Number  + 1;
-                  when List_Member =>
+                  when List_Child =>
                      null; -- This information does not have any impact on resulting Ada code. Why?
                   end case;
                end Handle_Struct_Child;
 
             begin
-               for I in X_Proto_XML.Struct.Member_Vector.Index_T range 1..Last_Index (Struct.Members) loop
-                  Handle_Struct_Child (Element (Struct.Members, I).all);
+               for I in X_Proto_XML.Struct.Child_Vector.Index_T range 1..Last_Index (Struct.Children) loop
+                  Handle_Struct_Child (Element (Struct.Children, I).all);
                end loop;
             end Generate_Code_For_Struct_Array;
 
@@ -1001,11 +1001,11 @@ package body XCB_Package_Creator is
 
                Padding_Number : Aida.Int32.T := 0;
 
-               procedure Handle_Struct_Child (Child : X_Proto_XML.Struct.Member_T) is
+               procedure Handle_Struct_Child (Child : X_Proto_XML.Struct.Child_T) is
                   This_Subprogram : constant String := "Create_XCB_Package.Generate_Ada_Code_For_Structs.Handle_Struct.Generate_Code_For_The_Struct";
                begin
                   case Child.Kind_Id is
-                     when Field_Member =>
+                     when Field_Child =>
                         if Child.F.Kind.Exists then
                            declare
                               Variable_T_Name : X_Proto_XML.Large_Bounded_String.T;
@@ -1030,7 +1030,7 @@ package body XCB_Package_Creator is
                         else
                            Ada.Text_IO.Put_Line (This_Subprogram & ", 2, error");
                         end if;
-                     when Pad_Member =>
+                     when Pad_Child =>
                         if Child.P.Bytes.Value = 1 then
                            Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
                         else
@@ -1045,7 +1045,7 @@ package body XCB_Package_Creator is
                            end;
                         end if;
                         Padding_Number := Padding_Number + 1;
-                     when List_Member =>
+                     when List_Child =>
                         null; -- This information does not have any impact on resulting Ada code. Why?
                   end case;
                end Handle_Struct_Child;
@@ -1064,8 +1064,8 @@ package body XCB_Package_Creator is
 
                Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_T_Name) & " is record");
 
-               for I in X_Proto_XML.Struct.Member_Vector.Index_T range 1..Last_Index (Struct.Members) loop
-                  Handle_Struct_Child (Element (Struct.Members, I).all);
+               for I in X_Proto_XML.Struct.Child_Vector.Index_T range 1..Last_Index (Struct.Children) loop
+                  Handle_Struct_Child (Element (Struct.Children, I).all);
                end loop;
 
                Put_Tabs (1); Put_Line ("end record;");
@@ -1545,15 +1545,15 @@ package body XCB_Package_Creator is
                   for I in X_Proto_XML.Union.Child_Vector.Index_T range 1..Last_Index (Union.Children) loop
                      case Element (Union.Children, I).Kind_Id is
                      when X_Proto_XML.Union.Child_List =>
-                        if Last_Index (Element (Union.Children, I).L.Members) = 1 then
+                        if Last_Index (Element (Union.Children, I).L.Children) = 1 then
                            Generate_Classic_Array_T_Name (Prefix_Name => To_String (Union.Name.Value),
                                                           Field_Name  => To_String (Element (Union.Children, I).L.Name.Value),
                                                           New_Name    => New_Variable_T_Name);
 
-                           case Element (Element (Union.Children, I).L.Members, 1).Kind_Id is
-                              when X_Proto_XML.List.List_Member_Kind_Field_Reference =>
+                           case Element (Element (Union.Children, I).L.Children, 1).Kind_Id is
+                              when X_Proto_XML.List.Child_Kind_Field_Reference =>
                                  Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Union " & To_String (Union.Name.Value) & " with list field child is unimplemented.");
-                              when X_Proto_XML.List.List_Member_Kind_Value =>
+                              when X_Proto_XML.List.Child_Kind_Value =>
                                  declare
                                     Is_Success : Boolean;
                                     N : X_Proto_XML.Large_Bounded_String.T;
@@ -1564,19 +1564,19 @@ package body XCB_Package_Creator is
 
                                     if Is_Success then
                                        Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_T_Name) & " is array (0.." &
-                                                                 To_String (Aida.Int32.T (Element (Element (Union.Children, I).L.Members, 1).Value - 1)) & ") of aliased " & To_String (N) & ";");
+                                                                 To_String (Aida.Int32.T (Element (Element (Union.Children, I).L.Children, 1).Value - 1)) & ") of aliased " & To_String (N) & ";");
                                     else
                                        Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Union " & To_String (Union.Name.Value) & ", failed to identify kind of array item: " &
                                                                To_String (Element (Union.Children, I).L.Kind.Value));
                                     end if;
                                  end;
-                              when X_Proto_XML.List.List_Member_Kind_Operation =>
+                              when X_Proto_XML.List.Child_Kind_Operation =>
                                  Ada.Text_IO.Put_Line (This_Subprogram & ", 3, Union " & To_String (Union.Name.Value) & " with list kind child is unimplemented.");
                            end case;
 
                         else
                            Ada.Text_IO.Put_Line (This_Subprogram & ", 4, Union " & To_String (Union.Name.Value) & " contains list child with" &
-                                                   Last_Index (Element (Union.Children, I).L.Members)'Img & " number fo children");
+                                                   Last_Index (Element (Union.Children, I).L.Children)'Img & " number fo children");
                         end if;
                      end case;
                   end loop;
@@ -1673,55 +1673,55 @@ package body XCB_Package_Creator is
 
                   Padding_Number : Aida.Int32.T := 0;
                begin
-                  for I in X_Proto_XML.Event.Member_Vector.Index_T range 1..Last_Index (Event.Members) loop
-                     case Element (Event.Members, I).Kind_Id is
-                     when X_Proto_XML.Event.Event_Member_Field =>
+                  for I in X_Proto_XML.Event.Child_Vector.Index_T range 1..Last_Index (Event.Children) loop
+                     case Element (Event.Children, I).Kind_Id is
+                     when X_Proto_XML.Event.Child_Field =>
                         null;
-                     when X_Proto_XML.Event.Event_Member_Pad =>
-                        if Element (Event.Members, I).P.Bytes.Value > 1 then
+                     when X_Proto_XML.Event.Child_Pad =>
+                        if Element (Event.Children, I).P.Bytes.Value > 1 then
                            Generate_Classic_Event_List_T_Name (Enum_Name => To_String (Event.Name.Value),
                                                                List_Name => "Padding" & To_String (Padding_Number),
                                                                New_Name  => New_Variable_T_Name);
 
                            Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_T_Name) & " is array (0.." &
-                                                     To_String (Aida.Int32.T (Element (Event.Members, I).P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
+                                                     To_String (Aida.Int32.T (Element (Event.Children, I).P.Bytes.Value) - 1) & ") of aliased Interfaces.Unsigned_8;");
                         end if;
                         Padding_Number := Padding_Number  + 1;
-                     when X_Proto_XML.Event.Event_Member_Doc =>
+                     when X_Proto_XML.Event.Child_Doc =>
                         null;
-                     when X_Proto_XML.Event.Event_Member_List =>
-                        if Last_Index (Element (Event.Members, I).L.Members) = 1 then
+                     when X_Proto_XML.Event.Child_List =>
+                        if Last_Index (Element (Event.Children, I).L.Children) = 1 then
                            Generate_Classic_Event_List_T_Name (Enum_Name => To_String (Event.Name.Value),
-                                                               List_Name => To_String (Element (Event.Members, I).L.Name.Value),
+                                                               List_Name => To_String (Element (Event.Children, I).L.Name.Value),
                                                                New_Name  => New_Variable_T_Name);
 
-                           case Element (Element (Event.Members, I).L.Members, 1).Kind_Id is
-                              when X_Proto_XML.List.List_Member_Kind_Field_Reference =>
+                           case Element (Element (Event.Children, I).L.Children, 1).Kind_Id is
+                              when X_Proto_XML.List.Child_Kind_Field_Reference =>
                                  Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Event " & To_String (Event.Name.Value) & " with list field child is unimplemented.");
-                              when X_Proto_XML.List.List_Member_Kind_Value =>
+                              when X_Proto_XML.List.Child_Kind_Value =>
                                  declare
                                     Is_Success : Boolean;
                                     N : X_Proto_XML.Large_Bounded_String.T;
                                  begin
-                                    Translate_Classic_Variable_T_Name (Variable_T_Name => To_String (Element (Event.Members, I).L.Kind.Value),
+                                    Translate_Classic_Variable_T_Name (Variable_T_Name => To_String (Element (Event.Children, I).L.Kind.Value),
                                                                        Is_Success         => Is_Success,
                                                                        Translated_Name    => N);
 
                                     if Is_Success then
                                        Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_T_Name) & " is array (0.." &
-                                                                 To_String (Aida.Int32.T (Element (Element (Event.Members, I).L.Members, 1).Value) - 1) & ") of aliased " & To_String (N) & ";");
+                                                                 To_String (Aida.Int32.T (Element (Element (Event.Children, I).L.Children, 1).Value) - 1) & ") of aliased " & To_String (N) & ";");
                                     else
                                        Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Event " & To_String (Event.Name.Value) & ", failed to identify kind of array item: " &
-                                                               To_String (Element (Event.Members, I).L.Kind.Value));
+                                                               To_String (Element (Event.Children, I).L.Kind.Value));
                                     end if;
                                  end;
-                              when X_Proto_XML.List.List_Member_Kind_Operation =>
+                              when X_Proto_XML.List.Child_Kind_Operation =>
                                  Ada.Text_IO.Put_Line (This_Subprogram & ", 3, Event " & To_String (Event.Name.Value) & " with list kind child is unimplemented.");
                            end case;
 
                         else
                            Ada.Text_IO.Put_Line (This_Subprogram & ", 4, Event " & To_String (Event.Name.Value) & " contains list child with" &
-                                                   Last_Index (Element (Event.Members, I).L.Members)'Img & " number fo children");
+                                                   Last_Index (Element (Event.Children, I).L.Children)'Img & " number fo children");
                         end if;
                      end case;
                   end loop;
@@ -1734,14 +1734,14 @@ package body XCB_Package_Creator is
                   Put_Tabs (1); Put_Line ("type " & To_String (New_Variable_T_Name) & " is record");
                   Put_Tabs (2); Put_Line ("Response_Kind : aliased Interfaces.Unsigned_8;");
 
-                  for I in X_Proto_XML.Event.Member_Vector.Index_T range 1..Last_Index (Event.Members) loop
-                     case Element (Event.Members, I).Kind_Id is
-                     when X_Proto_XML.Event.Event_Member_Field =>
+                  for I in X_Proto_XML.Event.Child_Vector.Index_T range 1..Last_Index (Event.Children) loop
+                     case Element (Event.Children, I).Kind_Id is
+                     when X_Proto_XML.Event.Child_Field =>
                         declare
                            Variable_T_Name : X_Proto_XML.Large_Bounded_String.T;
                            Is_Success : Boolean;
                         begin
-                           Translate_Variable_T_Name (Variable_T_Name => To_String (Element (Event.Members, I).F.Kind.Value),
+                           Translate_Variable_T_Name (Variable_T_Name => To_String (Element (Event.Children, I).F.Kind.Value),
                                                       Is_Success         => Is_Success,
                                                       Translated_Name    => Variable_T_Name);
 
@@ -1749,15 +1749,15 @@ package body XCB_Package_Creator is
                               declare
                                  Field_Name : X_Proto_XML.Large_Bounded_String.T;
                               begin
-                                 Generate_Struct_Name (Old_Name => To_String (Element (Event.Members, I).F.Name.Value),
+                                 Generate_Struct_Name (Old_Name => To_String (Element (Event.Children, I).F.Name.Value),
                                                        New_Name => Field_Name);
 
                                  if I = 1 then
                                     if
-                                      Contains (Eight_Bit_Variable_T_Names.all, (Element (Event.Members, I).F.Kind.Value))
+                                      Contains (Eight_Bit_Variable_T_Names.all, (Element (Event.Children, I).F.Kind.Value))
                                     then
-                                       if Element (Event.Members, I).F.Enum.Exists then
-                                          Translate_Variable_T_Name (Variable_T_Name => To_String (Element (Event.Members, I).F.Enum.Value),
+                                       if Element (Event.Children, I).F.Enum.Exists then
+                                          Translate_Variable_T_Name (Variable_T_Name => To_String (Element (Event.Children, I).F.Enum.Value),
                                                                      Is_Success         => Is_Success,
                                                                      Translated_Name    => Variable_T_Name);
                                        end if;
@@ -1787,11 +1787,11 @@ package body XCB_Package_Creator is
                                  end if;
                               end;
                            else
-                              Ada.Text_IO.Put_Line (This_Subprogram & ", 6, Unknown field type name " & To_String (Element (Event.Members, I).F.Kind.Value));
+                              Ada.Text_IO.Put_Line (This_Subprogram & ", 6, Unknown field type name " & To_String (Element (Event.Children, I).F.Kind.Value));
                            end if;
                         end;
-                     when X_Proto_XML.Event.Event_Member_Pad =>
-                        if Element (Event.Members, I).P.Bytes.Value = 1 then
+                     when X_Proto_XML.Event.Child_Pad =>
+                        if Element (Event.Children, I).P.Bytes.Value = 1 then
                            Put_Tabs (2); Put_Line (   "Padding_" & To_String (Padding_Number) & " : aliased Interfaces.Unsigned_8;");
                         else
                            Generate_Classic_Event_List_T_Name (Enum_Name => To_String (Event.Name.Value),
@@ -1800,31 +1800,31 @@ package body XCB_Package_Creator is
                            Put_Tabs (2); Put_Line ("Padding_" & To_String (Padding_Number) & " : aliased " & To_String (New_Variable_T_Name) & ";");
                         end if;
                         Padding_Number := Padding_Number + 1;
-                     when X_Proto_XML.Event.Event_Member_Doc =>
+                     when X_Proto_XML.Event.Child_Doc =>
                         null;
-                     when X_Proto_XML.Event.Event_Member_List =>
-                        if Last_Index (Element (Event.Members, I).L.Members) = 1 then
+                     when X_Proto_XML.Event.Child_List =>
+                        if Last_Index (Element (Event.Children, I).L.Children) = 1 then
                            Generate_Classic_Event_List_T_Name (Enum_Name => To_String (Event.Name.Value),
-                                                               List_Name => To_String (Element (Event.Members, I).L.Name.Value),
+                                                               List_Name => To_String (Element (Event.Children, I).L.Name.Value),
                                                                New_Name  => New_Variable_T_Name);
 
                            declare
                               Variable_Name : X_Proto_XML.Large_Bounded_String.T;
                            begin
-                              Generate_Struct_Name (Old_Name => To_String (Element (Event.Members, I).L.Name.Value),
+                              Generate_Struct_Name (Old_Name => To_String (Element (Event.Children, I).L.Name.Value),
                                                     New_Name => Variable_Name);
-                              case Element (Element (Event.Members, I).L.Members, 1).Kind_Id is
-                              when X_Proto_XML.List.List_Member_Kind_Field_Reference =>
+                              case Element (Element (Event.Children, I).L.Children, 1).Kind_Id is
+                              when X_Proto_XML.List.Child_Kind_Field_Reference =>
                                  Ada.Text_IO.Put_Line (This_Subprogram & ", 7, Event " & To_String (Event.Name.Value) & " with list field child is unimplemented.");
-                              when X_Proto_XML.List.List_Member_Kind_Value =>
+                              when X_Proto_XML.List.Child_Kind_Value =>
                                  Put_Tabs (2); Put_Line (To_String (Variable_Name) & " : aliased " & To_String (New_Variable_T_Name) & ";");
-                              when X_Proto_XML.List.List_Member_Kind_Operation =>
+                              when X_Proto_XML.List.Child_Kind_Operation =>
                                  Ada.Text_IO.Put_Line (This_Subprogram & ", 8, Event " & To_String (Event.Name.Value) & " with list kind child is unimplemented.");
                               end case;
                            end;
                         else
                            Ada.Text_IO.Put_Line (This_Subprogram & ", 9, Event " & To_String (Event.Name.Value) & " contains list child with" &
-                                                   Last_Index (Element (Event.Members, I).L.Members)'Img & " number fo children");
+                                                   Last_Index (Element (Event.Children, I).L.Children)'Img & " number fo children");
                         end if;
                      end case;
                   end loop;

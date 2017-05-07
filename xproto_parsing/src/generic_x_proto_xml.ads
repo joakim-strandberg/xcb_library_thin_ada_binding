@@ -100,31 +100,31 @@ package Generic_X_Proto_XML is
       type Ptr is access all T;
       for Ptr'Storage_Pool use Pool;
 
-      type Member_Kind_Id_T is (
-                                   Member_Kind_Field_Reference,
-                                   Member_Kind_Value,
-                                   Member_Operation
-                                  );
+      type Child_Kind_Id_T is (
+                               Child_Kind_Field_Reference,
+                               Child_Kind_Value,
+                               Child_Operation
+                              );
 
-      type Member_T (Kind_Id : Member_Kind_Id_T) is record
+      type Child_T (Kind_Id : Child_Kind_Id_T) is record
          case Kind_Id is
-            when Member_Kind_Field_Reference => Field_Reference : aliased Field_Reference_T;
-            when Member_Kind_Value           => Value           : aliased Value_T;
-            when Member_Operation            => Operation       : aliased Ptr;
+            when Child_Kind_Field_Reference => Field_Reference : aliased Field_Reference_T;
+            when Child_Kind_Value           => Value           : aliased Value_T;
+            when Child_Operation            => Operation       : aliased Ptr;
          end case;
       end record;
 
-      type Member_Ptr is access all Member_T;
-      for Member_Ptr'Storage_Pool use Pool;
+      type Child_Ptr is access all Child_T;
+      for Child_Ptr'Storage_Pool use Pool;
 
-      package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
-                                                                   "="        => "=",
-                                                                   MAX_LENGTH => 50);
+      package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
+                                                                  "="        => "=",
+                                                                  MAX_LENGTH => 50);
 
       type T is limited
          record
-            Op      : aliased Op_T;
-            Members : aliased Member_Vector.T;
+            Op       : aliased Op_T;
+            Children : aliased Child_Vector.T;
          end record;
 
    end Operation;
@@ -143,32 +143,32 @@ package Generic_X_Proto_XML is
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Member_Kind_Id_T is (
-                                   List_Member_Kind_Field_Reference,
-                                   List_Member_Kind_Value,
-                                   List_Member_Kind_Operation
-                                  );
+      type Child_Kind_Id_T is (
+                               Child_Kind_Field_Reference,
+                               Child_Kind_Value,
+                               Child_Kind_Operation
+                              );
 
-      type Member_T (Kind_Id : Member_Kind_Id_T) is limited record
+      type Child_T (Kind_Id : Child_Kind_Id_T) is limited record
          case Kind_Id is
-            when List_Member_Kind_Field_Reference => Field_Reference : Large_Bounded_String.T;
-            when List_Member_Kind_Value           => Value           : aliased Value_T;
-            when List_Member_Kind_Operation       => Operation       : aliased Operation_T;
+            when Child_Kind_Field_Reference => Field_Reference : Large_Bounded_String.T;
+            when Child_Kind_Value           => Value           : aliased Value_T;
+            when Child_Kind_Operation       => Operation       : aliased Operation_T;
          end case;
       end record;
 
-      type Member_Ptr is access all Member_T;
-      for Member_Ptr'Storage_Pool use Pool;
+      type Child_Ptr is access all Child_T;
+      for Child_Ptr'Storage_Pool use Pool;
 
-      package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
-                                                                   "="        => "=",
-                                                                   MAX_LENGTH => 50);
+      package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
+                                                                  "="        => "=",
+                                                                  MAX_LENGTH => 50);
 
       type T is limited
          record
-            Kind    : aliased Kind_T;
-            Name    : aliased Name_T;
-            Members : aliased Member_Vector.T;
+            Kind     : aliased Kind_T;
+            Name     : aliased Name_T;
+            Children : aliased Child_Vector.T;
          end record;
 
       type Ptr is access all T;
@@ -179,10 +179,10 @@ package Generic_X_Proto_XML is
    package Item is
 
       type Kind_Id_T is (
-                            Not_Specified,
-                            Specified_As_Value,
-                            Specified_As_Bit
-                           );
+                         Not_Specified,
+                         Specified_As_Value,
+                         Specified_As_Bit
+                        );
 
       type Bit_T is new Natural;
 
@@ -218,8 +218,8 @@ package Generic_X_Proto_XML is
       end record;
 
       type Child_Kind_Id_T is (
-                                  Child_Operation
-                                 );
+                               Child_Operation
+                              );
 
       type Child_T (Kind_Id : Child_Kind_Id_T) is record
          case Kind_Id is
@@ -269,9 +269,9 @@ package Generic_X_Proto_XML is
       end record;
 
       type Child_Kind_Id_T is (
-                                  Child_Field,
-                                  Child_Pad
-                                 );
+                               Child_Field,
+                               Child_Pad
+                              );
 
       type Child_T (Kind_Id : Child_Kind_Id_T) is record
          case Kind_Id is
@@ -303,20 +303,20 @@ package Generic_X_Proto_XML is
 
    package Error_Copy is
 
-         type Name_T is record
-            Exists : Boolean := False;
-            Value  : Large_Bounded_String.T;
-         end record;
+      type Name_T is record
+         Exists : Boolean := False;
+         Value  : Large_Bounded_String.T;
+      end record;
 
-         type Number_T is record
-            Exists : Boolean := False;
-            Value  : Natural;
-         end record;
+      type Number_T is record
+         Exists : Boolean := False;
+         Value  : Natural;
+      end record;
 
-         type Ref_T is record
-            Exists : Boolean := False;
-            Value  : Large_Bounded_String.T;
-         end record;
+      type Ref_T is record
+         Exists : Boolean := False;
+         Value  : Large_Bounded_String.T;
+      end record;
 
       type T is limited
          record
@@ -382,34 +382,34 @@ package Generic_X_Proto_XML is
          Value  : Large_Bounded_String.T;
       end record;
 
-      type Member_Kind_Id_T is (
-                                   Member_Field,
-                                   Member_See,
-                                   Member_Error,
-                                   Member_Example
-                                  );
+      type Child_Kind_Id_T is (
+                               Child_Field,
+                               Child_See,
+                               Child_Error,
+                               Child_Example
+                              );
 
-      type Member_T (Kind_Id : Member_Kind_Id_T) is record
+      type Child_T (Kind_Id : Child_Kind_Id_T) is record
          case Kind_Id is
-            when Member_Field   => F  : aliased Field.T;
-            when Member_See     => S  : aliased See.T;
-            when Member_Error   => E  : aliased Error.T;
-            when Member_Example => Ex : aliased Example.T;
+            when Child_Field   => F  : aliased Field.T;
+            when Child_See     => S  : aliased See.T;
+            when Child_Error   => E  : aliased Error.T;
+            when Child_Example => Ex : aliased Example.T;
          end case;
       end record;
 
-      type Member_Ptr is access all Member_T;
-      for Member_Ptr'Storage_Pool use Pool;
+      type Child_Ptr is access all Child_T;
+      for Child_Ptr'Storage_Pool use Pool;
 
-      package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
-                                                                   "="        => "=",
-                                                                   MAX_LENGTH => 30);
+      package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
+                                                                  "="        => "=",
+                                                                  MAX_LENGTH => 30);
 
       type T is limited
          record
             Brief_Description : aliased Brief_Description_T;
             Description       : aliased Description_T;
-            Members           : aliased Member_Vector.T;
+            Children          : aliased Child_Vector.T;
          end record;
 
       type Ptr is access all T;
@@ -560,8 +560,8 @@ package Generic_X_Proto_XML is
       end record;
 
       type Child_Kind_Id_T is (
-                                  Child_List
-                                 );
+                               Child_List
+                              );
 
       type Child_T (Kind_Id : Child_Kind_Id_T) is record
          case Kind_Id is
@@ -594,35 +594,35 @@ package Generic_X_Proto_XML is
          Value  : Large_Bounded_String.T;
       end record;
 
-      package Member_Kind_Id is
+      package Child_Kind_Id is
          type Enum_T is (
-                         Field_Member,
-                         Pad_Member,
-                         List_Member
+                         Field_Child,
+                         Pad_Child,
+                         List_Child
                         );
-      end Member_Kind_Id;
+      end Child_Kind_Id;
 
-      use Member_Kind_Id;
+      use Child_Kind_Id;
 
-      type Member_T (Kind_Id : Member_Kind_Id.Enum_T) is record
+      type Child_T (Kind_Id : Child_Kind_Id.Enum_T) is record
          case Kind_Id is
-            when Field_Member => F : aliased Field.T;
-            when Pad_Member   => P : aliased Pad.T;
-            when List_Member  => L : aliased List.T;
+            when Field_Child => F : aliased Field.T;
+            when Pad_Child   => P : aliased Pad.T;
+            when List_Child  => L : aliased List.T;
          end case;
       end record;
 
-      type Member_Ptr is access all Member_T;
-      for Member_Ptr'Storage_Pool use Pool;
+      type Child_Ptr is access all Child_T;
+      for Child_Ptr'Storage_Pool use Pool;
 
-      package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
-                                                                   "="        => "=",
-                                                                   MAX_LENGTH => 30);
+      package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
+                                                                  "="        => "=",
+                                                                  MAX_LENGTH => 30);
 
       type T is limited
          record
-            Name    : aliased Name_T;
-            Members : aliased Member_Vector.T;
+            Name     : aliased Name_T;
+            Children : aliased Child_Vector.T;
          end record;
 
       type Ptr is access all T;
@@ -652,35 +652,35 @@ package Generic_X_Proto_XML is
          Value  : Boolean;
       end record;
 
-      type Member_Kind_Id_T is (
-                                   Event_Member_Field,
-                                   Event_Member_Pad,
-                                   Event_Member_Doc,
-                                   Event_Member_List
-                                  );
+      type Child_Kind_Id_T is (
+                               Child_Field,
+                               Child_Pad,
+                               Child_Doc,
+                               Child_List
+                              );
 
-      type Member_T (Kind_Id : Member_Kind_Id_T) is record
+      type Child_T (Kind_Id : Child_Kind_Id_T) is record
          case Kind_Id is
-            when Event_Member_Field => F : aliased Field.T;
-            when Event_Member_Pad   => P : aliased Pad.T;
-            when Event_Member_Doc   => D : aliased Documentation.T;
-            when Event_Member_List  => L : aliased List.T;
+            when Child_Field => F : aliased Field.T;
+            when Child_Pad   => P : aliased Pad.T;
+            when Child_Doc   => D : aliased Documentation.T;
+            when Child_List  => L : aliased List.T;
          end case;
       end record;
 
-      type Member_Ptr is access all Member_T;
-      for Member_Ptr'Storage_Pool use Pool;
+      type Child_Ptr is access all Child_T;
+      for Child_Ptr'Storage_Pool use Pool;
 
-      package Member_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Member_Ptr,
-                                                                   "="        => "=",
-                                                                   MAX_LENGTH => 30);
+      package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
+                                                                  "="        => "=",
+                                                                  MAX_LENGTH => 30);
 
       type T is limited
          record
             Name               : aliased Name_T;
             Number             : aliased Number_T;
             No_Sequence_Number : aliased No_Sequence_Number_T;
-            Members            : aliased Member_Vector.T;
+            Children           : aliased Child_Vector.T;
             XGE                : aliased XGE_T;
          end record;
 
@@ -721,11 +721,11 @@ package Generic_X_Proto_XML is
    package Reply is
 
       type Child_Kind_Id_T is (
-                                  Child_Field,
-                                  Child_Pad,
-                                  Child_Documentation,
-                                  Child_List
-                                 );
+                               Child_Field,
+                               Child_Pad,
+                               Child_Documentation,
+                               Child_List
+                              );
 
       type Child_T (Kind_Id : Child_Kind_Id_T) is record
          case Kind_Id is
@@ -755,49 +755,49 @@ package Generic_X_Proto_XML is
 
    package Request is
 
-         type Name_T is record
-            Exists : Boolean := False;
-            Value  : Large_Bounded_String.T;
-         end record;
+      type Name_T is record
+         Exists : Boolean := False;
+         Value  : Large_Bounded_String.T;
+      end record;
 
-         type Op_Code_T is record
-            Exists : Boolean := False;
-            Value  : Natural;
-         end record;
+      type Op_Code_T is record
+         Exists : Boolean := False;
+         Value  : Natural;
+      end record;
 
-         type Shall_Combine_Adjacent_T is record
-            Exists : Boolean := False;
-            Value  : Boolean;
-         end record;
+      type Shall_Combine_Adjacent_T is record
+         Exists : Boolean := False;
+         Value  : Boolean;
+      end record;
 
-         type Child_Kind_Id_T is (
-                                     Child_Field,
-                                     Child_Pad,
-                                     Child_Value_Param,
-                                     Child_Documentation,
-                                     Child_Reply,
-                                     Child_List,
-                                     Child_Expression_Field
-                                    );
+      type Child_Kind_Id_T is (
+                               Child_Field,
+                               Child_Pad,
+                               Child_Value_Param,
+                               Child_Documentation,
+                               Child_Reply,
+                               Child_List,
+                               Child_Expression_Field
+                              );
 
-         type Child_T (Kind_Id : Child_Kind_Id_T) is record
-            case Kind_Id is
-              when Child_Field            => F  : aliased Field.T;
-              when Child_Pad              => P  : aliased Pad.T;
-              when Child_Value_Param      => V  : aliased Value_Param.T;
-              when Child_Documentation    => D  : aliased Documentation.T;
-              when Child_Reply            => R  : aliased Reply.T;
-              when Child_List             => L  : aliased List.T;
-              when Child_Expression_Field => EF : aliased Expression_Field.T;
-            end case;
-         end record;
+      type Child_T (Kind_Id : Child_Kind_Id_T) is record
+         case Kind_Id is
+            when Child_Field            => F  : aliased Field.T;
+            when Child_Pad              => P  : aliased Pad.T;
+            when Child_Value_Param      => V  : aliased Value_Param.T;
+            when Child_Documentation    => D  : aliased Documentation.T;
+            when Child_Reply            => R  : aliased Reply.T;
+            when Child_List             => L  : aliased List.T;
+            when Child_Expression_Field => EF : aliased Expression_Field.T;
+         end case;
+      end record;
 
-         type Child_Ptr is access all Child_T;
-         for Child_Ptr'Storage_Pool use Pool;
+      type Child_Ptr is access all Child_T;
+      for Child_Ptr'Storage_Pool use Pool;
 
-         package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
-                                                                     "="        => "=",
-                                                                     MAX_LENGTH => 30);
+      package Child_Vector is new Aida.Containers.Bounded_Vector (Element_T  => Child_Ptr,
+                                                                  "="        => "=",
+                                                                  MAX_LENGTH => 30);
 
       type T is limited
          record
