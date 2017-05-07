@@ -6,36 +6,39 @@ with Ada.Exceptions;
 package body XML_File_Parser is
 
    use Aida.String;
-   use X_Proto_XML.Struct.Fs.Member_Kind_Id;
-   use X_Proto_XML.Operation;
    use Aida.XML.Error_Message_P;
    use Aida.XML.DL;
    use Aida.XML.Bounded_String;
+   use X_Proto_XML.Struct.Member_Kind_Id;
+   use X_Proto_XML.Operation.Member_Vector;
    use X_Proto_XML.Large_Bounded_String;
-   use X_Proto_XML.Xcb;
-   use X_Proto_XML.Struct;
-   use X_Proto_XML.Union;
-   use X_Proto_XML.Enum;
-   use X_Proto_XML.X_Id_Union;
-   use X_Proto_XML.List;
-   use X_Proto_XML.Event;
-   use X_Proto_XML.Event_Copy;
-   use X_Proto_XML.Documentation;
-   use X_Proto_XML.Error;
+   use X_Proto_XML.Xcb.Struct_Vector;
+   use X_Proto_XML.Xcb.X_Id_Vector;
+   use X_Proto_XML.Xcb.X_Id_Union_Vector;
+   use X_Proto_XML.Xcb.Type_Definition_Vector;
+   use X_Proto_XML.Xcb.Enum_Vector;
+   use X_Proto_XML.Xcb.Event_Vector;
+   use X_Proto_XML.Xcb.Event_Copy_Vector;
+   use X_Proto_XML.Xcb.Union_Vector;
+   use X_Proto_XML.Xcb.Error_Vector;
+   use X_Proto_XML.Xcb.Error_Copy_Vector;
+   use X_Proto_XML.Xcb.Request_Vector;
+   use X_Proto_XML.Struct.Member_Vector;
+   use X_Proto_XML.Union.Child_Vector;
+   use X_Proto_XML.Enum.Item_Vector;
+   use X_Proto_XML.Enum.Documentation_Vector;
+   use X_Proto_XML.X_Id_Union.Type_Vector;
+   use X_Proto_XML.List.Member_Vector;
+   use X_Proto_XML.Event.Member_Vector;
+   use X_Proto_XML.Documentation.Member_Vector;
+   use X_Proto_XML.Error.Child_Vector;
    use X_Proto_XML.Error_Copy;
-   use X_Proto_XML.Request;
-   use X_Proto_XML.Reply;
-   use X_Proto_XML.Expression_Field;
-   use X_Proto_XML.Field;
-   use X_Proto_XML.X_Id;
-   use X_Proto_XML.Type_Definition;
-   use X_Proto_XML.Pad;
-   use X_Proto_XML.Item;
-   use X_Proto_XML.See;
-   use X_Proto_XML.Value_Param;
-   use X_Proto_XML.Type_P;
-   use X_Proto_XML.Example;
+   use X_Proto_XML.Request.Child_Vector;
+   use X_Proto_XML.Reply.Child_Vector;
+   use X_Proto_XML.Expression_Field.Child_Vector;
    use X_Proto_XML.Field_Reference;
+
+   use type X_Proto_XML.Xcb.Ptr;
 
    Tag_Xcb                                    : constant String := "xcb";
    Tag_Xcb_Attribute_Header                   : constant String := "header";
@@ -163,7 +166,7 @@ package body XML_File_Parser is
          when Enum             => Enum_V             : X_Proto_XML.Enum.Ptr;
          when Item             => Item_V             : X_Proto_XML.Item.Ptr;
          when Value            => Value_V            : X_Proto_XML.Value_Access_Type;
-         when Bit              => Bit_V              : X_Proto_XML.Item.Fs.Bit_Ptr;
+         when Bit              => Bit_V              : X_Proto_XML.Item.Bit_Ptr;
          when List             => List_V             : X_Proto_XML.List.Ptr;
          when Field_Reference  => Field_Reference    : X_Proto_XML.Field_Reference_Access_Type;
          when Op               => Op_V               : X_Proto_XML.Operation.Ptr;
@@ -288,8 +291,8 @@ package body XML_File_Parser is
                Insert (This        => Parents_Including_Self_To_Current_Tag_Map.all,
                        Key         => Parents_Including_Self,
                        New_Element => new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Xcb,
-                                                            Find_Tag => Find_Tag (Parent_Tags),
-                                                        Xcb_V    => Xcb_V));
+                                                                         Find_Tag => Find_Tag (Parent_Tags),
+                                                                         Xcb_V    => Xcb_V));
                Is_Success := True;
             else
                Is_Success := False;
@@ -306,10 +309,10 @@ package body XML_File_Parser is
                   begin
                      case Prev_Tag.Kind_Id is
                         when Tag_Id.Xcb =>
-                           Append_Struct (Prev_Tag.Xcb_V.all, Struct_V);
+                           Append (Prev_Tag.Xcb_V.Structs, Struct_V);
                            Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Struct,
-                                                         Find_Tag             => Prev_Tag,
-                                                         Struct_V             => Struct_V));
+                                                                      Find_Tag             => Prev_Tag,
+                                                                      Struct_V             => Struct_V));
                            Is_Success := True;
                         when others =>
                            Is_Success := False;
@@ -320,101 +323,101 @@ package body XML_File_Parser is
                   declare
                      X_Id_Type_V : constant X_Proto_XML.X_Id.Ptr := new X_Proto_XML.X_Id.T;
                   begin
-                     Append_X_Id (Prev_Tag.Xcb_V.all, X_Id_Type_V);
+                     Append (Prev_Tag.Xcb_V.X_Ids, X_Id_Type_V);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id     => Tag_Id.X_Id_Kind,
-                                                   Find_Tag    => Prev_Tag,
-                                                   X_Id_Kind_V => X_Id_Type_V));
+                                                                Find_Tag    => Prev_Tag,
+                                                                X_Id_Kind_V => X_Id_Type_V));
                   end;
                elsif Tag_Name = Tag_X_Id_Union then
                   declare
                      X_Id_Union_V : constant X_Proto_XML.X_Id_Union.Ptr := new X_Proto_XML.X_Id_Union.T;
                   begin
-                     Append_X_Id_Union (Prev_Tag.Xcb_V.all, X_Id_Union_V);
+                     Append (Prev_Tag.Xcb_V.X_Id_Unions, X_Id_Union_V);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id      => Tag_Id.X_Id_Union,
-                                                   Find_Tag     => Prev_Tag,
-                                                   X_Id_Union_V => X_Id_Union_V));
+                                                                Find_Tag     => Prev_Tag,
+                                                                X_Id_Union_V => X_Id_Union_V));
                   end;
                elsif Tag_Name = Tag_Type_Definition then
                   declare
                      TD : constant X_Proto_XML.Type_Definition.Ptr := new X_Proto_XML.Type_Definition.T;
                   begin
-                     Append_Type_Definition (Prev_Tag.Xcb_V.all, TD);
+                     Append (Prev_Tag.Xcb_V.Type_Definitions, TD);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id           => Tag_Id.Type_Definition,
-                                                   Find_Tag          => Prev_Tag,
-                                                   Type_Definition_V => TD));
+                                                                Find_Tag          => Prev_Tag,
+                                                                Type_Definition_V => TD));
                   end;
                elsif Tag_Name = Tag_Enum then
                   declare
                      Enum_V : constant X_Proto_XML.Enum.Ptr := new X_Proto_XML.Enum.T;
                   begin
-                     Append_Enum (Prev_Tag.Xcb_V.all, Enum_V);
+                     Append (Prev_Tag.Xcb_V.Enums, Enum_V);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Enum,
-                                                   Find_Tag => Prev_Tag,
-                                                   Enum_V   => Enum_V));
+                                                                Find_Tag => Prev_Tag,
+                                                                Enum_V   => Enum_V));
                   end;
                elsif Tag_Name = XML_Tag_Event then
                   declare
                      E : constant X_Proto_XML.Event.Ptr := new X_Proto_XML.Event.T;
                   begin
-                     Append_Event (Prev_Tag.Xcb_V.all, E);
+                     Append (Prev_Tag.Xcb_V.Events, E);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Event,
-                                                   Find_Tag => Prev_Tag,
-                                                   Event_V  => E));
+                                                                Find_Tag => Prev_Tag,
+                                                                Event_V  => E));
                   end;
                elsif Tag_Name = XML_Tag_Event_Copy then
                   declare
                      EC : constant X_Proto_XML.Event_Copy.Ptr := new X_Proto_XML.Event_Copy.T;
                   begin
-                     Append_Event_Copy (Prev_Tag.Xcb_V.all, EC);
+                     Append (Prev_Tag.Xcb_V.Event_Copies, EC);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id      => Tag_Id.Event_Copy,
-                                                   Find_Tag     => Prev_Tag,
-                                                   Event_Copy_V => EC));
+                                                                Find_Tag     => Prev_Tag,
+                                                                Event_Copy_V => EC));
                   end;
                elsif Tag_Name = XML_Tag_Union then
                   declare
                      U : constant X_Proto_XML.Union.Ptr := new X_Proto_XML.Union.T;
                   begin
-                     Append_Union (Prev_Tag.Xcb_V.all, U);
+                     Append (Prev_Tag.Xcb_V.Unions, U);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Union,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Union_V              => U));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Union_V              => U));
                   end;
                elsif Tag_Name = XML_Tag_Error then
                   declare
                      E : constant X_Proto_XML.Error.Ptr := new X_Proto_XML.Error.T;
                   begin
-                     Append_Error (Prev_Tag.Xcb_V.all, E);
+                     Append (Prev_Tag.Xcb_V.Errors, E);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Error,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Error_V              => E));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Error_V              => E));
                   end;
                elsif Tag_Name = XML_Tag_Error_Copy then
                   declare
                      E : constant X_Proto_XML.Error_Copy.Ptr := new X_Proto_XML.Error_Copy.T;
                   begin
-                     Append_Error_Copy (Prev_Tag.Xcb_V.all, E);
+                     Append (Prev_Tag.Xcb_V.Error_Copies, E);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Error_Copy,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Error_Copy_V         => E));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Error_Copy_V         => E));
                   end;
                elsif Tag_Name = XML_Tag_Request then
                   declare
                      R : constant X_Proto_XML.Request.Ptr := new X_Proto_XML.Request.T;
                   begin
-                     Append_Request (Prev_Tag.Xcb_V.all, R);
+                     Append (Prev_Tag.Xcb_V.Requests, R);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Request,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Request_V            => R));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Request_V            => R));
                   end;
                else
                   Is_Success := False;
@@ -423,33 +426,33 @@ package body XML_File_Parser is
             when Tag_Id.Struct =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Struct.Fs.Member_Ptr := new X_Proto_XML.Struct.Fs.Member_Type (Field_Member);
+                     F : X_Proto_XML.Struct.Member_Ptr := new X_Proto_XML.Struct.Member_Type (Field_Member);
                   begin
-                     Append_Member (Prev_Tag.Struct_V.all, F);
+                     Append (Prev_Tag.Struct_V.Members, F);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Field,
-                                                   Find_Tag => Prev_Tag,
-                                                   Field_V  => F.F'Access));
+                                                                Find_Tag => Prev_Tag,
+                                                                Field_V  => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : X_Proto_XML.Struct.Fs.Member_Ptr := new X_Proto_XML.Struct.Fs.Member_Type (Pad_Member);
+                     P : X_Proto_XML.Struct.Member_Ptr := new X_Proto_XML.Struct.Member_Type (Pad_Member);
                   begin
-                     Append_Member (Prev_Tag.Struct_V.all, P);
+                     Append (Prev_Tag.Struct_V.Members, P);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Pad,
-                                                   Find_Tag => Prev_Tag,
-                                                   Pad_V    => P.P'Access));
+                                                                Find_Tag => Prev_Tag,
+                                                                Pad_V    => P.P'Access));
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     L : X_Proto_XML.Struct.Fs.Member_Ptr := new X_Proto_XML.Struct.Fs.Member_Type (List_Member);
+                     L : X_Proto_XML.Struct.Member_Ptr := new X_Proto_XML.Struct.Member_Type (List_Member);
                   begin
-                     Append_Member (Prev_Tag.Struct_V.all, L);
+                     Append (Prev_Tag.Struct_V.Members, L);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.List,
-                                                   Find_Tag => Prev_Tag,
-                                                   List_V   => L.L'Access));
+                                                                Find_Tag => Prev_Tag,
+                                                                List_V   => L.L'Access));
                   end;
                else
                   Is_Success := False;
@@ -460,11 +463,11 @@ package body XML_File_Parser is
                   declare
                      Kind : constant X_Proto_XML.Type_P.Ptr := new X_Proto_XML.Type_P.T;
                   begin
-                     Append_Kind (Prev_Tag.X_Id_Union_V.all, Kind);
+                     Append (Prev_Tag.X_Id_Union_V.Kinds, Kind);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Kind,
-                                                   Find_Tag => Prev_Tag,
-                                                   Kind     => Kind));
+                                                                Find_Tag => Prev_Tag,
+                                                                Kind     => Kind));
                   end;
                else
                   Is_Success := False;
@@ -475,21 +478,21 @@ package body XML_File_Parser is
                   declare
                      Item_V : constant X_Proto_XML.Item.Ptr := new X_Proto_XML.Item.T;
                   begin
-                     Append_Item (Prev_Tag.Enum_V.all, Item_V);
+                     Append (Prev_Tag.Enum_V.Items, Item_V);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Item,
-                                                   Find_Tag => Prev_Tag,
-                                                   Item_V   => Item_V));
+                                                                Find_Tag => Prev_Tag,
+                                                                Item_V   => Item_V));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
                      D : constant X_Proto_XML.Documentation.Ptr := new X_Proto_XML.Documentation.T;
                   begin
-                     Append_Documentation (Prev_Tag.Enum_V.all, D);
+                     Append (Prev_Tag.Enum_V.Documentations, D);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id         => Tag_Id.Documentation,
-                                                   Find_Tag        => Prev_Tag,
-                                                   Documentation_V => D));
+                                                                Find_Tag        => Prev_Tag,
+                                                                Documentation_V => D));
                   end;
                else
                   Is_Success := False;
@@ -509,23 +512,23 @@ package body XML_File_Parser is
                   Is_Success := True;
                elsif Tag_Name = XML_Tag_Operation then
                   declare
-                     Operation : X_Proto_XML.List.Fs.Member_Ptr := new X_Proto_XML.List.Fs.Member_Type (X_Proto_XML.List.Fs.List_Member_Kind_Operation);
+                     Operation : X_Proto_XML.List.Member_Ptr := new X_Proto_XML.List.Member_Type (X_Proto_XML.List.List_Member_Kind_Operation);
                   begin
-                     Append_Member (Prev_Tag.List_V.all, Operation);
+                     Append (Prev_Tag.List_V.Members, Operation);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Op,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Op_V                 => Operation.Operation'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Op_V                 => Operation.Operation'Access));
                   end;
                elsif Tag_Name = XML_Tag_Value then
                   declare
-                     V : X_Proto_XML.List.Fs.Member_Ptr := new X_Proto_XML.List.Fs.Member_Type (X_Proto_XML.List.Fs.List_Member_Kind_Value);
+                     V : X_Proto_XML.List.Member_Ptr := new X_Proto_XML.List.Member_Type (X_Proto_XML.List.List_Member_Kind_Value);
                   begin
-                     Append_Member (Prev_Tag.List_V.all, V);
+                     Append (Prev_Tag.List_V.Members, V);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Value,
-                                                   Find_Tag => Prev_Tag,
-                                                   Value_V  => V.Value'Access));
+                                                                Find_Tag => Prev_Tag,
+                                                                Value_V  => V.Value'Access));
                   end;
                else
                   Is_Success := False;
@@ -534,34 +537,34 @@ package body XML_File_Parser is
             when Tag_Id.Op =>
                if Tag_Name = XML_Tag_Operation then
                   declare
-                     V : constant X_Proto_XML.Operation.Fs.Member_Ptr := new X_Proto_XML.Operation.Fs.Member_Type (X_Proto_XML.Operation.Fs.Member_Operation);
+                     V : constant X_Proto_XML.Operation.Member_Ptr := new X_Proto_XML.Operation.Member_Type (X_Proto_XML.Operation.Member_Operation);
                   begin
                      V.Operation := new X_Proto_XML.Operation.T;
-                     Append_Member (Prev_Tag.Op_V.all, V);
+                     Append (Prev_Tag.Op_V.Members, V);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Op,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Op_V                 => V.Operation));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Op_V                 => V.Operation));
                   end;
                elsif Tag_Name = Tag_Field_Reference then
                   declare
-                     V : X_Proto_XML.Operation.Fs.Member_Ptr := new X_Proto_XML.Operation.Fs.Member_Type (X_Proto_XML.Operation.Fs.Member_Kind_Field_Reference);
+                     V : X_Proto_XML.Operation.Member_Ptr := new X_Proto_XML.Operation.Member_Type (X_Proto_XML.Operation.Member_Kind_Field_Reference);
                   begin
-                     Append_Member (Prev_Tag.Op_V.all, V);
+                     Append (Prev_Tag.Op_V.Members, V);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Field_Reference,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Field_Reference      => V.Field_Reference'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Field_Reference      => V.Field_Reference'Access));
                   end;
                elsif Tag_Name = XML_Tag_Value then
                   declare
-                     V : X_Proto_XML.Operation.Fs.Member_Ptr := new X_Proto_XML.Operation.Fs.Member_Type (X_Proto_XML.Operation.Fs.Member_Kind_Value);
+                     V : X_Proto_XML.Operation.Member_Ptr := new X_Proto_XML.Operation.Member_Type (X_Proto_XML.Operation.Member_Kind_Value);
                   begin
-                     Append_Member (Prev_Tag.Op_V.all, V);
+                     Append (Prev_Tag.Op_V.Members, V);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Value,
-                                                   Find_Tag => Prev_Tag,
-                                                   Value_V  => V.Value'Access));
+                                                                Find_Tag => Prev_Tag,
+                                                                Value_V  => V.Value'Access));
                   end;
                else
                   Is_Success := False;
@@ -570,43 +573,43 @@ package body XML_File_Parser is
             when Tag_Id.Event =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Event.Fs.Member_Ptr := new X_Proto_XML.Event.Fs.Member_Type (X_Proto_XML.Event.Fs.Event_Member_Field);
+                     F : X_Proto_XML.Event.Member_Ptr := new X_Proto_XML.Event.Member_Type (X_Proto_XML.Event.Event_Member_Field);
                   begin
-                     Append_Member (Prev_Tag.Event_V.all, F);
+                     Append (Prev_Tag.Event_V.Members, F);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Field,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Field_V              => F.F'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Field_V              => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : X_Proto_XML.Event.Fs.Member_Ptr := new X_Proto_XML.Event.Fs.Member_Type (X_Proto_XML.Event.Fs.Event_Member_Pad);
+                     P : X_Proto_XML.Event.Member_Ptr := new X_Proto_XML.Event.Member_Type (X_Proto_XML.Event.Event_Member_Pad);
                   begin
-                     Append_Member (Prev_Tag.Event_V.all, P);
+                     Append (Prev_Tag.Event_V.Members, P);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Pad,
-                                                   Find_Tag => Prev_Tag,
-                                                   Pad_V    => P.P'Access));
+                                                                Find_Tag => Prev_Tag,
+                                                                Pad_V    => P.P'Access));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
-                     D : X_Proto_XML.Event.Fs.Member_Ptr := new X_Proto_XML.Event.Fs.Member_Type (X_Proto_XML.Event.Fs.Event_Member_Doc);
+                     D : X_Proto_XML.Event.Member_Ptr := new X_Proto_XML.Event.Member_Type (X_Proto_XML.Event.Event_Member_Doc);
                   begin
-                     Append_Member (Prev_Tag.Event_V.all, D);
+                     Append (Prev_Tag.Event_V.Members, D);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Documentation,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Documentation_V      => D.D'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Documentation_V      => D.D'Access));
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     L : X_Proto_XML.Event.Fs.Member_Ptr := new X_Proto_XML.Event.Fs.Member_Type (X_Proto_XML.Event.Fs.Event_Member_List);
+                     L : X_Proto_XML.Event.Member_Ptr := new X_Proto_XML.Event.Member_Type (X_Proto_XML.Event.Event_Member_List);
                   begin
-                     Append_Member (Prev_Tag.Event_V.all, L);
+                     Append (Prev_Tag.Event_V.Members, L);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.List,
-                                                   Find_Tag             => Prev_Tag,
-                                                   List_V               => L.L'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                List_V               => L.L'Access));
                   end;
                else
                   Is_Success := False;
@@ -615,43 +618,43 @@ package body XML_File_Parser is
             when Tag_Id.Documentation =>
                if Tag_Name = Tag_Field then
                   declare
-                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := new X_Proto_XML.Documentation.Fs.Member_Type (X_Proto_XML.Documentation.Fs.Member_Field);
+                     D : X_Proto_XML.Documentation.Member_Ptr := new X_Proto_XML.Documentation.Member_Type (X_Proto_XML.Documentation.Member_Field);
                   begin
-                     Append_Member (Prev_Tag.Documentation_V.all, D);
+                     Append (Prev_Tag.Documentation_V.Members, D);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Field,
-                                                   Find_Tag => Prev_Tag,
-                                                   Field_V  => D.F'Access));
+                                                                Find_Tag => Prev_Tag,
+                                                                Field_V  => D.F'Access));
                   end;
                elsif Tag_Name = XML_Tag_See then
                   declare
-                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := new X_Proto_XML.Documentation.Fs.Member_Type (X_Proto_XML.Documentation.Fs.Member_See);
+                     D : X_Proto_XML.Documentation.Member_Ptr := new X_Proto_XML.Documentation.Member_Type (X_Proto_XML.Documentation.Member_See);
                   begin
-                     Append_Member (Prev_Tag.Documentation_V.all, D);
+                     Append (Prev_Tag.Documentation_V.Members, D);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.See,
-                                                   Find_Tag             => Prev_Tag,
-                                                   See_V                => D.S'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                See_V                => D.S'Access));
                   end;
                elsif Tag_Name = XML_Tag_Error then
                   declare
-                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := new X_Proto_XML.Documentation.Fs.Member_Type (X_Proto_XML.Documentation.Fs.Member_Error);
+                     D : X_Proto_XML.Documentation.Member_Ptr := new X_Proto_XML.Documentation.Member_Type (X_Proto_XML.Documentation.Member_Error);
                   begin
-                     Append_Member (Prev_Tag.Documentation_V.all, D);
+                     Append (Prev_Tag.Documentation_V.Members, D);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Error,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Error_V              => D.E'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Error_V              => D.E'Access));
                   end;
                elsif Tag_Name = XML_Tag_Example then
                   declare
-                     D : X_Proto_XML.Documentation.Fs.Member_Ptr := new X_Proto_XML.Documentation.Fs.Member_Type (X_Proto_XML.Documentation.Fs.Member_Example);
+                     D : X_Proto_XML.Documentation.Member_Ptr := new X_Proto_XML.Documentation.Member_Type (X_Proto_XML.Documentation.Member_Example);
                   begin
-                     Append_Member (Prev_Tag.Documentation_V.all, D);
+                     Append (Prev_Tag.Documentation_V.Members, D);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Example,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Example_V            => D.Ex'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Example_V            => D.Ex'Access));
                   end;
                elsif Tag_Name = XML_Tag_Brief then
                   Is_Success := True;
@@ -664,13 +667,13 @@ package body XML_File_Parser is
             when Tag_Id.Union =>
                if Tag_Name = Tag_List then
                   declare
-                     L : X_Proto_XML.Union.Fs.Child_Ptr := new X_Proto_XML.Union.Fs.Child_Type (X_Proto_XML.Union.Fs.Child_List);
+                     L : X_Proto_XML.Union.Child_Ptr := new X_Proto_XML.Union.Child_Type (X_Proto_XML.Union.Child_List);
                   begin
-                     Append_Child (Prev_Tag.Union_V.all, L);
+                     Append (Prev_Tag.Union_V.Children, L);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.List,
-                                                   Find_Tag => Prev_Tag,
-                                                   List_V   => L.L'Access));
+                                                                Find_Tag => Prev_Tag,
+                                                                List_V   => L.L'Access));
                   end;
                else
                   Is_Success := False;
@@ -679,23 +682,23 @@ package body XML_File_Parser is
             when Tag_Id.Error =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Error.Fs.Child_Ptr := new X_Proto_XML.Error.Fs.Child_Type (X_Proto_XML.Error.Fs.Child_Field);
+                     F : X_Proto_XML.Error.Child_Ptr := new X_Proto_XML.Error.Child_Type (X_Proto_XML.Error.Child_Field);
                   begin
-                     Append_Child (Prev_Tag.Error_V.all, F);
+                     Append (Prev_Tag.Error_V.Children, F);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Field,
-                                                   Find_Tag => Prev_Tag,
-                                                   Field_V  => F.F'Access));
+                                                                Find_Tag => Prev_Tag,
+                                                                Field_V  => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : X_Proto_XML.Error.Fs.Child_Ptr := new X_Proto_XML.Error.Fs.Child_Type (X_Proto_XML.Error.Fs.Child_Pad);
+                     P : X_Proto_XML.Error.Child_Ptr := new X_Proto_XML.Error.Child_Type (X_Proto_XML.Error.Child_Pad);
                   begin
-                     Append_Child (Prev_Tag.Error_V.all, P);
+                     Append (Prev_Tag.Error_V.Children, P);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Pad,
-                                                   Find_Tag => Prev_Tag,
-                                                   Pad_V    => P.P'Access));
+                                                                Find_Tag => Prev_Tag,
+                                                                Pad_V    => P.P'Access));
                   end;
                else
                   Is_Success := False;
@@ -704,73 +707,73 @@ package body XML_File_Parser is
             when Tag_Id.Request =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Request.Fs.Child_Ptr := new X_Proto_XML.Request.Fs.Child_Type (X_Proto_XML.Request.Fs.Child_Field);
+                     F : X_Proto_XML.Request.Child_Ptr := new X_Proto_XML.Request.Child_Type (X_Proto_XML.Request.Child_Field);
                   begin
-                     Append_Child (Prev_Tag.Request_V.all, F);
+                     Append (Prev_Tag.Request_V.Children, F);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Field,
-                                                   Find_Tag => Prev_Tag,
-                                                   Field_V  => F.F'Access));
+                                                                Find_Tag => Prev_Tag,
+                                                                Field_V  => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     P : X_Proto_XML.Request.Fs.Child_Ptr := new X_Proto_XML.Request.Fs.Child_Type (X_Proto_XML.Request.Fs.Child_Pad);
+                     P : X_Proto_XML.Request.Child_Ptr := new X_Proto_XML.Request.Child_Type (X_Proto_XML.Request.Child_Pad);
                   begin
-                     Append_Child (Prev_Tag.Request_V.all, P);
+                     Append (Prev_Tag.Request_V.Children, P);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Pad,
-                                                   Find_Tag => Prev_Tag,
-                                                   Pad_V    => P.P'Access));
+                                                                Find_Tag => Prev_Tag,
+                                                                Pad_V    => P.P'Access));
                   end;
                elsif Tag_Name = XML_Tag_Value_Param then
                   declare
-                     V : X_Proto_XML.Request.Fs.Child_Ptr := new X_Proto_XML.Request.Fs.Child_Type (X_Proto_XML.Request.Fs.Child_Value_Param);
+                     V : X_Proto_XML.Request.Child_Ptr := new X_Proto_XML.Request.Child_Type (X_Proto_XML.Request.Child_Value_Param);
                   begin
-                     Append_Child (Prev_Tag.Request_V.all, V);
+                     Append (Prev_Tag.Request_V.Children, V);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Value_Param,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Value_Param_V        => V.V'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Value_Param_V        => V.V'Access));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
-                     V : X_Proto_XML.Request.Fs.Child_Ptr := new X_Proto_XML.Request.Fs.Child_Type (X_Proto_XML.Request.Fs.Child_Documentation);
+                     V : X_Proto_XML.Request.Child_Ptr := new X_Proto_XML.Request.Child_Type (X_Proto_XML.Request.Child_Documentation);
                   begin
-                     Append_Child (Prev_Tag.Request_V.all, V);
+                     Append (Prev_Tag.Request_V.Children, V);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Documentation,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Documentation_V      => V.D'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Documentation_V      => V.D'Access));
                   end;
                elsif Tag_Name = XML_Tag_Reply then
                   declare
-                     R : X_Proto_XML.Request.Fs.Child_Ptr := new X_Proto_XML.Request.Fs.Child_Type (X_Proto_XML.Request.Fs.Child_Reply);
+                     R : X_Proto_XML.Request.Child_Ptr := new X_Proto_XML.Request.Child_Type (X_Proto_XML.Request.Child_Reply);
                   begin
-                     Append_Child (Prev_Tag.Request_V.all, R);
+                     Append (Prev_Tag.Request_V.Children, R);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Reply,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Reply_V              => R.R'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Reply_V              => R.R'Access));
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     R : X_Proto_XML.Request.Fs.Child_Ptr := new X_Proto_XML.Request.Fs.Child_Type (X_Proto_XML.Request.Fs.Child_List);
+                     R : X_Proto_XML.Request.Child_Ptr := new X_Proto_XML.Request.Child_Type (X_Proto_XML.Request.Child_List);
                   begin
-                     Append_Child (Prev_Tag.Request_V.all, R);
+                     Append (Prev_Tag.Request_V.Children, R);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.List,
-                                                   Find_Tag             => Prev_Tag,
-                                                   List_V               => R.L'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                List_V               => R.L'Access));
                   end;
                elsif Tag_Name = XML_Tag_Expression_Field then
                   declare
-                     R : X_Proto_XML.Request.Fs.Child_Ptr := new X_Proto_XML.Request.Fs.Child_Type (X_Proto_XML.Request.Fs.Child_Expression_Field);
+                     R : X_Proto_XML.Request.Child_Ptr := new X_Proto_XML.Request.Child_Type (X_Proto_XML.Request.Child_Expression_Field);
                   begin
-                     Append_Child (Prev_Tag.Request_V.all, R);
+                     Append (Prev_Tag.Request_V.Children, R);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Expression_Field,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Expression_Field_V   => R.EF'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Expression_Field_V   => R.EF'Access));
                   end;
                else
                   Is_Success := False;
@@ -779,43 +782,43 @@ package body XML_File_Parser is
             when Tag_Id.Reply =>
                if Tag_Name = Tag_Field then
                   declare
-                     F : X_Proto_XML.Reply.Fs.Child_Ptr := new X_Proto_XML.Reply.Fs.Child_Type (X_Proto_XML.Reply.Fs.Child_Field);
+                     F : X_Proto_XML.Reply.Child_Ptr := new X_Proto_XML.Reply.Child_Type (X_Proto_XML.Reply.Child_Field);
                   begin
-                     Append_Child (Prev_Tag.Reply_V.all, F);
+                     Append (Prev_Tag.Reply_V.Children, F);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Field,
-                                                   Find_Tag => Prev_Tag,
-                                                   Field_V  => F.F'Access));
+                                                                Find_Tag => Prev_Tag,
+                                                                Field_V  => F.F'Access));
                   end;
                elsif Tag_Name = Tag_Pad then
                   declare
-                     F : X_Proto_XML.Reply.Fs.Child_Ptr := new X_Proto_XML.Reply.Fs.Child_Type (X_Proto_XML.Reply.Fs.Child_Pad);
+                     F : X_Proto_XML.Reply.Child_Ptr := new X_Proto_XML.Reply.Child_Type (X_Proto_XML.Reply.Child_Pad);
                   begin
-                     Append_Child (Prev_Tag.Reply_V.all, F);
+                     Append (Prev_Tag.Reply_V.Children, F);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id  => Tag_Id.Pad,
-                                                   Find_Tag => Prev_Tag,
-                                                   Pad_V    => F.P'Access));
+                                                                Find_Tag => Prev_Tag,
+                                                                Pad_V    => F.P'Access));
                   end;
                elsif Tag_Name = XML_Tag_Doc then
                   declare
-                     F : X_Proto_XML.Reply.Fs.Child_Ptr := new X_Proto_XML.Reply.Fs.Child_Type (X_Proto_XML.Reply.Fs.Child_Documentation);
+                     F : X_Proto_XML.Reply.Child_Ptr := new X_Proto_XML.Reply.Child_Type (X_Proto_XML.Reply.Child_Documentation);
                   begin
-                     Append_Child (Prev_Tag.Reply_V.all, F);
+                     Append (Prev_Tag.Reply_V.Children, F);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Documentation,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Documentation_V      => F.D'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Documentation_V      => F.D'Access));
                   end;
                elsif Tag_Name = Tag_List then
                   declare
-                     F : X_Proto_XML.Reply.Fs.Child_Ptr := new X_Proto_XML.Reply.Fs.Child_Type (X_Proto_XML.Reply.Fs.Child_List);
+                     F : X_Proto_XML.Reply.Child_Ptr := new X_Proto_XML.Reply.Child_Type (X_Proto_XML.Reply.Child_List);
                   begin
-                     Append_Child (Prev_Tag.Reply_V.all, F);
+                     Append (Prev_Tag.Reply_V.Children, F);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.List,
-                                                   Find_Tag             => Prev_Tag,
-                                                   List_V               => F.L'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                List_V               => F.L'Access));
                   end;
                else
                   Is_Success := False;
@@ -824,13 +827,13 @@ package body XML_File_Parser is
             when Tag_Id.Expression_Field =>
                if Tag_Name = XML_Tag_Operation then
                   declare
-                     C : X_Proto_XML.Expression_Field.Fs.Child_Ptr := new X_Proto_XML.Expression_Field.Fs.Child_Type (X_Proto_XML.Expression_Field.Fs.Child_Operation);
+                     C : X_Proto_XML.Expression_Field.Child_Ptr := new X_Proto_XML.Expression_Field.Child_Type (X_Proto_XML.Expression_Field.Child_Operation);
                   begin
-                     Append_Child (Prev_Tag.Expression_Field_V.all, C);
+                     Append (Prev_Tag.Expression_Field_V.Children, C);
                      Is_Success := True;
                      Insert (new XML_File_Parser.Current_Tag_T'(Kind_Id              => Tag_Id.Op,
-                                                   Find_Tag             => Prev_Tag,
-                                                   Op_V                 => C.Op'Access));
+                                                                Find_Tag             => Prev_Tag,
+                                                                Op_V                 => C.Op'Access));
                   end;
                else
                   Is_Success := False;
@@ -867,7 +870,7 @@ package body XML_File_Parser is
          if Current_Tag = null then
             Is_Success := False;
             Initialize (Error_Message, This_Subprogram & ", 1, attribute name " & Attribute_Name & " and value " & Attribute_Value & ", parents: " & To_String (
-Parent_Tags_And_Current_Tag));
+                        Parent_Tags_And_Current_Tag));
             return;
          end if;
 
@@ -880,7 +883,8 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Header (Current_Tag.Xcb_V.all, V);
+                     Current_Tag.Xcb_V.Header := (Exists => True,
+                                                  Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -892,7 +896,8 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.Struct_V.all, V);
+                     Current_Tag.Struct_V.Name := (Exists => True,
+                                                   Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -904,35 +909,40 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Kind (Current_Tag.Field_V.all, V);
+                     Current_Tag.Field_V.Kind := (Exists => True,
+                                                  Value  => V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Name then
                   declare
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.Field_V.all, V);
+                     Current_Tag.Field_V.Name := (Exists => True,
+                                                  Value  => V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Enum then
                   declare
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Enum (Current_Tag.Field_V.all, V);
+                     Current_Tag.Field_V.Enum := (Exists => True,
+                                                  Value  => V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Mask then
                   declare
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Mask (Current_Tag.Field_V.all, V);
+                     Current_Tag.Field_V.Mask := (Exists => True,
+                                                  Value  => V);
                   end;
                elsif Attribute_Name = Tag_Field_Attribute_Alt_Enum then
                   declare
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Alt_Enum (Current_Tag.Field_V.all, V);
+                     Current_Tag.Field_V.Alt_Enum := (Exists => True,
+                                                      Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -944,7 +954,8 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.X_Id_Kind_V.all, V);
+                     Current_Tag.X_Id_Kind_V.Name := (Exists => True,
+                                                      Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -956,7 +967,8 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.X_Id_Union_V.all, V);
+                     Current_Tag.X_Id_Union_V.Name := (Exists => True,
+                                                       Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -968,14 +980,16 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Old_Name (Current_Tag.Type_Definition_V.all, V);
+                     Current_Tag.Type_Definition_V.Old_Name := (Exists => True,
+                                                                Value  => V);
                   end;
                elsif Attribute_Name = Tag_Type_Definition_Attribute_New_Name then
                   declare
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_New_Name (Current_Tag.Type_Definition_V.all, V);
+                     Current_Tag.Type_Definition_V.New_Name := (Exists => True,
+                                                                Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -996,7 +1010,7 @@ Parent_Tags_And_Current_Tag));
                         Is_Success := False;
                         Initialize (Error_Message, This_Subprogram & ", 8, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Set_Bytes (Current_Tag.Pad_V.all, Positive (V));
+                        Current_Tag.Pad_V.all.Bytes := (Exists => True, Value => Positive (V));
                      end if;
                   end;
                else
@@ -1009,7 +1023,8 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.Enum_V.all, V);
+                     Current_Tag.Enum_V.Name := (Exists => True,
+                                                 Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -1021,7 +1036,8 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.Item_V.all, V);
+                     Current_Tag.Item_V.Name := (Exists => True,
+                                                 Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -1033,14 +1049,16 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Kind (Current_Tag.List_V.all, V);
+                     Current_Tag.List_V.Kind := (Exists => True,
+                                                 Value  => V);
                   end;
                elsif Attribute_Name = Tag_List_Attribute_Name then
                   declare
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.List_V.all, V);
+                     Current_Tag.List_V.Name := (Exists => True,
+                                                 Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -1052,7 +1070,8 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Op (Current_Tag.Op_V.all, V);
+                     Current_Tag.Op_V.Op := (Exists => True,
+                                             Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -1064,7 +1083,8 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.Event_V.all, V);
+                     Current_Tag.Event_V.Name := (Exists => True,
+                                                  Value  => V);
                   end;
                elsif Attribute_Name = XML_Tag_Event_Attribute_Number then
                   declare
@@ -1079,23 +1099,28 @@ Parent_Tags_And_Current_Tag));
                         Is_Success := False;
                         Initialize (Error_Message, This_Subprogram & ", 13, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Set_Number (Current_Tag.Event_V.all, Positive (V));
+                        Current_Tag.Event_V.Number := (Exists => True,
+                                                       Value  => Positive (V));
                      end if;
                   end;
                elsif Attribute_Name = XML_Tag_Event_Attribute_No_Sequence_Number then
                   if Attribute_Value = "true" then
-                     Set_No_Sequence_Number (Current_Tag.Event_V.all, True);
+                     Current_Tag.Event_V.No_Sequence_Number := (Exists => True,
+                                                                Value  => True);
                   elsif Attribute_Value = "false" then
-                     Set_No_Sequence_Number (Current_Tag.Event_V.all, False);
+                     Current_Tag.Event_V.No_Sequence_Number := (Exists => True,
+                                                                Value  => False);
                   else
                      Is_Success := False;
                      Initialize (Error_Message, This_Subprogram & ", 14, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                   end if;
                elsif Attribute_Name = XML_Tag_Event_Attribute_XGE then
                   if Attribute_Value = "true" then
-                     Set_XGE (Current_Tag.Event_V.all, True);
+                     Current_Tag.Event_V.XGE := (Exists => True,
+                                                 Value  => True);
                   elsif Attribute_Value = "false" then
-                     Set_XGE (Current_Tag.Event_V.all, False);
+                     Current_Tag.Event_V.XGE := (Exists => True,
+                                                 Value  => False);
                   else
                      Is_Success := False;
                      Initialize (Error_Message, This_Subprogram & ", 15, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
@@ -1110,14 +1135,16 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.See_V.all, V);
+                     Current_Tag.See_V.Name := (Exists => True,
+                                                Value  => V);
                   end;
                elsif Attribute_Name = XML_Tag_See_Attribute_Kind then
                   declare
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Kind (Current_Tag.See_V.all, V);
+                     Current_Tag.See_V.Kind := (Exists => True,
+                                                Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -1129,14 +1156,16 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.Event_Copy_V.all, V);
+                     Current_Tag.Event_Copy_V.Name := (Exists => True,
+                                                       Value  => V);
                   end;
                elsif Attribute_Name = XML_Tag_Event_Copy_Attribute_Ref then
                   declare
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Ref (Current_Tag.Event_Copy_V.all, V);
+                     Current_Tag.Event_Copy_V.Ref := (Exists => True,
+                                                      Value  => V);
                   end;
                elsif Attribute_Name = XML_Tag_Event_Copy_Attribute_Number then
                   declare
@@ -1151,7 +1180,8 @@ Parent_Tags_And_Current_Tag));
                         Is_Success := False;
                         Initialize (Error_Message, This_Subprogram & ", 18, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Set_Number (Current_Tag.Event_Copy_V.all, V);
+                        Current_Tag.Event_Copy_V.Number := (Exists => True,
+                                                            Value  => V);
                      end if;
                   end;
                else
@@ -1164,7 +1194,8 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.Union_V.all, V);
+                     Current_Tag.Union_V.Name := (Exists => True,
+                                                  Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -1176,7 +1207,8 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.Error_V.all, V);
+                     Current_Tag.Error_V.Name := (Exists => True,
+                                                  Value  => V);
                   end;
                elsif Attribute_Name = XML_Tag_Error_Attribute_Number then
                   declare
@@ -1191,7 +1223,8 @@ Parent_Tags_And_Current_Tag));
                         Is_Success := False;
                         Initialize (Error_Message, This_Subprogram & ", 21, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Set_Number (Current_Tag.Error_V.all, V);
+                        Current_Tag.Error_V.Number := (Exists => True,
+                                                       Value  => V);
                      end if;
                   end;
                elsif Attribute_Name = XML_Tag_Error_Attribute_Kind then
@@ -1199,7 +1232,8 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Kind (Current_Tag.Error_V.all, V);
+                     Current_Tag.Error_V.Kind := (Exists => True,
+                                                  Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -1211,7 +1245,8 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.Error_Copy_V.all, V);
+                     Current_Tag.Error_Copy_V.Name := (Exists => True,
+                                                       Value  => V);
                   end;
                elsif Attribute_Name = XML_Tag_Error_Copy_Attribute_Number then
                   declare
@@ -1226,7 +1261,8 @@ Parent_Tags_And_Current_Tag));
                         Is_Success := False;
                         Initialize (Error_Message, This_Subprogram & ", 23, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Set_Number (Current_Tag.Error_Copy_V.all, V);
+                        Current_Tag.Error_Copy_V.Number := (Exists => True,
+                                                            Value  => V);
                      end if;
                   end;
                elsif Attribute_Name = XML_Tag_Error_Copy_Attribute_Ref then
@@ -1234,7 +1270,8 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Ref (Current_Tag.Error_Copy_V.all, V);
+                     Current_Tag.Error_Copy_V.Ref := (Exists => True,
+                                                      Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -1246,7 +1283,8 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.Request_V.all, V);
+                     Current_Tag.Request_V.Name := (Exists => True,
+                                                    Value  => V);
                   end;
                elsif Attribute_Name = XML_Tag_Request_Attribute_Op_Code then
                   declare
@@ -1261,14 +1299,17 @@ Parent_Tags_And_Current_Tag));
                         Is_Success := False;
                         Initialize (Error_Message, This_Subprogram & ", 24, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
                      else
-                        Set_Op_Code (Current_Tag.Request_V.all, V);
+                        Current_Tag.Request_V.Op_Code := (Exists => True,
+                                                          Value  => V);
                      end if;
                   end;
                elsif Attribute_Name = XML_Tag_Request_Attribute_Combine_Adjacent then
                   if Attribute_Value = "true" then
-                     Set_Shall_Combine_Adjacent (Current_Tag.Request_V.all, True);
+                     Current_Tag.Request_V.Shall_Combine_Adjacent := (Exists => True,
+                                                                      Value  => True);
                   elsif Attribute_Value = "false" then
-                     Set_Shall_Combine_Adjacent (Current_Tag.Request_V.all, False);
+                     Current_Tag.Request_V.Shall_Combine_Adjacent := (Exists => True,
+                                                                      Value  => False);
                   else
                      Is_Success := False;
                      Initialize (Error_Message, This_Subprogram & ", 25, found unexpected attribute name " & Attribute_Name & " and value " & Attribute_Value);
@@ -1283,21 +1324,24 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Mask_Kind (Current_Tag.Value_Param_V.all, V);
+                     Current_Tag.Value_Param_V.Mask_Kind := (Exists => True,
+                                                             Value  => V);
                   end;
                elsif Attribute_Name = XML_Tag_Value_Param_Attribute_Mask_Name then
                   declare
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Mask_Name (Current_Tag.Value_Param_V.all, V);
+                     Current_Tag.Value_Param_V.Mask_Name := (Exists => True,
+                                                             Value  => V);
                   end;
                elsif Attribute_Name = XML_Tag_Value_Param_Attribute_List_Name then
                   declare
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_List_Name (Current_Tag.Value_Param_V.all, V);
+                     Current_Tag.Value_Param_V.List_Name := (Exists => True,
+                                                             Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -1309,14 +1353,16 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Name (Current_Tag.Expression_Field_V.all, V);
+                     Current_Tag.Expression_Field_V.Name := (Exists => True,
+                                                             Value  => V);
                   end;
                elsif Attribute_Name = XML_Tag_Expression_Field_Attribute_Kind then
                   declare
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Attribute_Value);
-                     Set_Kind (Current_Tag.Expression_Field_V.all, V);
+                     Current_Tag.Expression_Field_V.Kind := (Exists => True,
+                                                             Value  => V);
                   end;
                else
                   Is_Success := False;
@@ -1402,22 +1448,22 @@ Parent_Tags_And_Current_Tag));
                            Is_Success := False;
                            Initialize (Error_Message, This_Subprogram & ", 1, failed to interpret '" & Tag_Value & "' as a number for end tag " & Tag_Name);
                         else
-                           case Kind_Id (Prev_Tag.Item_V.all) is
-                              when X_Proto_XML.Item.Fs.Not_Specified =>
+                           case Prev_Tag.Item_V.Kind_Id is
+                              when X_Proto_XML.Item.Not_Specified =>
                                  if Tag_Name = XML_Tag_Value then
-                                    Set_Kind_Id (Prev_Tag.Item_V.all, X_Proto_XML.Item.Fs.Specified_As_Value);
-                                    Set_Value (Prev_Tag.Item_V.all, V);
+                                    Prev_Tag.Item_V.Kind_Id := X_Proto_XML.Item.Specified_As_Value;
+                                    Prev_Tag.Item_V.Value := V;
                                  elsif Tag_Name = Tag_Bit then
-                                    Set_Kind_Id (Prev_Tag.Item_V.all, X_Proto_XML.Item.Fs.Specified_As_Bit);
-                                    Set_Bit (Prev_Tag.Item_V.all, X_Proto_XML.Item.Fs.Bit_Type (V));
+                                    Prev_Tag.Item_V.Kind_Id := X_Proto_XML.Item.Specified_As_Bit;
+                                    Prev_Tag.Item_V.Bit     := X_Proto_XML.Item.Bit_Type (V);
                                  else
                                     Is_Success := False;
                                     Initialize (Error_Message, This_Subprogram & ", 2, unknown end tag '" & Tag_Name & "'");
                                  end if;
-                              when X_Proto_XML.Item.Fs.Specified_As_Value |
-                                   X_Proto_XML.Item.Fs.Specified_As_Bit =>
+                              when X_Proto_XML.Item.Specified_As_Value |
+                                   X_Proto_XML.Item.Specified_As_Bit =>
                                  Is_Success := False;
-                                 Initialize (Error_Message, This_Subprogram & ", 3, value already initialized for end tag " & Tag_Name & ", kind id " & X_Proto_XML.Item.Fs.Kind_Id_Type'Image (Kind_Id (Prev_Tag.Item_V.all)))
+                                 Initialize (Error_Message, This_Subprogram & ", 3, value already initialized for end tag " & Tag_Name & ", kind id " & X_Proto_XML.Item.Kind_Id_Type'Image (Prev_Tag.Item_V.Kind_Id))
 ;
                            end case;
                         end if;
@@ -1425,10 +1471,10 @@ Parent_Tags_And_Current_Tag));
                   when Tag_Id.List =>
                      if Tag_Name = Tag_Field_Reference then
                         declare
-                           L : constant X_Proto_XML.List.Fs.Member_Ptr := new X_Proto_XML.List.Fs.Member_Type (X_Proto_XML.List.Fs.List_Member_Kind_Field_Reference);
+                           L : constant X_Proto_XML.List.Member_Ptr := new X_Proto_XML.List.Member_Type (X_Proto_XML.List.List_Member_Kind_Field_Reference);
                         begin
                            Initialize (L.Field_Reference, Tag_Value);
-                           Append_Member (Prev_Tag.List_V.all, L);
+                           Append (Prev_Tag.List_V.Members, L);
                         end;
                      else
                         Is_Success := False;
@@ -1440,14 +1486,16 @@ Parent_Tags_And_Current_Tag));
                            V : X_Proto_XML.Large_Bounded_String.T;
                         begin
                            Initialize (V, Tag_Value);
-                           Set_Brief_Description (Prev_Tag.Documentation_V.all, V);
+                           Prev_Tag.Documentation_V.Brief_Description := (Exists => True,
+                                                                          Value  => V);
                         end;
                      elsif Tag_Name = XML_Tag_Description then
                         declare
                            V : X_Proto_XML.Large_Bounded_String.T;
                         begin
                            Initialize (V, Tag_Value);
-                           Set_Description (Prev_Tag.Documentation_V.all, V);
+                           Prev_Tag.Documentation_V.Description := (Exists => True,
+                                                                    Value  => V);
                         end;
                      else
                         Is_Success := False;
@@ -1475,14 +1523,16 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Tag_Value);
-                     Set_Value (Current_Tag.Kind.all, V);
+                     Current_Tag.Kind.Value := (Exists => True,
+                                                Value  => V);
                   end;
                when Tag_Id.Field =>
                   declare
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Tag_Value);
-                     Set_Value (Current_Tag.Field_V.all, V);
+                     Current_Tag.Field_V.Value := (Exists => True,
+                                                   Value  => V);
                   end;
                when Tag_Id.Value =>
                   declare
@@ -1505,14 +1555,16 @@ Parent_Tags_And_Current_Tag));
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Tag_Value);
-                     Set_Value (Current_Tag.Error_V.all, V);
+                     Current_Tag.Error_V.Value := (Exists => True,
+                                                   Value  => V);
                   end;
                when Tag_Id.Example =>
                   declare
                      V : X_Proto_XML.Large_Bounded_String.T;
                   begin
                      Initialize (V, Tag_Value);
-                     Set_Value (Current_Tag.Example_V.all, V);
+                     Current_Tag.Example_V.Value := (Exists => True,
+                                                     Value  => V);
                   end;
                when Tag_Id.Op =>
                   if Tag_Name = Tag_Field_Reference then
@@ -1520,8 +1572,8 @@ Parent_Tags_And_Current_Tag));
                         V : X_Proto_XML.Field_Reference_Type;
                      begin
                         Initialize (V, Tag_Value);
-                        Append_Member (Current_Tag.Op_V.all, new X_Proto_XML.Operation.Fs.Member_Type'(Kind_Id         => X_Proto_XML.Operation.Fs.Member_Kind_Field_Reference,
-                                                                                                   Field_Reference => V));
+                        Append (Current_Tag.Op_V.Members, new X_Proto_XML.Operation.Member_Type'(Kind_Id         => X_Proto_XML.Operation.Member_Kind_Field_Reference,
+                                                                                                 Field_Reference => V));
                      end;
                   elsif Tag_Name = XML_Tag_Value then
                      declare
@@ -1536,8 +1588,8 @@ Parent_Tags_And_Current_Tag));
                            Is_Success := False;
                            Initialize (Error_Message, This_Subprogram & ", 9, failed to interpret '" & Tag_Value & "' as a number for end tag " & Tag_Name);
                         else
-                           Append_Member (Current_Tag.Op_V.all, new X_Proto_XML.Operation.Fs.Member_Type'(Kind_Id => X_Proto_XML.Operation.Fs.Member_Kind_Value,
-                                                                                                      Value   => V));
+                           Append (Current_Tag.Op_V.Members, new X_Proto_XML.Operation.Member_Type'(Kind_Id => X_Proto_XML.Operation.Member_Kind_Value,
+                                                                                                    Value   => V));
                         end if;
                      end;
                   else
