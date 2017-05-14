@@ -46,12 +46,12 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Kind     : aliased Kind_T;
-            Name     : aliased Name_T;
-            Enum     : aliased Enum_T;
-            Mask     : aliased Mask_T;
-            Alt_Enum : aliased Alt_Enum_T;
-            Value    : aliased Value_T;
+            Kind     : Kind_T;
+            Name     : Name_T;
+            Enum     : Enum_T;
+            Mask     : Mask_T;
+            Alt_Enum : Alt_Enum_T;
+            Value    : Value_T;
          end record;
 
       type Ptr is access all T;
@@ -68,7 +68,7 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Bytes : aliased Bytes_T;
+            Bytes : Bytes_T;
          end record;
 
       type Ptr is access all T;
@@ -110,7 +110,7 @@ package Generic_X_Proto_XML is
          case Kind_Id is
             when Child_Kind_Field_Reference => Field_Reference : aliased Field_Reference_T;
             when Child_Kind_Value           => Value           : aliased Value_T;
-            when Child_Operation            => Operation       : aliased Ptr;
+            when Child_Operation            => Operation       : Ptr;
          end case;
       end record;
 
@@ -123,8 +123,8 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Op       : aliased Op_T;
-            Children : aliased Child_Vector.T;
+            Op       : Op_T;
+            Children : Child_Vector.T;
          end record;
 
    end Operation;
@@ -166,9 +166,9 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Kind     : aliased Kind_T;
-            Name     : aliased Name_T;
-            Children : aliased Child_Vector.T;
+            Kind     : Kind_T;
+            Name     : Name_T;
+            Children : Child_Vector.T;
          end record;
 
       type Ptr is access all T;
@@ -194,10 +194,10 @@ package Generic_X_Proto_XML is
       end record;
 
       type T is limited record
-         Kind_Id : aliased Kind_Id_T := Not_Specified;
-         Name    : aliased Name_T;
-         Value   : aliased Value_T;
-         Bit     : aliased Bit_T;
+         Kind_Id : Kind_Id_T := Not_Specified;
+         Name    : Name_T;
+         Value   : Value_T;
+         Bit     : Bit_T;
       end record;
 
       type Ptr is access all T;
@@ -236,9 +236,9 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Kind     : aliased Kind_T;
-            Name     : aliased Name_T;
-            Children : aliased Child_Vector.T;
+            Kind     : Kind_T;
+            Name     : Name_T;
+            Children : Child_Vector.T;
          end record;
 
       type Ptr is access all T;
@@ -289,11 +289,11 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name     : aliased Name_T;
-            Number   : aliased Number_T;
-            Kind     : aliased Kind_T;
-            Value    : aliased Value_T;
-            Children : aliased Child_Vector.T;
+            Name     : Name_T;
+            Number   : Number_T;
+            Kind     : Kind_T;
+            Value    : Value_T;
+            Children : Child_Vector.T;
          end record;
 
       type Ptr is access all T;
@@ -320,9 +320,9 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name   : aliased Name_T;
-            Number : aliased Number_T;
-            Ref    : aliased Ref_T;
+            Name   : Name_T;
+            Number : Number_T;
+            Ref    : Ref_T;
          end record;
 
       type Ptr is access all T;
@@ -339,7 +339,7 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Value : aliased Value_T;
+            Value : Value_T;
          end record;
 
       type Ptr is access all T;
@@ -361,8 +361,8 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Kind : aliased Kind_T;
-            Name : aliased Name_T;
+            Kind : Kind_T;
+            Name : Name_T;
          end record;
 
       type Ptr is access all T;
@@ -407,9 +407,9 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Brief_Description : aliased Brief_Description_T;
-            Description       : aliased Description_T;
-            Children          : aliased Child_Vector.T;
+            Brief_Description : Brief_Description_T;
+            Description       : Description_T;
+            Children          : Child_Vector.T;
          end record;
 
       type Ptr is access all T;
@@ -436,9 +436,9 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name   : aliased Name_T;
-            Number : aliased Number_T;
-            Ref    : aliased Ref_T;
+            Name   : Name_T;
+            Number : Number_T;
+            Ref    : Ref_T;
          end record;
 
       type Ptr is access all T;
@@ -455,7 +455,7 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name : aliased Name_T;
+            Name : Name_T;
          end record;
 
       type Ptr is access T;
@@ -472,7 +472,7 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Value : aliased Value_T;
+            Value : Value_T;
          end record;
 
       type Ptr is access all T;
@@ -493,8 +493,8 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name  : aliased Name_T;
-            Kinds : aliased Type_Vector.T;
+            Name  : Name_T;
+            Kinds : Type_Vector.T;
          end record;
 
       type Ptr is access T;
@@ -516,8 +516,8 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Old_Name : aliased Old_Name_T;
-            New_Name : aliased New_Name_T;
+            Old_Name : Old_Name_T;
+            New_Name : New_Name_T;
          end record;
 
       type Ptr is access all T;
@@ -542,9 +542,9 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name           : aliased Name_T;
-            Items          : aliased Item_Vector.T;
-            Documentations : aliased Documentation_Vector.T;
+            Name           : Name_T;
+            Items          : Item_Vector.T;
+            Documentations : Documentation_Vector.T;
          end record;
 
       type Ptr is access all T;
@@ -578,8 +578,8 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name     : aliased Name_T;
-            Children : aliased Child_Vector.T;
+            Name     : Name_T;
+            Children : Child_Vector.T;
          end record;
 
       type Ptr is access all T;
@@ -621,8 +621,8 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name     : aliased Name_T;
-            Children : aliased Child_Vector.T;
+            Name     : Name_T;
+            Children : Child_Vector.T;
          end record;
 
       type Ptr is access all T;
@@ -677,11 +677,11 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name               : aliased Name_T;
-            Number             : aliased Number_T;
-            No_Sequence_Number : aliased No_Sequence_Number_T;
-            Children           : aliased Child_Vector.T;
-            XGE                : aliased XGE_T;
+            Name               : Name_T;
+            Number             : Number_T;
+            No_Sequence_Number : No_Sequence_Number_T;
+            Children           : Child_Vector.T;
+            XGE                : XGE_T;
          end record;
 
       type Ptr is access all T;
@@ -708,9 +708,9 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Mask_Kind : aliased Mask_Kind_T;
-            Mask_Name : aliased Mask_Name_T;
-            List_Name : aliased List_Name_T;
+            Mask_Kind : Mask_Kind_T;
+            Mask_Name : Mask_Name_T;
+            List_Name : List_Name_T;
          end record;
 
       type Ptr is access all T;
@@ -745,7 +745,7 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Children : aliased Child_Vector.T;
+            Children : Child_Vector.T;
          end record;
 
       type Ptr is access all T;
@@ -801,10 +801,10 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Name                   : aliased Name_T;
-            Op_Code                : aliased Op_Code_T;
-            Shall_Combine_Adjacent : aliased Shall_Combine_Adjacent_T;
-            Children               : aliased Child_Vector.T;
+            Name                   : Name_T;
+            Op_Code                : Op_Code_T;
+            Shall_Combine_Adjacent : Shall_Combine_Adjacent_T;
+            Children               : Child_Vector.T;
          end record;
 
       type Ptr is access all T;
@@ -865,18 +865,18 @@ package Generic_X_Proto_XML is
 
       type T is limited
          record
-            Header           : aliased Header_T;
-            Structs          : aliased Struct_Vector.T;
-            X_Ids            : aliased X_Id_Vector.T;
-            X_Id_Unions      : aliased X_Id_Union_Vector.T;
-            Type_Definitions : aliased Type_Definition_Vector.T;
-            Enums            : aliased Enum_Vector.T;
-            Events           : aliased Event_Vector.T;
-            Event_Copies     : aliased Event_Copy_Vector.T;
-            Unions           : aliased Union_Vector.T;
-            Errors           : aliased Error_Vector.T;
-            Error_Copies     : aliased Error_Copy_Vector.T;
-            Requests         : aliased Request_Vector.T;
+            Header           : Header_T;
+            Structs          : Struct_Vector.T;
+            X_Ids            : X_Id_Vector.T;
+            X_Id_Unions      : X_Id_Union_Vector.T;
+            Type_Definitions : Type_Definition_Vector.T;
+            Enums            : Enum_Vector.T;
+            Events           : Event_Vector.T;
+            Event_Copies     : Event_Copy_Vector.T;
+            Unions           : Union_Vector.T;
+            Errors           : Error_Vector.T;
+            Error_Copies     : Error_Copy_Vector.T;
+            Requests         : Request_Vector.T;
          end record;
 
       type Ptr is access all T;
