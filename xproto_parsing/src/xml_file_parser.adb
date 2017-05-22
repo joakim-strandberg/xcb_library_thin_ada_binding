@@ -250,7 +250,9 @@ package body XML_File_Parser is
 
          TN : Aida.XML.Bounded_String_T;
       begin
-         Populate_Parents (Parents);
+         if not Is_Empty (Parents) then
+            Populate_Parents (Parents);
+         end if;
          Initialize (This => TN,
                      Text => Tag_Name);
          Append (This     => Parents_Including_Self,
@@ -296,6 +298,7 @@ package body XML_File_Parser is
 
          Prev_Tag : constant Current_Tag_Ptr := Find_Tag (Parent_Tags);
       begin
+--         Ada.Text_IO.Put_Line (Length (Parent_Tags));
          Populate_Parents_Including_Self (Parents_Including_Self, Parent_Tags, Tag_Name);
 
          if Prev_Tag = null then
