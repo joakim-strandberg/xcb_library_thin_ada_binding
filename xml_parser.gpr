@@ -1,0 +1,40 @@
+with "../aida_2012/aida.gpr";
+with "xproto_xml_tags.gpr";
+
+project Xml_Parser is
+   for Source_Dirs use ("src");
+   for Object_Dir use "obj";
+   for Exec_Dir use "bin";
+   for Main use ("xml_parser.adb");
+
+   for Source_Files use (
+                         "generic_x_proto_xml.ads",
+                         "xcb_package_creator.ads",
+                         "xcb_package_creator.adb",
+                         "xml_file_parser.ads",
+                         "xml_file_parser.adb",
+                         "xproto_xml-storage.ads",
+                         "xproto_xml-parser.ads",
+                         "xproto_xml-parser.adb",
+                         "xproto_xml-current_ids.ads",
+                         "xproto_xml-max_indices.ads",
+                         "xproto_xml-max_indices.adb",
+                         "xml_parser.adb"
+                        );
+
+   package Compiler is
+--      for Local_Configuration_Pragmas use "xcb_parser.adc";
+      for Default_Switches ("Ada") use (
+                                        "-g",
+                                        "-gnat12",
+                                        "-Wall",
+--                                        "-pedantic",
+                                        "-fstack-check"
+                                       );
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("Ada") use ("-E");
+   end Binder;
+
+end Xml_Parser;

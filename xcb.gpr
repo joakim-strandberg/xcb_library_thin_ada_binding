@@ -8,4 +8,9 @@ library project Xcb is
 
    for Languages    use ("Ada");
 
+   for Source_Files use (
+                         "xcb.ads",
+                         "xcb.adb"
+                        );
+
 end Xcb;
