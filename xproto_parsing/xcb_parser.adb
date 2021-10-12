@@ -1,7 +1,7 @@
 with Ada.Direct_IO;
 with Ada.Text_IO;
 with Aida.XML;
-with Generic_X_Proto_XML;
+with X_Proto_XML;
 with XML_File_Parser;
 with XCB_Package_Creator;
 with Ada.Exceptions;
@@ -12,11 +12,9 @@ package body Xcb_Parser is
 
    File_Name : constant String  := "xproto.xml";
 
-   package X_Proto_XML is new Generic_X_Proto_XML (Size => 220_000_000);
+   package Parser renames XML_File_Parser;
 
-   package Parser is new XML_File_Parser (X_Proto_XML);
-
-   package Creator is new XCB_Package_Creator (X_Proto_XML);
+   package Creator renames XCB_Package_Creator;
 
    function Determine_File_Size return Natural is
 

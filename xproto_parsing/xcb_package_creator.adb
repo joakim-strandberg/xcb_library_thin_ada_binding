@@ -1313,7 +1313,7 @@ package body XCB_Package_Creator is
                            if Kind.Value.Exists then
                               for X_Id_Index in 1..Last_Index (Xcb.X_Ids) loop
                                  declare
-                                    X_Id : X_Proto_XML.X_Id.Ptr renames Element (Xcb.X_Ids, X_Id_Index);
+                                    X_Id : X_Proto_XML.X_Id.Ptr := Element (Xcb.X_Ids, X_Id_Index);
                                  begin
                                     if X_Id.Name.Exists then
                                        if To_String (Kind.Value.Value) = To_String (X_Id.Name.Value) then
@@ -2466,7 +2466,7 @@ package body XCB_Package_Creator is
 
       for X_Id_Index in 1..Last_Index (Xcb.X_Ids) loop
          declare
-            X_Id : X_Proto_XML.X_Id.Ptr renames Element (Xcb.X_Ids, X_Id_Index);
+            X_Id : X_Proto_XML.X_Id.Ptr := Element (Xcb.X_Ids, X_Id_Index);
          begin
             if X_Id.Name.Exists then
                if not Contains (Processed_X_Ids.all, X_Id.Name.Value) then
@@ -2490,7 +2490,7 @@ package body XCB_Package_Creator is
 
       for I in 1..Last_Index (Names_Of_Ts_To_Make_Array_Ts.all) loop
          declare
-            Text                     : X_Proto_XML.Large_Bounded_String.T renames Element (Names_Of_Ts_To_Make_Array_Ts.all, I);
+            Text                  : X_Proto_XML.Large_Bounded_String.T := Element (Names_Of_Ts_To_Make_Array_Ts.all, I);
             Variable_T_Name       : X_Proto_XML.Large_Bounded_String.T;
             Variable_Array_T_Name : X_Proto_XML.Large_Bounded_String.T;
             Is_Success : Boolean;
@@ -2762,7 +2762,7 @@ package body XCB_Package_Creator is
 
       for X_Id_Index in 1..Last_Index (Xcb.X_Ids) loop
          declare
-            X_Id : X_Proto_XML.X_Id.Ptr renames Element (Xcb.X_Ids, X_Id_Index);
+            X_Id : X_Proto_XML.X_Id.Ptr := Element (Xcb.X_Ids, X_Id_Index);
          begin
             if X_Id.Name.Exists then
                Generate_Code_For_Next_Procedure (To_String (X_Id.Name.Value));

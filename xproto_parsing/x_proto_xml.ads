@@ -4,11 +4,9 @@ with System.Storage_Elements;
 with Basic_Bounded_Dynamic_Pools;
 pragma Elaborate_All (Basic_Bounded_Dynamic_Pools);
 
-generic
-   Size : System.Storage_Elements.Storage_Offset;
-package Generic_X_Proto_XML is
+package X_Proto_XML is
 
-   Pool : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool (Size);
+   Pool : Basic_Bounded_Dynamic_Pools.Basic_Dynamic_Pool (Size => 220_000_000);
 
    package Large_Bounded_String is new Aida.Bounded_String (Maximum_Length_Of_Bounded_String => 3_000);
 
@@ -884,4 +882,4 @@ package Generic_X_Proto_XML is
 
    end Xcb;
 
-end Generic_X_Proto_XML;
+end X_Proto_XML;

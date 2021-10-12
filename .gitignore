@@ -8,7 +8,9 @@ xproto_parsing/obj_gnat
 xproto_parsing/obj_janus
 
 xproto_parsing/xcb_parser_gnat
+xproto_parsing/xcb_parser_gnat.exe
 xproto_parsing/xcb_parser_janus
+xproto_parsing/xcb_parser_janus.exe
 
 TRACE.tmp
 
