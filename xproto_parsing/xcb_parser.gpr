@@ -1,16 +1,19 @@
-with "deepend";
-
 project Xcb_Parser is
-   for Source_Dirs use ("src", "src/aida");
-   for Object_Dir use "obj";
+   for Source_Dirs use (".");
+   for Object_Dir use "obj_gnat";
+   for Exec_Dir use ".";
    for Main use ("main.adb");
+
+   package Builder is
+      for Executable ("main.adb") use "xcb_parser_gnat";
+   end Builder;
 
    package Compiler is
       for Local_Configuration_Pragmas use "xcb_parser.adc";
       for Default_Switches ("Ada") use ("-g",
-                                        "-gnat95",
-                                        "-Wall",
-                                        "-pedantic",
+                                        --  "-gnat95",
+--                                        "-Wall",
+--                                        "-pedantic",
                                         "-fstack-check");
    end Compiler;
 
