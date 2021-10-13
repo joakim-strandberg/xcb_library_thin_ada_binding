@@ -59,9 +59,10 @@ package body XCB_Package_Creator is
    use X_Proto_XML.Example;
    use X_Proto_XML.Struct.Child_Kind_Id;
 
-   package Unbounded_String_Vector_P is new Aida.Containers.Bounded_Vector (Element_T  => X_Proto_XML.Large_Bounded_String.T,
-                                                                            "="        => X_Proto_XML.Large_Bounded_String."=",
-                                                                            MAX_LENGTH => 1_000);
+   package Unbounded_String_Vector_P is new Aida.Containers.Bounded_Vector
+     (Element_T  => X_Proto_XML.Large_Bounded_String.T,
+      "="        => X_Proto_XML.Large_Bounded_String."=",
+      MAX_LENGTH => 1_000);
 
    use Unbounded_String_Vector_P;
 
@@ -72,7 +73,17 @@ package body XCB_Package_Creator is
 
    Processed_X_Ids : constant Unbounded_String_Vector_Ptr := new Unbounded_String_Vector_T;
 
-   Eight_Bit_Variable_T_Names : constant Unbounded_String_Vector_Ptr := new Unbounded_String_Vector_T;
+   Eight_Bit_Variable_T_Names : constant Unbounded_String_Vector_Ptr
+     := new Unbounded_String_Vector_T;
+
+   function Contains (Container : Unbounded_String_Vector_Ptr;
+                      Text      : String) return Boolean
+   is
+      Temp : X_Proto_XML.Large_Bounded_String.T;
+   begin
+      Initialize (Temp, Text);
+      return Contains (Container.all, Temp);
+   end Contains;
 
    Thirty_Two_Bit_Variable_T_Names : constant Unbounded_String_Vector_Ptr := new Unbounded_String_Vector_T;
 
@@ -714,15 +725,15 @@ package body XCB_Package_Creator is
             case Element (Children, I).Kind_Id is
                when X_Proto_XML.Request.Child_Field =>
                   if Element (Children, I).F.Kind.Exists then
-                     if not There_Is_No_Value_Param_With_Same_Name_And_T (Variable_Name      => To_String (Element (Children, I).F.Name.Value),
-                                                                          Variable_T_Name => To_String (Element (Children, I).F.Kind.Value),
+                     if not There_Is_No_Value_Param_With_Same_Name_And_T (Variable_Name      => Element (Children, I).F.Name.Value.all,
+                                                                          Variable_T_Name => Element (Children, I).F.Kind.Value.all,
                                                                           Children           => Children)
                      then
                         declare
                            Variable_T_Name : X_Proto_XML.Large_Bounded_String.T;
                            Is_Success : Boolean;
                         begin
-                           Translate_Variable_T_Name (Variable_T_Name => To_String (Element (Children, I).F.Kind.Value),
+                           Translate_Variable_T_Name (Variable_T_Name => Element (Children, I).F.Kind.Value.all,
                                                       Is_Success         => Is_Success,
                                                       Translated_Name    => Variable_T_Name);
 
@@ -730,7 +741,7 @@ package body XCB_Package_Creator is
                               declare
                                  Field_Name : X_Proto_XML.Large_Bounded_String.T;
                               begin
-                                 Generate_Struct_Name (Old_Name => To_String (Element (Children, I).F.Name.Value),
+                                 Generate_Struct_Name (Old_Name => Element (Children, I).F.Name.Value.all,
                                                        New_Name => Field_Name);
                                  Put_Line (";");
                                  if Is_First_Parameter then
@@ -754,7 +765,7 @@ package body XCB_Package_Creator is
                                  end if;
                               end;
                            else
-                              Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Unknown field type name " & To_String (Element (Children, I).F.Kind.Value));
+                              Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Unknown field type name " & Element (Children, I).F.Kind.Value.all);
                            end if;
                         end;
                      end if;
@@ -886,7 +897,7 @@ package body XCB_Package_Creator is
                Translated_Name : X_Proto_XML.Large_Bounded_String.T;
             begin
                if F.Enum.Exists then
-                  Translate_Classic_Variable_T_Name (Variable_T_Name => To_String (F.Kind.Value),
+                  Translate_Classic_Variable_T_Name (Variable_T_Name => F.Kind.Value.all,
                                                      Is_Success         => Is_Success,
                                                      Translated_Name    => Translated_Name);
 
@@ -906,7 +917,7 @@ package body XCB_Package_Creator is
                         end if;
                      end;
                   else
-                     Ada.Text_IO.Put_Line (This_Subprogram  & ", 1, could not translate " & To_String (F.Kind.Value));
+                     Ada.Text_IO.Put_Line (This_Subprogram  & ", 1, could not translate " & F.Kind.Value.all);
                   end if;
                else
                   null; -- Far from all fields are expected to have an enum specified
@@ -1011,7 +1022,7 @@ package body XCB_Package_Creator is
                               Variable_T_Name : X_Proto_XML.Large_Bounded_String.T;
                               Is_Success : Boolean;
                            begin
-                              Translate_Variable_T_Name (Variable_T_Name => To_String (Child.F.Kind.Value),
+                              Translate_Variable_T_Name (Variable_T_Name => Child.F.Kind.Value.all,
                                                          Is_Success         => Is_Success,
                                                          Translated_Name    => Variable_T_Name);
 
@@ -1019,12 +1030,12 @@ package body XCB_Package_Creator is
                                  declare
                                     Field_Name : X_Proto_XML.Large_Bounded_String.T;
                                  begin
-                                    Generate_Struct_Name (Old_Name => To_String (Child.F.Name.Value),
+                                    Generate_Struct_Name (Old_Name => Child.F.Name.Value.all,
                                                           New_Name => Field_Name);
                                     Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_T_Name) & ";");
                                  end;
                               else
-                                 Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Unknown field type name " & To_String (Child.F.Kind.Value));
+                                 Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Unknown field type name " & Child.F.Kind.Value.all);
                               end if;
                            end;
                         else
@@ -1749,7 +1760,7 @@ package body XCB_Package_Creator is
                            Variable_T_Name : X_Proto_XML.Large_Bounded_String.T;
                            Is_Success : Boolean;
                         begin
-                           Translate_Variable_T_Name (Variable_T_Name => To_String (Element (Event.Children, I).F.Kind.Value),
+                           Translate_Variable_T_Name (Variable_T_Name => Element (Event.Children, I).F.Kind.Value.all,
                                                       Is_Success         => Is_Success,
                                                       Translated_Name    => Variable_T_Name);
 
@@ -1757,12 +1768,13 @@ package body XCB_Package_Creator is
                               declare
                                  Field_Name : X_Proto_XML.Large_Bounded_String.T;
                               begin
-                                 Generate_Struct_Name (Old_Name => To_String (Element (Event.Children, I).F.Name.Value),
+                                 Generate_Struct_Name (Old_Name => Element (Event.Children, I).F.Name.Value.all,
                                                        New_Name => Field_Name);
 
                                  if I = 1 then
                                     if
-                                      Contains (Eight_Bit_Variable_T_Names.all, (Element (Event.Children, I).F.Kind.Value))
+                                      Contains (Eight_Bit_Variable_T_Names,
+                                                Element (Event.Children, I).F.Kind.Value.all)
                                     then
                                        if Element (Event.Children, I).F.Enum.Exists then
                                           Translate_Variable_T_Name (Variable_T_Name => To_String (Element (Event.Children, I).F.Enum.Value),
@@ -1795,7 +1807,7 @@ package body XCB_Package_Creator is
                                  end if;
                               end;
                            else
-                              Ada.Text_IO.Put_Line (This_Subprogram & ", 6, Unknown field type name " & To_String (Element (Event.Children, I).F.Kind.Value));
+                              Ada.Text_IO.Put_Line (This_Subprogram & ", 6, Unknown field type name " & Element (Event.Children, I).F.Kind.Value.all);
                            end if;
                         end;
                      when X_Proto_XML.Event.Child_Pad =>
@@ -1960,7 +1972,7 @@ package body XCB_Package_Creator is
                               Variable_T_Name : X_Proto_XML.Large_Bounded_String.T;
                               Is_Success : Boolean;
                            begin
-                              Translate_Variable_T_Name (Variable_T_Name => To_String (Child.F.Kind.Value),
+                              Translate_Variable_T_Name (Variable_T_Name => Child.F.Kind.Value.all,
                                                          Is_Success         => Is_Success,
                                                          Translated_Name    => Variable_T_Name);
 
@@ -1968,7 +1980,7 @@ package body XCB_Package_Creator is
                                  declare
                                     Field_Name : X_Proto_XML.Large_Bounded_String.T;
                                  begin
-                                    Generate_Struct_Name (Old_Name => To_String (Child.F.Name.Value),
+                                    Generate_Struct_Name (Old_Name => Child.F.Name.Value.all,
                                                           New_Name => Field_Name);
                                     Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_T_Name) & ";");
 
@@ -1977,7 +1989,7 @@ package body XCB_Package_Creator is
                                     end if;
                                  end;
                               else
-                                 Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Unknown field type name " & To_String (Child.F.Kind.Value));
+                                 Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Unknown field type name " & Child.F.Kind.Value.all);
                               end if;
                            end;
                         else
@@ -2172,7 +2184,7 @@ package body XCB_Package_Creator is
                                           Variable_T_Name : X_Proto_XML.Large_Bounded_String.T;
                                           Is_Success : Boolean;
                                        begin
-                                          Translate_Variable_T_Name (Variable_T_Name => To_String (Reply_Child.F.Kind.Value),
+                                          Translate_Variable_T_Name (Variable_T_Name => Reply_Child.F.Kind.Value.all,
                                                                      Is_Success         => Is_Success,
                                                                      Translated_Name    => Variable_T_Name);
 
@@ -2180,12 +2192,12 @@ package body XCB_Package_Creator is
                                              declare
                                                 Field_Name : X_Proto_XML.Large_Bounded_String.T;
                                              begin
-                                                Generate_Struct_Name (Old_Name => To_String (Reply_Child.F.Name.Value),
+                                                Generate_Struct_Name (Old_Name => Reply_Child.F.Name.Value.all,
                                                                       New_Name => Field_Name);
 
                                                 if Is_First then
                                                    if
-                                                     Contains (Eight_Bit_Variable_T_Names.all, Reply_Child.F.Kind.Value)
+                                                     Contains (Eight_Bit_Variable_T_Names, Reply_Child.F.Kind.Value.all)
                                                    then
                                                       if Reply_Child.F.Enum.Exists then
                                                          Translate_Variable_T_Name (Variable_T_Name => To_String (Reply_Child.F.Enum.Value),
@@ -2197,22 +2209,22 @@ package body XCB_Package_Creator is
                                                       Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_T_Name) & ";");
                                                       Put_Tabs (2); Put_Line ("Sequence : aliased Interfaces.Unsigned_16;");
                                                       Put_Tabs (2); Put_Line ("Length : aliased Interfaces.Unsigned_32;");
-                                                   elsif To_String (Reply_Child.F.Kind.Value) = "BOOL" then
+                                                   elsif Reply_Child.F.Kind.Value.all = "BOOL" then
                                                       Put_Tabs (2); Put_Line ("Response_Kind : aliased Interfaces.Unsigned_8;");
                                                       Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased Interfaces.Unsigned_8;");
                                                       Put_Tabs (2); Put_Line ("Sequence : aliased Interfaces.Unsigned_16;");
                                                       Put_Tabs (2); Put_Line ("Length : aliased Interfaces.Unsigned_32;");
                                                    else
                                                       Ada.Text_IO.Put_Line (This_Subprogram & ", 1, Request " & To_String (Request.Name.Value) &
-                                                                              ", reply " & To_String (Reply_Child.F.Name.Value) & " has first field " &
-                                                                              To_String (Reply_Child.F.Kind.Value) & ", which is non-8-bits.");
+                                                                              ", reply " & Reply_Child.F.Name.Value.all & " has first field " &
+                                                                              Reply_Child.F.Kind.Value.all & ", which is non-8-bits.");
                                                    end if;
                                                 else
                                                    Put_Tabs (2); Put_Line (To_String (Field_Name) & " : aliased " & To_String (Variable_T_Name) & ";");
                                                 end if;
                                              end;
                                           else
-                                             Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Unknown field type name " & To_String (Reply_Child.F.Kind.Value));
+                                             Ada.Text_IO.Put_Line (This_Subprogram & ", 2, Unknown field type name " & Reply_Child.F.Kind.Value.all);
                                           end if;
                                        end;
                                     else

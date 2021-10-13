@@ -10,16 +10,23 @@ package X_Proto_XML is
 
    package Large_Bounded_String is new Aida.Bounded_String (Maximum_Length_Of_Bounded_String => 3_000);
 
+   type String_Ptr is access constant String;
+   for String_Ptr'Storage_Pool use Pool;
+
    package Field is
 
-      type Kind_T is record
-         Exists : Boolean := False;
-         Value  : Large_Bounded_String.T;
+      type Kind_T (Exists : Boolean := False) is record
+         case Exists is
+            when True  => Value  : String_Ptr;
+            when False => null;
+         end case;
       end record;
 
-      type Name_T is record
-         Exists : Boolean := False;
-         Value  : Large_Bounded_String.T;
+      type Name_T (Exists : Boolean := False) is record
+         case Exists is
+            when True  => Value  : String_Ptr;
+            when False => null;
+         end case;
       end record;
 
       type Enum_T is record
@@ -42,15 +49,14 @@ package X_Proto_XML is
          Value  : Large_Bounded_String.T;
       end record;
 
-      type T is limited
-         record
-            Kind     : Kind_T;
-            Name     : Name_T;
-            Enum     : Enum_T;
-            Mask     : Mask_T;
-            Alt_Enum : Alt_Enum_T;
-            Value    : Value_T;
-         end record;
+      type T is limited record
+         Kind     : Kind_T;
+         Name     : Name_T;
+         Enum     : Enum_T;
+         Mask     : Mask_T;
+         Alt_Enum : Alt_Enum_T;
+         Value    : Value_T;
+      end record;
 
       type Ptr is access all T;
       for Ptr'Storage_Pool use Pool;

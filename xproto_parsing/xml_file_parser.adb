@@ -928,21 +928,11 @@ package body XML_File_Parser is
                end if;
             when Tag_Id.Field =>
                if Attribute_Name = Tag_Field_Attribute_Kind then
-                  declare
-                     V : X_Proto_XML.Large_Bounded_String.T;
-                  begin
-                     Initialize (V, Attribute_Value);
-                     Current_Tag.Field_V.Kind := (Exists => True,
-                                                  Value  => V);
-                  end;
+                  Current_Tag.Field_V.Kind := (Exists => True,
+                                               Value  => new String'(Attribute_Value));
                elsif Attribute_Name = Tag_Field_Attribute_Name then
-                  declare
-                     V : X_Proto_XML.Large_Bounded_String.T;
-                  begin
-                     Initialize (V, Attribute_Value);
-                     Current_Tag.Field_V.Name := (Exists => True,
-                                                  Value  => V);
-                  end;
+                  Current_Tag.Field_V.Name := (Exists => True,
+                                               Value  => new String'(Attribute_Value));
                elsif Attribute_Name = Tag_Field_Attribute_Enum then
                   declare
                      V : X_Proto_XML.Large_Bounded_String.T;
